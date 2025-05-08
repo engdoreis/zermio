@@ -1,0 +1,16 @@
+[package]
+name = "reismmio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+askama = { version = "0.12.1", features = ["serde-json"] }
+
+[lib]
+name = "reismmiolib"
+path = "src/lib/lib.rs"
+
+
+[[bin]]
+name = "reismmio_cli"
+path = "src/main.rs"
