@@ -30,6 +30,7 @@ impl<'a> Register<'a> {
 
 pub struct Bitfields<'a> {
     pub name: &'a str,
+    pub desc: &'a str,
     pub bit_size: u32,
     pub offset: u32,
 }
@@ -40,6 +41,7 @@ impl<'a> Bitfields<'a> {
             name,
             offset,
             bit_size,
+            desc: name,
         }
     }
 }
