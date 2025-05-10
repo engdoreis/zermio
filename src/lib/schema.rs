@@ -1,5 +1,4 @@
 use serde::Deserialize;
-use std::str::FromStr;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -42,7 +41,7 @@ pub struct Peripheral {
     pub description: Option<String>,
     #[serde(deserialize_with = "from_hex_string")]
     pub base_address: u64,
-    #[serde(deserialize_with = "from_hex_string")]
+    #[serde(deserialize_with = "from_hex_string", default)]
     pub size: u64,
     pub address_block: Option<AddressBlock>,
     pub interrupt: Option<Interrupt>,

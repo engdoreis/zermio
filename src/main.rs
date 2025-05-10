@@ -1,6 +1,4 @@
-use askama::Template; // bring trait in scope
 use reis_mmiogen::generator;
-use reis_mmiogen::mmio;
 use reis_mmiogen::schema;
 
 use clap::Parser;
@@ -24,8 +22,14 @@ struct Args {
     output: PathBuf,
 }
 
-fn main() {
+fn main() -> anyhow::Result<(), &'static str> {
     let args: Args = Args::parse();
+    if !args.svd.exists() {
+        return Err("Svd does not exist!");
+    }
+    if !args.output.is_dir() {
+        return Err("Output path is not a dir!");
+    }
 
     println!("Loading xml");
 
@@ -35,4 +39,5 @@ fn main() {
     let device: schema::Device = from_reader(reader).unwrap();
     // println!("{:#?}", device);
     generator::cpp::generate(&device, args.output).unwrap();
+    Ok(())
 }

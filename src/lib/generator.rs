@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
+use crate::filters;
 use crate::mmio;
 use crate::schema;
 
@@ -12,6 +13,7 @@ fn peripheral_name(s: &str) -> String {
     // Remove trailing digits
     re.replace(s, "").to_string().to_lowercase()
 }
+
 pub mod cpp {
     use super::*;
 
@@ -19,12 +21,31 @@ pub mod cpp {
     #[template(
         ext = "txt",
         source = "
-     class {{ data.name|capitalize }} { 
-        {% for register in data.registers -%}
-        {{ register|capitalize }}Reg {{register|lower}};
+    #pragma once
+    #include <cstdint>
+     enum Peripherals: uintptr_t{ 
+        {% for peripheral in data.peripherals -%}
+        {{ peripheral.name|pascal_case }} = {{peripheral.address}},
         {% endfor -%}
+     };
+
+    "
+    )]
+    pub struct PeripheralAddresses<'a> {
+        pub data: &'a mmio::PeripheralAddresses<'a>,
+    }
+
+    #[derive(Template)]
+    #[template(
+        ext = "txt",
+        source = "
+     class {{ data.name|pascal_case }} { 
+        protected:
+        {% for register in data.registers -%}
+        {{ register|pascal_case }}Reg {{register|lower}};
+        {% endfor %}
         
-        constexpr {{ data.name|capitalize }} (uintptr_t addr): 
+        constexpr {{ data.name|pascal_case }} (uintptr_t addr): 
         {%- for register in data.registers -%}
             {{register|lower}}(addr) {%- if !loop.last -%},{%- endif -%}
         {%- endfor -%}
@@ -41,14 +62,16 @@ pub mod cpp {
     #[template(
         ext = "txt",
         source = "
-     struct {{ data.name|capitalize }}Reg: Mmio<{{ data.name|capitalize }}Reg> { 
+     // {{ data.desc }}
+     struct {{ data.name|pascal_case }}Reg: Mmio<{{ data.name|pascal_case }}Reg> { 
         {% for bitfield in data.bitfields -%}
-        Mmio::BitField<{{ data.name|capitalize }}Reg, {{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
+        // {{ bitfield.desc }}
+        Mmio::BitField<{{ data.name|pascal_case }}Reg, {{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
         {% endfor -%}
         
-        constexpr {{ data.name|capitalize }}Reg (uintptr_t addr): Mmio(addr + {{ data.offset }}),
+        constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): Mmio(addr + {{ data.offset }}),
         {%- for bitfield in data.bitfields -%}
-            {{ bitfield.name|lower }}(addr) {%- if !loop.last -%},{%- endif -%}
+            {{ bitfield.name|lower }}(this) {%- if !loop.last -%},{%- endif -%}
         {%- endfor -%}
         {}
      };
@@ -60,47 +83,86 @@ pub mod cpp {
     }
 
     pub fn generate(soc: &schema::Device, output: PathBuf) -> anyhow::Result<()> {
-        for peripheral_it in &soc.peripherals.peripheral {
-            let peripheral_name = peripheral_name(&peripheral_it.name);
+        let filepath = |name: &str| -> anyhow::Result<PathBuf> {
             let mut filename = output.clone();
-            filename.push(&peripheral_name);
-            filename.set_extension("cc");
-            let mut file = File::create(&filename)?;
+            filename.push(name);
+            filename.set_extension("hh");
+            Ok(filename)
+        };
+        let name = soc.name.replace(" ", "_").to_lowercase();
+        let mut platform = mmio::PeripheralAddresses {
+            name: &name,
+            peripherals: Vec::new(),
+        };
 
-            file.write_all(
-                &format!("namespace {} {{\n", peripheral_name.to_uppercase()).as_bytes(),
-            )?;
+        for peripheral_it in &soc.peripherals.peripheral {
+            let name = peripheral_it.name.replace(" ", "_").to_uppercase();
+            platform.peripherals.push(mmio::PeripheralAddress {
+                name,
+                address: format!("{:#x}", peripheral_it.base_address),
+            });
+
+            let Some(registers) = &peripheral_it.registers.as_ref() else {
+                continue;
+            };
+
+            let peripheral_name = peripheral_name(&peripheral_it.name);
+
+            let peripheral_header = filepath(&peripheral_name)?;
+            let mut peripheral_handler = File::create(&peripheral_header)?;
+
+            writeln!(peripheral_handler, r###"#pragma once "###)?;
+            writeln!(peripheral_handler, r###"#include  "mmio.hh" "###)?;
+            writeln!(peripheral_handler, "namespace MMIO {{",)?;
 
             let mut peripheral = mmio::Peripheral::new(&peripheral_name);
-            for register_it in &peripheral_it.registers.as_ref().unwrap().register {
+            for register_it in &registers.register {
                 peripheral.registers.push(&register_it.name);
 
-                let mut register =
-                    mmio::Register::new(&register_it.name, register_it.address_offset as u32);
+                let mut register = mmio::Register::new(
+                    &register_it.name,
+                    register_it.address_offset as u32,
+                    Some(&register_it.description),
+                );
                 for register_field in &register_it.fields.field {
                     register.bitfields.push(mmio::Bitfields::new(
                         &register_field.name,
                         register_field.bit_range.offset as u32,
                         register_field.bit_range.size as u32,
+                        Some(&register_field.description),
                     ));
                 }
-                file.write_all(Register { data: &register }.render().unwrap().as_bytes())?;
+                writeln!(
+                    peripheral_handler,
+                    "{}",
+                    Register { data: &register }.render().unwrap()
+                )?;
                 // println!("{}", Register { data: &register }.render().unwrap());
             }
-            file.write_all(
-                Peripheral { data: &peripheral }
-                    .render()
-                    .unwrap()
-                    .as_bytes(),
+            writeln!(
+                peripheral_handler,
+                "{}",
+                Peripheral { data: &peripheral }.render().unwrap()
             )?;
-            file.write_all(
-                &format!("}} // namespace {}", peripheral_name.to_uppercase()).as_bytes(),
+            writeln!(
+                peripheral_handler,
+                "}} // namespace {}",
+                peripheral_name.to_uppercase()
             )?;
-            // println!("{}", Peripheral { data: &peripheral }.render().unwrap());
-            println!("File: {} generated", filename.display());
-            break;
+            println!("{} generated", peripheral_header.display());
         }
 
+        let platform_header = filepath(&format!(
+            "{}_peripherals",
+            soc.name.replace(" ", "_").to_lowercase()
+        ))?;
+        let mut platform_header_handle = File::create(&platform_header)?;
+        writeln!(
+            platform_header_handle,
+            "{}",
+            PeripheralAddresses { data: &platform }.render().unwrap()
+        )?;
+        println!("{} generated", platform_header.display());
         Ok(())
     }
 }
