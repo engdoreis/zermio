@@ -18,14 +18,16 @@ impl<'a> Peripheral<'a> {
 
 pub struct Register<'a> {
     pub name: &'a str,
+    pub desc: &'a str,
     pub offset: String,
     pub bitfields: Vec<Bitfields<'a>>,
 }
 
 impl<'a> Register<'a> {
-    pub fn new(name: &'a str, offset: u32) -> Self {
+    pub fn new(name: &'a str, offset: u32, desc: Option<&'a str>) -> Self {
         Self {
             name,
+            desc: desc.unwrap_or(name),
             offset: format!("{:#x}", offset),
             bitfields: vec![],
         }
@@ -40,12 +42,22 @@ pub struct Bitfields<'a> {
 }
 
 impl<'a> Bitfields<'a> {
-    pub fn new(name: &'a str, offset: u32, bit_size: u32) -> Self {
+    pub fn new(name: &'a str, offset: u32, bit_size: u32, desc: Option<&'a str>) -> Self {
         Self {
             name,
             offset,
             bit_size,
-            desc: name,
+            desc: desc.unwrap_or(name),
         }
     }
+}
+
+pub struct PeripheralAddress {
+    pub name: String,
+    pub address: String,
+}
+
+pub struct PeripheralAddresses<'a> {
+    pub name: &'a str,
+    pub peripherals: Vec<PeripheralAddress>,
 }
