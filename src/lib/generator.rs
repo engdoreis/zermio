@@ -86,9 +86,13 @@ pub mod cpp {
         pub data: &'a mmio::Register<'a>,
     }
 
-    pub fn generate(soc: &schema::Device, output: PathBuf) -> anyhow::Result<()> {
-        let filepath = |name: &str| -> anyhow::Result<PathBuf> {
-            let mut filename = output.clone();
+    pub fn generate(
+        soc: &schema::Device,
+        output: PathBuf,
+        addresses: PathBuf,
+    ) -> anyhow::Result<()> {
+        let filepath = |path: &PathBuf, name: &str| -> anyhow::Result<PathBuf> {
+            let mut filename = path.clone();
             filename.push(name);
             filename.set_extension("hh");
             Ok(filename)
@@ -112,7 +116,7 @@ pub mod cpp {
 
             let peripheral_name = peripheral_name(&peripheral_it.name);
 
-            let peripheral_header = filepath(&peripheral_name)?;
+            let peripheral_header = filepath(&output, &peripheral_name)?;
             let mut peripheral_handler = File::create(&peripheral_header)?;
 
             writeln!(peripheral_handler, r###"#pragma once "###)?;
@@ -156,10 +160,10 @@ pub mod cpp {
             println!("{} generated", peripheral_header.display());
         }
 
-        let platform_header = filepath(&format!(
-            "{}_peripherals",
-            soc.name.replace(" ", "_").to_lowercase()
-        ))?;
+        let platform_header = filepath(
+            &addresses,
+            &format!("{}_peripherals", soc.name.replace(" ", "_").to_lowercase()),
+        )?;
         let mut platform_header_handle = File::create(&platform_header)?;
         writeln!(
             platform_header_handle,
