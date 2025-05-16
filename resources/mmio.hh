@@ -21,6 +21,8 @@ struct Mmio {
     return *static_cast<DERIVED*>(this);
   }
 
+  DERIVED& operator ()() {return fetch();}
+
   template <typename BITFIELD, std::size_t OFFSET, std::size_t BITS>
   class BitField {
     BITFIELD* const reg;

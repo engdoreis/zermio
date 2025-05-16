@@ -28,11 +28,11 @@ enum Output {
     ExportCpp {
         /// A dir to output the peripheral implementation.
         #[arg(long, short, value_parser =  PathBuf::from_str)]
-        peripheral_dir: PathBuf,
+        dir: PathBuf,
 
         /// A dir to output the header with the peripheral addresses.
         #[arg(long, short, value_parser =  PathBuf::from_str)]
-        addresses_dir: Option<PathBuf>,
+        periph_dir: Option<PathBuf>,
     },
 }
 
@@ -60,19 +60,16 @@ fn main() -> anyhow::Result<(), &'static str> {
     };
 
     match output {
-        Output::ExportCpp {
-            peripheral_dir,
-            addresses_dir,
-        } => {
-            if !peripheral_dir.is_dir() {
+        Output::ExportCpp { dir, periph_dir } => {
+            if !dir.is_dir() {
                 return Err("Output path is not a dir!");
             }
-            let addresses_dir = addresses_dir.unwrap_or(peripheral_dir.clone());
-            if !addresses_dir.is_dir() {
+            let periph_dir = periph_dir.unwrap_or(dir.clone());
+            if !periph_dir.is_dir() {
                 return Err("Addresses path is not a dir!");
             }
 
-            generator::cpp::generate(&device, peripheral_dir, addresses_dir).unwrap();
+            generator::cpp::generate(&device, dir, periph_dir).unwrap();
         }
     }
 

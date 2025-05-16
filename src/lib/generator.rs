@@ -88,51 +88,53 @@ pub mod cpp {
 
     pub fn generate(
         soc: &schema::Device,
-        output: PathBuf,
-        addresses: PathBuf,
+        out_dir: PathBuf,
+        addr_dir: PathBuf,
     ) -> anyhow::Result<()> {
-        let filepath = |path: &PathBuf, name: &str| -> anyhow::Result<PathBuf> {
+        let get_path = |path: &PathBuf, name: &str| -> anyhow::Result<PathBuf> {
             let mut filename = path.clone();
             filename.push(name);
             filename.set_extension("hh");
             Ok(filename)
         };
         let name = soc.name.replace(" ", "_").to_lowercase();
-        let mut platform = mmio::PeripheralAddresses {
+        // Store all the peripheral addresses which will be rendered later in a single header under
+        // a enum.
+        let mut periph_addr = mmio::PeripheralAddresses {
             name: &name,
             peripherals: Vec::new(),
         };
 
-        for peripheral_it in &soc.peripherals.peripheral {
-            let name = peripheral_it.name.replace(" ", "_").to_uppercase();
-            platform.peripherals.push(mmio::PeripheralAddress {
+        for periph_iter in &soc.peripherals.peripheral {
+            let name = periph_iter.name.replace(" ", "_").to_uppercase();
+            periph_addr.peripherals.push(mmio::PeripheralAddress {
                 name,
-                address: format!("{:#x}", peripheral_it.base_address),
+                address: format!("{:#x}", periph_iter.base_address),
             });
 
-            let Some(registers) = &peripheral_it.registers.as_ref() else {
+            let Some(registers) = &periph_iter.registers.as_ref() else {
                 continue;
             };
 
-            let peripheral_name = peripheral_name(&peripheral_it.name);
+            let peripheral_name = peripheral_name(&periph_iter.name);
 
-            let peripheral_header = filepath(&output, &peripheral_name)?;
+            let peripheral_header = get_path(&out_dir, &peripheral_name)?;
             let mut peripheral_handler = File::create(&peripheral_header)?;
 
-            writeln!(peripheral_handler, r###"#pragma once "###)?;
+            writeln!(peripheral_handler, r###"#pragma once \n"###)?;
             writeln!(peripheral_handler, r###"#include  "mmio.hh" "###)?;
             writeln!(peripheral_handler, "namespace MMIO {{",)?;
 
             let mut peripheral = mmio::Peripheral::new(&peripheral_name);
-            for register_it in &registers.register {
-                peripheral.registers.push(&register_it.name);
+            for register_iter in &registers.register {
+                peripheral.registers.push(&register_iter.name);
 
                 let mut register = mmio::Register::new(
-                    &register_it.name,
-                    register_it.address_offset as u32,
-                    Some(&register_it.description),
+                    &register_iter.name,
+                    register_iter.address_offset as u32,
+                    Some(&register_iter.description),
                 );
-                for register_field in &register_it.fields.field {
+                for register_field in &register_iter.fields.field {
                     register.bitfields.push(mmio::Bitfields::new(
                         &register_field.name,
                         register_field.bit_range.offset as u32,
@@ -145,7 +147,6 @@ pub mod cpp {
                     "{}",
                     Register { data: &register }.render().unwrap()
                 )?;
-                // println!("{}", Register { data: &register }.render().unwrap());
             }
             writeln!(
                 peripheral_handler,
@@ -160,15 +161,15 @@ pub mod cpp {
             println!("{} generated", peripheral_header.display());
         }
 
-        let platform_header = filepath(
-            &addresses,
+        let platform_header = get_path(
+            &addr_dir,
             &format!("{}_peripherals", soc.name.replace(" ", "_").to_lowercase()),
         )?;
         let mut platform_header_handle = File::create(&platform_header)?;
         writeln!(
             platform_header_handle,
             "{}",
-            PeripheralAddresses { data: &platform }.render().unwrap()
+            PeripheralAddresses { data: &periph_addr }.render().unwrap()
         )?;
         println!("{} generated", platform_header.display());
         Ok(())
