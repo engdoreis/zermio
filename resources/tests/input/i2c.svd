@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device schemaVersion="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD.xsd">
+  <vendor>reismmio</vendor>
+  <name>Test</name>
+  <version>0.1</version>
+  <description>
+    Single-core RISC-V processor,
+    1 x I2C
+    </description>
+  <licenseText>
+    Licensed under the Apache License, Version 2.0, see LICENSE for details.\n
+    SPDX-License-Identifier: Apache-2.0\n
+  </licenseText>
+  <cpu>
+    <name>reis-riscv</name>
+    <revision>r0p1</revision>
+    <endian>little</endian>
+    <mpuPresent>false</mpuPresent>
+    <fpuPresent>false</fpuPresent>
+    <vtorPresent>1</vtorPresent>
+    <nvicPrioBits>2</nvicPrioBits>
+    <vendorSystickConfig>false</vendorSystickConfig>
+    <deviceNumInterrupts>1</deviceNumInterrupts>
+  </cpu>
+  <addressUnitBits>8</addressUnitBits>
+  <width>32</width>
+  <peripherals>
+		<peripheral>
+			<name>I2C0</name>
+			<version>1.0.0</version>
+			<description>I2C interface for host and device mode, supporting up to 1 Mbaud data rates</description>
+			<baseAddress>0x80200000</baseAddress>
+			<size>0x20</size>
+			<interrupt>
+				<name>I2C0 IRQ</name>
+				<value>7</value>
+			</interrupt>
+			<addressBlock>
+				<offset>0x0</offset>
+				<size>0x1000</size>
+				<usage>registers</usage>
+			</addressBlock>
+			<registers>
+				<register>
+					<name>CTRL</name>
+					<description>I2C Control Register</description>
+					<addressOffset>0x10</addressOffset>
+					<fields>
+						<field>
+							<name>ENABLEHOST</name>
+							<description>Enable Host I2C functionality</description>
+							<bitRange>[0:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>ENABLETARGET</name>
+							<description>Enable Target I2C functionality</description>
+							<bitRange>[1:1]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>LLPBK</name>
+							<description>Enable I2C line loopback testIf line loopback is enabled, the internal design sees ACQ and RX data as &quot;1&quot;</description>
+							<bitRange>[2:2]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>STATUS</name>
+					<description>I2C Live Status Register</description>
+					<addressOffset>0x14</addressOffset>
+					<fields>
+						<field>
+							<name>FMTFULL</name>
+							<description>FMT FIFO is full</description>
+							<bitRange>[0:0]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>RXFULL</name>
+							<description>RX FIFO is full</description>
+							<bitRange>[1:1]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>FMTEMPTY</name>
+							<description>FMT FIFO is empty</description>
+							<bitRange>[2:2]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>RXEMPTY</name>
+							<description>RX FIFO is empty</description>
+							<bitRange>[5:5]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>HOSTIDLE</name>
+							<description>Host functionality is idle. No Host transaction is in progress</description>
+							<bitRange>[3:3]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>TARGETIDLE</name>
+							<description>Target functionality is idle. No Target transaction is in progress</description>
+							<bitRange>[4:4]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>TXFULL</name>
+							<description>TX FIFO is full</description>
+							<bitRange>[6:6]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>ACQFULL</name>
+							<description>ACQ FIFO is full</description>
+							<bitRange>[7:7]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>TXEMPTY</name>
+							<description>TX FIFO is empty</description>
+							<bitRange>[8:8]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>ACQEMPTY</name>
+							<description>ACQ FIFO is empty</description>
+							<bitRange>[9:9]</bitRange>
+							<access>read-only</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>RDATA</name>
+					<description>I2C Read Data</description>
+					<addressOffset>0x18</addressOffset>
+					<fields>
+						<field>
+							<name>Value</name>
+							<description>Value</description>
+							<bitRange>[7:0]</bitRange>
+							<access>read-only</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>FDATA</name>
+					<description>I2C Format Data</description>
+					<addressOffset>0x1c</addressOffset>
+					<fields>
+						<field>
+							<name>FBYTE</name>
+							<description>Format Byte. Directly transmitted if no flags are set.</description>
+							<bitRange>[7:0]</bitRange>
+							<access>write-only</access>
+						</field>
+						<field>
+							<name>START</name>
+							<description>Issue a START condition before transmitting BYTE.</description>
+							<bitRange>[8:8]</bitRange>
+							<access>write-only</access>
+						</field>
+						<field>
+							<name>STOP</name>
+							<description>Issue a STOP condition after this operation</description>
+							<bitRange>[9:9]</bitRange>
+							<access>write-only</access>
+						</field>
+						<field>
+							<name>READ</name>
+							<description>Read BYTE bytes from I2C. (256 if BYTE==0)</description>
+							<bitRange>[10:10]</bitRange>
+							<access>write-only</access>
+						</field>
+						<field>
+							<name>RCONT</name>
+							<description>Do not NACK the last byte read, let the read operation continue</description>
+							<bitRange>[11:11]</bitRange>
+							<access>write-only</access>
+						</field>
+						<field>
+							<name>NAKOK</name>
+							<description>Do not signal an exception if the current byte is not ACK'd</description>
+							<bitRange>[12:12]</bitRange>
+							<access>write-only</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>FIFO_CTRL</name>
+					<description>I2C FIFO control register</description>
+					<addressOffset>0x20</addressOffset>
+					<fields>
+						<field>
+							<name>RXRST</name>
+							<description>RX fifo reset. Write 1 to the register resets RX_FIFO. Read returns 0</description>
+							<bitRange>[0:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>FMTRST</name>
+							<description>FMT fifo reset. Write 1 to the register resets FMT_FIFO. Read returns 0</description>
+							<bitRange>[1:1]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>RXILVL</name>
+							<description>Trigger level for RX interrupts. If the FIFO depth exceedsthis setting, it raises rx_threshold interrupt.</description>
+							<bitRange>[4:2]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>FMTILVL</name>
+							<description>Trigger level for FMT interrupts. If the FIFO depth falls belowthis setting, it raises fmt_threshold interrupt.</description>
+							<bitRange>[6:5]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>ACQRST</name>
+							<description>ACQ FIFO reset. Write 1 to the register resets it. Read returns 0</description>
+							<bitRange>[7:7]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>TXRST</name>
+							<description>TX FIFO reset. Write 1 to the register resets it. Read returns 0</description>
+							<bitRange>[8:8]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>FIFO_STATUS</name>
+					<description>I2C FIFO status register</description>
+					<addressOffset>0x24</addressOffset>
+					<fields>
+						<field>
+							<name>FMTLVL</name>
+							<description>Current fill level of FMT fifo</description>
+							<bitRange>[6:0]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>RXLVL</name>
+							<description>Current fill level of RX fifo</description>
+							<bitRange>[22:16]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>TXLVL</name>
+							<description>Current fill level of TX fifo</description>
+							<bitRange>[14:8]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>ACQLVL</name>
+							<description>Current fill level of ACQ fifo</description>
+							<bitRange>[30:24]</bitRange>
+							<access>read-only</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>OVRD</name>
+					<description>I2C Override Control Register</description>
+					<addressOffset>0x58</addressOffset>
+					<fields>
+						<field>
+							<name>TXOVRDEN</name>
+							<description>Override the SDA and SCL TX signals.</description>
+							<bitRange>[0:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>SCLVAL</name>
+							<description>Value for SCL Override. Set to 0 to drive TX Low, and set to 1 for high-Z</description>
+							<bitRange>[1:1]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>SDAVAL</name>
+							<description>Value for SDA Override. Set to 0 to drive TX Low, and set to 1 for high-Z</description>
+							<bitRange>[2:2]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>VAL</name>
+					<description>Oversampled RX values</description>
+					<addressOffset>0x5c</addressOffset>
+					<fields>
+						<field>
+							<name>SCL_RX</name>
+							<description>Last 16 oversampled values of SCL. Most recent bit is bit 0, oldest 15.</description>
+							<bitRange>[15:0]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>SDA_RX</name>
+							<description>Last 16 oversampled values of SDA. Most recent bit is bit 16, oldest 31.</description>
+							<bitRange>[31:16]</bitRange>
+							<access>read-only</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TIMING0</name>
+					<description>Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly.</description>
+					<addressOffset>0x60</addressOffset>
+					<fields>
+						<field>
+							<name>THIGH</name>
+							<description>The actual time to hold SCL high in a given pulse: in host mode, when there is no stretching this value is 3 cycles longer as tracked in issue #18962</description>
+							<bitRange>[15:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>TLOW</name>
+							<description>The actual time to hold SCL low between any two SCL pulses</description>
+							<bitRange>[31:16]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TIMING1</name>
+					<description>Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.</description>
+					<addressOffset>0x64</addressOffset>
+					<fields>
+						<field>
+							<name>T_R</name>
+							<description>The nominal rise time to anticipate for the bus (depends on capacitance)</description>
+							<bitRange>[15:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>T_F</name>
+							<description>The nominal fall time to anticipate for the bus (influences SDA hold times): this is currently counted twice in host mode as tracked in issue #18958</description>
+							<bitRange>[31:16]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TIMING2</name>
+					<description>Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.</description>
+					<addressOffset>0x68</addressOffset>
+					<fields>
+						<field>
+							<name>TSU_STA</name>
+							<description>Actual setup time for repeated start signals</description>
+							<bitRange>[15:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>THD_STA</name>
+							<description>Actual hold time for start signals</description>
+							<bitRange>[31:16]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TIMING3</name>
+					<description>Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period.</description>
+					<addressOffset>0x6c</addressOffset>
+					<fields>
+						<field>
+							<name>TSU_DAT</name>
+							<description>Actual setup time for data (or ack) bits</description>
+							<bitRange>[15:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>THD_DAT</name>
+							<description>Actual hold time for data (or ack) bits(Note, where required, the parameters TVD_DAT is taken to be THD_DAT+T_F)</description>
+							<bitRange>[31:16]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TIMING4</name>
+					<description>Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period.</description>
+					<addressOffset>0x70</addressOffset>
+					<fields>
+						<field>
+							<name>TSU_STO</name>
+							<description>Actual setup time for stop signals</description>
+							<bitRange>[15:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>T_BUF</name>
+							<description>Actual time between each STOP signal and the following START signal</description>
+							<bitRange>[31:16]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TIMEOUT_CTRL</name>
+					<description>I2C clock stretching timeout control</description>
+					<addressOffset>0x74</addressOffset>
+					<fields>
+						<field>
+							<name>VAL</name>
+							<description>Clock stretching timeout value (in units of input clock frequency)</description>
+							<bitRange>[30:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>EN</name>
+							<description>Enable timeout feature</description>
+							<bitRange>[31:31]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TARGET_ID</name>
+					<description>I2C target address and mask pairs</description>
+					<addressOffset>0x78</addressOffset>
+					<fields>
+						<field>
+							<name>ADDRESS0</name>
+							<description>I2C target address number 0</description>
+							<bitRange>[6:0]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>MASK0</name>
+							<description>I2C target mask number 0</description>
+							<bitRange>[13:7]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>ADDRESS1</name>
+							<description>I2C target address number 1</description>
+							<bitRange>[20:14]</bitRange>
+							<access>read-write</access>
+						</field>
+						<field>
+							<name>MASK1</name>
+							<description>I2C target mask number 1</description>
+							<bitRange>[27:21]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>ACQDATA</name>
+					<description>I2C target acquired data</description>
+					<addressOffset>0x7c</addressOffset>
+					<fields>
+						<field>
+							<name>ABYTE</name>
+							<description>Address for accepted transaction or acquired byte</description>
+							<bitRange>[7:0]</bitRange>
+							<access>read-only</access>
+						</field>
+						<field>
+							<name>SIGNAL</name>
+							<description>Host issued a START before transmitting ABYTE, a STOP or a RESTART after the preceeding ABYTE</description>
+							<bitRange>[9:8]</bitRange>
+							<access>read-only</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>TXDATA</name>
+					<description>I2C target transmit data</description>
+					<addressOffset>0x80</addressOffset>
+					<fields>
+						<field>
+							<name>Value</name>
+							<description>Value</description>
+							<bitRange>[7:0]</bitRange>
+							<access>write-only</access>
+						</field>
+					</fields>
+				</register>
+				<register>
+					<name>HOST_TIMEOUT_CTRL</name>
+					<description>I2C host clock generation timeout value (in units of input clock frequency)</description>
+					<addressOffset>0x84</addressOffset>
+					<fields>
+						<field>
+							<name>Value</name>
+							<description>Value</description>
+							<bitRange>[31:0]</bitRange>
+							<access>read-write</access>
+						</field>
+					</fields>
+				</register>
+			</registers>
+		</peripheral>
+  </peripherals>
+</device>
