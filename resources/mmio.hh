@@ -47,6 +47,14 @@ struct Mmio {
       return *reg;
     }
 
+    // This function only exist if BITS > 1
+    constexpr BITFIELD& or_(const std::size_t value)
+      requires(BITS > 1)
+    {
+      reg->cache |= ((value << OFFSET) & mask());
+      return *reg;
+    }
+
     // This function only exist if BITS == 1
     constexpr BITFIELD& set()
       requires(BITS == 1)
