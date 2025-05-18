@@ -64,6 +64,14 @@ struct Mmio {
     }
 
     // This function only exist if BITS == 1
+    constexpr BITFIELD& bit(bool bit)
+      requires(BITS == 1)
+    {
+      reg->cache |= (static_cast<std::size_t>(bit) << OFFSET);
+      return *reg;
+    }
+
+    // This function only exist if BITS == 1
     constexpr bool is_set()
       requires(BITS == 1)
     {
