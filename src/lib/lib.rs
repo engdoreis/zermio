@@ -14,39 +14,37 @@ mod libtest {
     use std::path::PathBuf;
 
     #[test]
+    #[function_name::named]
     fn generate_cpp_from_svd() {
         let svd = PathBuf::from("resources/tests/input/i2c.svd");
         let snapshot_dir = PathBuf::from("resources/tests/snapshots");
-        let output_dir = PathBuf::from("target/");
+        let output_dir = PathBuf::from(format!("target/test_{}", function_name!()));
+
+        let _ = std::fs::create_dir(&output_dir);
 
         let file = File::open(svd).unwrap();
         let reader = std::io::BufReader::new(file);
         let schema = quick_xml::de::from_reader(reader).unwrap();
 
         generator::cpp::generate(&schema, output_dir.clone(), output_dir.clone()).unwrap();
-        let i2c = output_dir.join("i2c.hh");
-        let snapshot = snapshot_dir.join("i2c.hh");
 
-        assert!(
-            compare_files(&snapshot, &i2c).unwrap(),
-            "Run the command to check the diff: meld {} {}",
-            snapshot.as_os_str().to_str().unwrap(),
-            i2c.as_os_str().to_str().unwrap()
-        );
+        let check_eq = |name: &str, snapshot: Option<&str>| {
+            let res = output_dir.join(name);
+            let snapshot = snapshot_dir.join(snapshot.unwrap_or(name));
+            assert!(
+                compare_files(&snapshot, &res).unwrap(),
+                "Run the command to check the diff: meld {} {}",
+                snapshot.as_os_str().to_str().unwrap(),
+                res.as_os_str().to_str().unwrap()
+            );
+        };
 
-        let addrs = output_dir.join("test_peripherals.hh");
-        let snapshot = snapshot_dir.join("test_peripherals.hh");
-        assert!(
-            compare_files(&snapshot, &addrs).unwrap(),
-            "Run the command to check the diff: meld {} {}",
-            snapshot.as_os_str().to_str().unwrap(),
-            addrs.as_os_str().to_str().unwrap()
-        );
+        check_eq("i2c.hh", None);
+        check_eq("test_peripherals.hh", None);
+        check_eq("mmio.hh", Some("../../mmio.hh"));
     }
 
-    use anyhow::Result;
-
-    pub fn compare_files(file_path1: &PathBuf, file_path2: &PathBuf) -> Result<bool> {
+    pub fn compare_files(file_path1: &PathBuf, file_path2: &PathBuf) -> anyhow::Result<bool> {
         // Read the contents of the first file into a vector
         let contents1: Vec<_> = std::fs::read(file_path1)
             .expect(&format!(
