@@ -89,5 +89,9 @@ struct Mmio {
       reg->cache &= ~mask();
       return *reg;
     }
+
+    constexpr std::size_t max() {
+      return (1 << BITS) - 1;
+    }
   };
 };
