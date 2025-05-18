@@ -177,6 +177,10 @@ pub mod cpp {
             PeripheralAddresses { data: &periph_addr }.render().unwrap()
         )?;
         println!("{} generated", platform_header.display());
+        std::fs::write(
+            out_dir.join("mmio.hh"),
+            include_str!("../../resources/mmio.hh"),
+        )?;
         Ok(())
     }
 }
