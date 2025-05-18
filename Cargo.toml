@@ -1,0 +1,21 @@
+[package]
+name = "reismmio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.98"
+askama = { version = "0.14.0", features = ["full"] }
+clap = { version = "4.5.37", features = ["derive"] }
+quick-xml = { version = "0.37.5", features = ["serialize"] }
+regex = "1.11.1"
+serde = { version = "1.0.219", features = ["derive"] }
+
+[lib]
+name = "reismmiolib"
+path = "src/lib/lib.rs"
+
+
+[[bin]]
+name = "reismmio_cli"
+path = "src/main.rs"
