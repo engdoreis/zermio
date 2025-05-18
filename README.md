@@ -5,5 +5,5 @@ To generate the C++  MMIO abstractions for Ibex demo system run:
 
 ```sh
 wget https://raw.githubusercontent.com/lowRISC/ibex-demo-system/refs/heads/main/data/ibex.svd -O /tmp/ibex.svd
-cargo run inport-svd --svd /tmp/ibex.svd export-cpp --dir /tmp/ --periph-dir /tmp/
+cargo run import-svd --svd /tmp/ibex.svd export-cpp --dir /tmp/ --periph-dir /tmp/
 ```
