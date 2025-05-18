@@ -71,10 +71,10 @@ pub mod cpp {
     #[template(
         ext = "txt",
         source = "
-     // {{ data.desc }}
+     /* {{ data.desc }} */
      struct {{ data.name|pascal_case }}Reg: Mmio<{{ data.name|pascal_case }}Reg> { 
         {% for bitfield in data.bitfields -%}
-        // {{ bitfield.desc }}
+        /* {{ bitfield.desc }} */
         Mmio::BitField<{{ data.name|pascal_case }}Reg, {{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
         {% endfor -%}
         
