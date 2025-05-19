@@ -72,6 +72,30 @@ struct Mmio {
     }
 
     // This function only exist if BITS == 1
+    constexpr BITFIELD& toggle()
+      requires(BITS == 1)
+    {
+      reg->cache ^= (0x01 << OFFSET);
+      return *reg;
+    }
+
+    // This function only exist if BITS > 1
+    constexpr BITFIELD& bit_and(const std::size_t value)
+      requires(BITS > 1)
+    {
+      reg->cache &= ((value << OFFSET) & mask());
+      return *reg;
+    }
+
+    // This function only exist if BITS > 1
+    constexpr BITFIELD& bit_or(const std::size_t value)
+      requires(BITS > 1)
+    {
+      reg->cache |= ((value << OFFSET) & mask());
+      return *reg;
+    }
+
+    // This function only exist if BITS == 1
     constexpr BITFIELD& bit(bool bit)
       requires(BITS == 1)
     {
