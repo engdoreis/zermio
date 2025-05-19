@@ -48,17 +48,12 @@ pub mod cpp {
     #[template(
         ext = "txt",
         source = "
+     template <uintptr_t BASE_ADDR>
      class {{ data.name|pascal_case }} { 
-        protected:
+        public:
         {% for register in data.registers -%}
-        {{ register|pascal_case }}Reg {{register|lower}};
-        {% endfor %}
-        
-        constexpr {{ data.name|pascal_case }} (uintptr_t addr): 
-        {%- for register in data.registers -%}
-            {{register|lower}}(addr) {%- if !loop.last -%},{%- endif -%}
-        {%- endfor -%}
-        {}
+        {{ register|pascal_case }}Reg<BASE_ADDR> {{register|lower}};
+        {% endfor -%}
      };
 
     "
@@ -72,13 +67,14 @@ pub mod cpp {
         ext = "txt",
         source = "
      /* {{ data.desc }} */
-     struct {{ data.name|pascal_case }}Reg: Mmio<{{ data.name|pascal_case }}Reg> { 
+     template <uintptr_t BASE_ADDR>
+     struct {{ data.name|pascal_case }}Reg: Mmio<{{ data.name|pascal_case }}Reg<BASE_ADDR>, BASE_ADDR + {{ data.offset }}> { 
         {% for bitfield in data.bitfields -%}
         /* {{ bitfield.desc }} */
-        Mmio::BitField<{{ data.name|pascal_case }}Reg, {{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
+        BitField<{{ data.name|pascal_case }}Reg<BASE_ADDR>, {{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
         {% endfor -%}
         
-        constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): Mmio(addr + {{ data.offset }}),
+        constexpr {{ data.name|pascal_case }}Reg ():
         {%- for bitfield in data.bitfields -%}
             {{ bitfield.name|lower }}(this) {%- if !loop.last -%},{%- endif -%}
         {%- endfor -%}

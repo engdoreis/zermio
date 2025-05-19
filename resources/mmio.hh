@@ -7,123 +7,121 @@
 #include <cstdint>
 #include <limits>
 
-template <typename DERIVED>
+template <typename DERIVED, uintptr_t BASE_ADDR>
 struct Mmio {
-  const std::size_t addr;
-  std::size_t cache;
+  std::size_t cache{0};
 
-  constexpr Mmio(std::size_t addr) : addr(addr), cache{0} {}
-
-  void commit() { *(reinterpret_cast<volatile std::size_t*>(addr)) = cache; }
+  void commit() { *(reinterpret_cast<volatile std::size_t*>(BASE_ADDR)) = cache; }
 
   DERIVED& fetch() {
-    cache = *(reinterpret_cast<volatile std::size_t*>(addr));
+    cache = *(reinterpret_cast<volatile std::size_t*>(BASE_ADDR));
     return *static_cast<DERIVED*>(this);
   }
 
   DERIVED& operator ()() {return fetch();}
+};
 
-  template <typename BITFIELD, std::size_t OFFSET, std::size_t BITS>
-  class BitField {
-    BITFIELD* const reg;
+template <typename BITFIELD, std::size_t OFFSET, std::size_t BITS>
+class BitField {
+  BITFIELD* const reg;
 
-   public:
-    constexpr BitField(BITFIELD* reg) : reg(reg) {}
+  public:
+  constexpr BitField(BITFIELD* reg) : reg(reg) {}
 
-    constexpr std::size_t mask() {
-      static_assert(BITS <= sizeof(std::size_t) * 8);
-      if constexpr (BITS == sizeof(std::size_t) * 8) {
-        return std::numeric_limits<std::size_t>::max();
-      }
-      return ((0x01 << BITS) - 1) << OFFSET;
+  constexpr std::size_t mask() {
+    static_assert(BITS <= sizeof(std::size_t) * 8);
+    if constexpr (BITS == sizeof(std::size_t) * 8) {
+      return std::numeric_limits<std::size_t>::max();
     }
+    return ((0x01 << BITS) - 1) << OFFSET;
+  }
 
-    // This function only exist if BITS > 1
-    constexpr BITFIELD& write(const std::size_t value)
-      requires(BITS > 1)
+  // This function only exist if BITS > 1
+  constexpr BITFIELD& write(const std::size_t value)
+    requires(BITS > 1)
     {
       clear();
       reg->cache |= ((value << OFFSET) & mask());
       return *reg;
     }
 
-    // This function only exist if BITS > 1
-    constexpr BITFIELD& or_(const std::size_t value)
-      requires(BITS > 1)
+  // This function only exist if BITS > 1
+  constexpr BITFIELD& or_(const std::size_t value)
+    requires(BITS > 1)
     {
       reg->cache |= ((value << OFFSET) & mask());
       return *reg;
     }
 
-    // This function only exist if BITS == 1
-    constexpr BITFIELD& set()
-      requires(BITS == 1)
+  // This function only exist if BITS == 1
+  constexpr BITFIELD& set()
+    requires(BITS == 1)
     {
       reg->cache |= (0x01 << OFFSET);
       return *reg;
     }
 
-    // This function only exist if BITS == 1
-    constexpr BITFIELD& reset()
-      requires(BITS == 1)
+  // This function only exist if BITS == 1
+  constexpr BITFIELD& reset()
+    requires(BITS == 1)
     {
       clear();
       return *reg;
     }
 
-    // This function only exist if BITS == 1
-    constexpr BITFIELD& toggle()
-      requires(BITS == 1)
+  // This function only exist if BITS == 1
+  constexpr BITFIELD& toggle()
+    requires(BITS == 1)
     {
       reg->cache ^= (0x01 << OFFSET);
       return *reg;
     }
 
-    // This function only exist if BITS > 1
-    constexpr BITFIELD& bit_and(const std::size_t value)
-      requires(BITS > 1)
+  // This function only exist if BITS > 1
+  constexpr BITFIELD& bit_and(const std::size_t value)
+    requires(BITS > 1)
     {
       reg->cache &= ((value << OFFSET) & mask());
       return *reg;
     }
 
-    // This function only exist if BITS > 1
-    constexpr BITFIELD& bit_or(const std::size_t value)
-      requires(BITS > 1)
+  // This function only exist if BITS > 1
+  constexpr BITFIELD& bit_or(const std::size_t value)
+    requires(BITS > 1)
     {
       reg->cache |= ((value << OFFSET) & mask());
       return *reg;
     }
 
-    // This function only exist if BITS == 1
-    constexpr BITFIELD& bit(bool bit)
-      requires(BITS == 1)
+  // This function only exist if BITS == 1
+  constexpr BITFIELD& bit(bool bit)
+    requires(BITS == 1)
     {
       reg->cache |= (static_cast<std::size_t>(bit) << OFFSET);
       return *reg;
     }
 
-    // This function only exist if BITS == 1
-    constexpr bool is_set()
-      requires(BITS == 1)
+  // This function only exist if BITS == 1
+  constexpr bool is_set()
+    requires(BITS == 1)
     {
       return (reg->cache & mask()) == mask();
     }
 
-    // This function only exist if BITS > 1
-    constexpr std::size_t get()
-      requires(BITS > 1)
+  // This function only exist if BITS > 1
+  constexpr std::size_t get()
+    requires(BITS > 1)
     {
       return (reg->cache & mask()) >> OFFSET;
     }
 
-    constexpr BITFIELD& clear() {
-      reg->cache &= ~mask();
-      return *reg;
-    }
+  constexpr BITFIELD& clear() {
+    reg->cache &= ~mask();
+    return *reg;
+  }
 
-    constexpr std::size_t max() {
-      return (1 << BITS) - 1;
-    }
-  };
+  constexpr std::size_t max() {
+    return (1 << BITS) - 1;
+  }
 };
+

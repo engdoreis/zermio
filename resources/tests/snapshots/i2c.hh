@@ -8,265 +8,281 @@
 namespace MMIO {
 
      /* I2C Control Register */
-     struct CtrlReg: Mmio<CtrlReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct CtrlReg: Mmio<CtrlReg<BASE_ADDR>, BASE_ADDR + 0x10> { 
         /* Enable Host I2C functionality */
-        Mmio::BitField<CtrlReg, 0, 1> enablehost;
+        BitField<CtrlReg<BASE_ADDR>, 0, 1> enablehost;
         /* Enable Target I2C functionality */
-        Mmio::BitField<CtrlReg, 1, 1> enabletarget;
+        BitField<CtrlReg<BASE_ADDR>, 1, 1> enabletarget;
         /* Enable I2C line loopback testIf line loopback is enabled, the internal design sees ACQ and RX data as "1" */
-        Mmio::BitField<CtrlReg, 2, 1> llpbk;
-        constexpr CtrlReg (uintptr_t addr): Mmio(addr + 0x10),enablehost(this),enabletarget(this),llpbk(this){}
+        BitField<CtrlReg<BASE_ADDR>, 2, 1> llpbk;
+        constexpr CtrlReg ():enablehost(this),enabletarget(this),llpbk(this){}
      };
 
     
 
      /* I2C Live Status Register */
-     struct StatusReg: Mmio<StatusReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct StatusReg: Mmio<StatusReg<BASE_ADDR>, BASE_ADDR + 0x14> { 
         /* FMT FIFO is full */
-        Mmio::BitField<StatusReg, 0, 1> fmtfull;
+        BitField<StatusReg<BASE_ADDR>, 0, 1> fmtfull;
         /* RX FIFO is full */
-        Mmio::BitField<StatusReg, 1, 1> rxfull;
+        BitField<StatusReg<BASE_ADDR>, 1, 1> rxfull;
         /* FMT FIFO is empty */
-        Mmio::BitField<StatusReg, 2, 1> fmtempty;
+        BitField<StatusReg<BASE_ADDR>, 2, 1> fmtempty;
         /* RX FIFO is empty */
-        Mmio::BitField<StatusReg, 5, 1> rxempty;
+        BitField<StatusReg<BASE_ADDR>, 5, 1> rxempty;
         /* Host functionality is idle. No Host transaction is in progress */
-        Mmio::BitField<StatusReg, 3, 1> hostidle;
+        BitField<StatusReg<BASE_ADDR>, 3, 1> hostidle;
         /* Target functionality is idle. No Target transaction is in progress */
-        Mmio::BitField<StatusReg, 4, 1> targetidle;
+        BitField<StatusReg<BASE_ADDR>, 4, 1> targetidle;
         /* TX FIFO is full */
-        Mmio::BitField<StatusReg, 6, 1> txfull;
+        BitField<StatusReg<BASE_ADDR>, 6, 1> txfull;
         /* ACQ FIFO is full */
-        Mmio::BitField<StatusReg, 7, 1> acqfull;
+        BitField<StatusReg<BASE_ADDR>, 7, 1> acqfull;
         /* TX FIFO is empty */
-        Mmio::BitField<StatusReg, 8, 1> txempty;
+        BitField<StatusReg<BASE_ADDR>, 8, 1> txempty;
         /* ACQ FIFO is empty */
-        Mmio::BitField<StatusReg, 9, 1> acqempty;
-        constexpr StatusReg (uintptr_t addr): Mmio(addr + 0x14),fmtfull(this),rxfull(this),fmtempty(this),rxempty(this),hostidle(this),targetidle(this),txfull(this),acqfull(this),txempty(this),acqempty(this){}
+        BitField<StatusReg<BASE_ADDR>, 9, 1> acqempty;
+        constexpr StatusReg ():fmtfull(this),rxfull(this),fmtempty(this),rxempty(this),hostidle(this),targetidle(this),txfull(this),acqfull(this),txempty(this),acqempty(this){}
      };
 
     
 
      /* I2C Read Data */
-     struct RdataReg: Mmio<RdataReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct RdataReg: Mmio<RdataReg<BASE_ADDR>, BASE_ADDR + 0x18> { 
         /* Value */
-        Mmio::BitField<RdataReg, 0, 8> value;
-        constexpr RdataReg (uintptr_t addr): Mmio(addr + 0x18),value(this){}
+        BitField<RdataReg<BASE_ADDR>, 0, 8> value;
+        constexpr RdataReg ():value(this){}
      };
 
     
 
      /* I2C Format Data */
-     struct FdataReg: Mmio<FdataReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct FdataReg: Mmio<FdataReg<BASE_ADDR>, BASE_ADDR + 0x1c> { 
         /* Format Byte. Directly transmitted if no flags are set. */
-        Mmio::BitField<FdataReg, 0, 8> fbyte;
+        BitField<FdataReg<BASE_ADDR>, 0, 8> fbyte;
         /* Issue a START condition before transmitting BYTE. */
-        Mmio::BitField<FdataReg, 8, 1> start;
+        BitField<FdataReg<BASE_ADDR>, 8, 1> start;
         /* Issue a STOP condition after this operation */
-        Mmio::BitField<FdataReg, 9, 1> stop;
+        BitField<FdataReg<BASE_ADDR>, 9, 1> stop;
         /* Read BYTE bytes from I2C. (256 if BYTE==0) */
-        Mmio::BitField<FdataReg, 10, 1> read;
+        BitField<FdataReg<BASE_ADDR>, 10, 1> read;
         /* Do not NACK the last byte read, let the read operation continue */
-        Mmio::BitField<FdataReg, 11, 1> rcont;
+        BitField<FdataReg<BASE_ADDR>, 11, 1> rcont;
         /* Do not signal an exception if the current byte is not ACK'd */
-        Mmio::BitField<FdataReg, 12, 1> nakok;
-        constexpr FdataReg (uintptr_t addr): Mmio(addr + 0x1c),fbyte(this),start(this),stop(this),read(this),rcont(this),nakok(this){}
+        BitField<FdataReg<BASE_ADDR>, 12, 1> nakok;
+        constexpr FdataReg ():fbyte(this),start(this),stop(this),read(this),rcont(this),nakok(this){}
      };
 
     
 
      /* I2C FIFO control register */
-     struct FifoCtrlReg: Mmio<FifoCtrlReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct FifoCtrlReg: Mmio<FifoCtrlReg<BASE_ADDR>, BASE_ADDR + 0x20> { 
         /* RX fifo reset. Write 1 to the register resets RX_FIFO. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 0, 1> rxrst;
+        BitField<FifoCtrlReg<BASE_ADDR>, 0, 1> rxrst;
         /* FMT fifo reset. Write 1 to the register resets FMT_FIFO. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 1, 1> fmtrst;
+        BitField<FifoCtrlReg<BASE_ADDR>, 1, 1> fmtrst;
         /* Trigger level for RX interrupts. If the FIFO depth exceedsthis setting, it raises rx_threshold interrupt. */
-        Mmio::BitField<FifoCtrlReg, 2, 3> rxilvl;
+        BitField<FifoCtrlReg<BASE_ADDR>, 2, 3> rxilvl;
         /* Trigger level for FMT interrupts. If the FIFO depth falls belowthis setting, it raises fmt_threshold interrupt. */
-        Mmio::BitField<FifoCtrlReg, 5, 2> fmtilvl;
+        BitField<FifoCtrlReg<BASE_ADDR>, 5, 2> fmtilvl;
         /* ACQ FIFO reset. Write 1 to the register resets it. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 7, 1> acqrst;
+        BitField<FifoCtrlReg<BASE_ADDR>, 7, 1> acqrst;
         /* TX FIFO reset. Write 1 to the register resets it. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 8, 1> txrst;
-        constexpr FifoCtrlReg (uintptr_t addr): Mmio(addr + 0x20),rxrst(this),fmtrst(this),rxilvl(this),fmtilvl(this),acqrst(this),txrst(this){}
+        BitField<FifoCtrlReg<BASE_ADDR>, 8, 1> txrst;
+        constexpr FifoCtrlReg ():rxrst(this),fmtrst(this),rxilvl(this),fmtilvl(this),acqrst(this),txrst(this){}
      };
 
     
 
      /* I2C FIFO status register */
-     struct FifoStatusReg: Mmio<FifoStatusReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct FifoStatusReg: Mmio<FifoStatusReg<BASE_ADDR>, BASE_ADDR + 0x24> { 
         /* Current fill level of FMT fifo */
-        Mmio::BitField<FifoStatusReg, 0, 7> fmtlvl;
+        BitField<FifoStatusReg<BASE_ADDR>, 0, 7> fmtlvl;
         /* Current fill level of RX fifo */
-        Mmio::BitField<FifoStatusReg, 16, 7> rxlvl;
+        BitField<FifoStatusReg<BASE_ADDR>, 16, 7> rxlvl;
         /* Current fill level of TX fifo */
-        Mmio::BitField<FifoStatusReg, 8, 7> txlvl;
+        BitField<FifoStatusReg<BASE_ADDR>, 8, 7> txlvl;
         /* Current fill level of ACQ fifo */
-        Mmio::BitField<FifoStatusReg, 24, 7> acqlvl;
-        constexpr FifoStatusReg (uintptr_t addr): Mmio(addr + 0x24),fmtlvl(this),rxlvl(this),txlvl(this),acqlvl(this){}
+        BitField<FifoStatusReg<BASE_ADDR>, 24, 7> acqlvl;
+        constexpr FifoStatusReg ():fmtlvl(this),rxlvl(this),txlvl(this),acqlvl(this){}
      };
 
     
 
      /* I2C Override Control Register */
-     struct OvrdReg: Mmio<OvrdReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct OvrdReg: Mmio<OvrdReg<BASE_ADDR>, BASE_ADDR + 0x58> { 
         /* Override the SDA and SCL TX signals. */
-        Mmio::BitField<OvrdReg, 0, 1> txovrden;
+        BitField<OvrdReg<BASE_ADDR>, 0, 1> txovrden;
         /* Value for SCL Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-        Mmio::BitField<OvrdReg, 1, 1> sclval;
+        BitField<OvrdReg<BASE_ADDR>, 1, 1> sclval;
         /* Value for SDA Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-        Mmio::BitField<OvrdReg, 2, 1> sdaval;
-        constexpr OvrdReg (uintptr_t addr): Mmio(addr + 0x58),txovrden(this),sclval(this),sdaval(this){}
+        BitField<OvrdReg<BASE_ADDR>, 2, 1> sdaval;
+        constexpr OvrdReg ():txovrden(this),sclval(this),sdaval(this){}
      };
 
     
 
      /* Oversampled RX values */
-     struct ValReg: Mmio<ValReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct ValReg: Mmio<ValReg<BASE_ADDR>, BASE_ADDR + 0x5c> { 
         /* Last 16 oversampled values of SCL. Most recent bit is bit 0, oldest 15. */
-        Mmio::BitField<ValReg, 0, 16> scl_rx;
+        BitField<ValReg<BASE_ADDR>, 0, 16> scl_rx;
         /* Last 16 oversampled values of SDA. Most recent bit is bit 16, oldest 31. */
-        Mmio::BitField<ValReg, 16, 16> sda_rx;
-        constexpr ValReg (uintptr_t addr): Mmio(addr + 0x5c),scl_rx(this),sda_rx(this){}
+        BitField<ValReg<BASE_ADDR>, 16, 16> sda_rx;
+        constexpr ValReg ():scl_rx(this),sda_rx(this){}
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly. */
-     struct Timing0Reg: Mmio<Timing0Reg> { 
+     template <uintptr_t BASE_ADDR>
+     struct Timing0Reg: Mmio<Timing0Reg<BASE_ADDR>, BASE_ADDR + 0x60> { 
         /* The actual time to hold SCL high in a given pulse: in host mode, when there is no stretching this value is 3 cycles longer as tracked in issue #18962 */
-        Mmio::BitField<Timing0Reg, 0, 16> thigh;
+        BitField<Timing0Reg<BASE_ADDR>, 0, 16> thigh;
         /* The actual time to hold SCL low between any two SCL pulses */
-        Mmio::BitField<Timing0Reg, 16, 16> tlow;
-        constexpr Timing0Reg (uintptr_t addr): Mmio(addr + 0x60),thigh(this),tlow(this){}
+        BitField<Timing0Reg<BASE_ADDR>, 16, 16> tlow;
+        constexpr Timing0Reg ():thigh(this),tlow(this){}
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing1Reg: Mmio<Timing1Reg> { 
+     template <uintptr_t BASE_ADDR>
+     struct Timing1Reg: Mmio<Timing1Reg<BASE_ADDR>, BASE_ADDR + 0x64> { 
         /* The nominal rise time to anticipate for the bus (depends on capacitance) */
-        Mmio::BitField<Timing1Reg, 0, 16> t_r;
+        BitField<Timing1Reg<BASE_ADDR>, 0, 16> t_r;
         /* The nominal fall time to anticipate for the bus (influences SDA hold times): this is currently counted twice in host mode as tracked in issue #18958 */
-        Mmio::BitField<Timing1Reg, 16, 16> t_f;
-        constexpr Timing1Reg (uintptr_t addr): Mmio(addr + 0x64),t_r(this),t_f(this){}
+        BitField<Timing1Reg<BASE_ADDR>, 16, 16> t_f;
+        constexpr Timing1Reg ():t_r(this),t_f(this){}
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing2Reg: Mmio<Timing2Reg> { 
+     template <uintptr_t BASE_ADDR>
+     struct Timing2Reg: Mmio<Timing2Reg<BASE_ADDR>, BASE_ADDR + 0x68> { 
         /* Actual setup time for repeated start signals */
-        Mmio::BitField<Timing2Reg, 0, 16> tsu_sta;
+        BitField<Timing2Reg<BASE_ADDR>, 0, 16> tsu_sta;
         /* Actual hold time for start signals */
-        Mmio::BitField<Timing2Reg, 16, 16> thd_sta;
-        constexpr Timing2Reg (uintptr_t addr): Mmio(addr + 0x68),tsu_sta(this),thd_sta(this){}
+        BitField<Timing2Reg<BASE_ADDR>, 16, 16> thd_sta;
+        constexpr Timing2Reg ():tsu_sta(this),thd_sta(this){}
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing3Reg: Mmio<Timing3Reg> { 
+     template <uintptr_t BASE_ADDR>
+     struct Timing3Reg: Mmio<Timing3Reg<BASE_ADDR>, BASE_ADDR + 0x6c> { 
         /* Actual setup time for data (or ack) bits */
-        Mmio::BitField<Timing3Reg, 0, 16> tsu_dat;
+        BitField<Timing3Reg<BASE_ADDR>, 0, 16> tsu_dat;
         /* Actual hold time for data (or ack) bits(Note, where required, the parameters TVD_DAT is taken to be THD_DAT+T_F) */
-        Mmio::BitField<Timing3Reg, 16, 16> thd_dat;
-        constexpr Timing3Reg (uintptr_t addr): Mmio(addr + 0x6c),tsu_dat(this),thd_dat(this){}
+        BitField<Timing3Reg<BASE_ADDR>, 16, 16> thd_dat;
+        constexpr Timing3Reg ():tsu_dat(this),thd_dat(this){}
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing4Reg: Mmio<Timing4Reg> { 
+     template <uintptr_t BASE_ADDR>
+     struct Timing4Reg: Mmio<Timing4Reg<BASE_ADDR>, BASE_ADDR + 0x70> { 
         /* Actual setup time for stop signals */
-        Mmio::BitField<Timing4Reg, 0, 16> tsu_sto;
+        BitField<Timing4Reg<BASE_ADDR>, 0, 16> tsu_sto;
         /* Actual time between each STOP signal and the following START signal */
-        Mmio::BitField<Timing4Reg, 16, 16> t_buf;
-        constexpr Timing4Reg (uintptr_t addr): Mmio(addr + 0x70),tsu_sto(this),t_buf(this){}
+        BitField<Timing4Reg<BASE_ADDR>, 16, 16> t_buf;
+        constexpr Timing4Reg ():tsu_sto(this),t_buf(this){}
      };
 
     
 
      /* I2C clock stretching timeout control */
-     struct TimeoutCtrlReg: Mmio<TimeoutCtrlReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct TimeoutCtrlReg: Mmio<TimeoutCtrlReg<BASE_ADDR>, BASE_ADDR + 0x74> { 
         /* Clock stretching timeout value (in units of input clock frequency) */
-        Mmio::BitField<TimeoutCtrlReg, 0, 31> val;
+        BitField<TimeoutCtrlReg<BASE_ADDR>, 0, 31> val;
         /* Enable timeout feature */
-        Mmio::BitField<TimeoutCtrlReg, 31, 1> en;
-        constexpr TimeoutCtrlReg (uintptr_t addr): Mmio(addr + 0x74),val(this),en(this){}
+        BitField<TimeoutCtrlReg<BASE_ADDR>, 31, 1> en;
+        constexpr TimeoutCtrlReg ():val(this),en(this){}
      };
 
     
 
      /* I2C target address and mask pairs */
-     struct TargetIdReg: Mmio<TargetIdReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct TargetIdReg: Mmio<TargetIdReg<BASE_ADDR>, BASE_ADDR + 0x78> { 
         /* I2C target address number 0 */
-        Mmio::BitField<TargetIdReg, 0, 7> address0;
+        BitField<TargetIdReg<BASE_ADDR>, 0, 7> address0;
         /* I2C target mask number 0 */
-        Mmio::BitField<TargetIdReg, 7, 7> mask0;
+        BitField<TargetIdReg<BASE_ADDR>, 7, 7> mask0;
         /* I2C target address number 1 */
-        Mmio::BitField<TargetIdReg, 14, 7> address1;
+        BitField<TargetIdReg<BASE_ADDR>, 14, 7> address1;
         /* I2C target mask number 1 */
-        Mmio::BitField<TargetIdReg, 21, 7> mask1;
-        constexpr TargetIdReg (uintptr_t addr): Mmio(addr + 0x78),address0(this),mask0(this),address1(this),mask1(this){}
+        BitField<TargetIdReg<BASE_ADDR>, 21, 7> mask1;
+        constexpr TargetIdReg ():address0(this),mask0(this),address1(this),mask1(this){}
      };
 
     
 
      /* I2C target acquired data */
-     struct AcqdataReg: Mmio<AcqdataReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct AcqdataReg: Mmio<AcqdataReg<BASE_ADDR>, BASE_ADDR + 0x7c> { 
         /* Address for accepted transaction or acquired byte */
-        Mmio::BitField<AcqdataReg, 0, 8> abyte;
+        BitField<AcqdataReg<BASE_ADDR>, 0, 8> abyte;
         /* Host issued a START before transmitting ABYTE, a STOP or a RESTART after the preceeding ABYTE */
-        Mmio::BitField<AcqdataReg, 8, 2> signal;
-        constexpr AcqdataReg (uintptr_t addr): Mmio(addr + 0x7c),abyte(this),signal(this){}
+        BitField<AcqdataReg<BASE_ADDR>, 8, 2> signal;
+        constexpr AcqdataReg ():abyte(this),signal(this){}
      };
 
     
 
      /* I2C target transmit data */
-     struct TxdataReg: Mmio<TxdataReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct TxdataReg: Mmio<TxdataReg<BASE_ADDR>, BASE_ADDR + 0x80> { 
         /* Value */
-        Mmio::BitField<TxdataReg, 0, 8> value;
-        constexpr TxdataReg (uintptr_t addr): Mmio(addr + 0x80),value(this){}
+        BitField<TxdataReg<BASE_ADDR>, 0, 8> value;
+        constexpr TxdataReg ():value(this){}
      };
 
     
 
      /* I2C host clock generation timeout value (in units of input clock frequency) */
-     struct HostTimeoutCtrlReg: Mmio<HostTimeoutCtrlReg> { 
+     template <uintptr_t BASE_ADDR>
+     struct HostTimeoutCtrlReg: Mmio<HostTimeoutCtrlReg<BASE_ADDR>, BASE_ADDR + 0x84> { 
         /* Value */
-        Mmio::BitField<HostTimeoutCtrlReg, 0, 32> value;
-        constexpr HostTimeoutCtrlReg (uintptr_t addr): Mmio(addr + 0x84),value(this){}
+        BitField<HostTimeoutCtrlReg<BASE_ADDR>, 0, 32> value;
+        constexpr HostTimeoutCtrlReg ():value(this){}
      };
 
     
 
+     template <uintptr_t BASE_ADDR>
      class I2c { 
         protected:
-        CtrlReg ctrl;
-        StatusReg status;
-        RdataReg rdata;
-        FdataReg fdata;
-        FifoCtrlReg fifo_ctrl;
-        FifoStatusReg fifo_status;
-        OvrdReg ovrd;
-        ValReg val;
-        Timing0Reg timing0;
-        Timing1Reg timing1;
-        Timing2Reg timing2;
-        Timing3Reg timing3;
-        Timing4Reg timing4;
-        TimeoutCtrlReg timeout_ctrl;
-        TargetIdReg target_id;
-        AcqdataReg acqdata;
-        TxdataReg txdata;
-        HostTimeoutCtrlReg host_timeout_ctrl;
-        
-        
-        constexpr I2c (uintptr_t addr):ctrl(addr),status(addr),rdata(addr),fdata(addr),fifo_ctrl(addr),fifo_status(addr),ovrd(addr),val(addr),timing0(addr),timing1(addr),timing2(addr),timing3(addr),timing4(addr),timeout_ctrl(addr),target_id(addr),acqdata(addr),txdata(addr),host_timeout_ctrl(addr){}
-     };
+        CtrlReg<BASE_ADDR> ctrl;
+        StatusReg<BASE_ADDR> status;
+        RdataReg<BASE_ADDR> rdata;
+        FdataReg<BASE_ADDR> fdata;
+        FifoCtrlReg<BASE_ADDR> fifo_ctrl;
+        FifoStatusReg<BASE_ADDR> fifo_status;
+        OvrdReg<BASE_ADDR> ovrd;
+        ValReg<BASE_ADDR> val;
+        Timing0Reg<BASE_ADDR> timing0;
+        Timing1Reg<BASE_ADDR> timing1;
+        Timing2Reg<BASE_ADDR> timing2;
+        Timing3Reg<BASE_ADDR> timing3;
+        Timing4Reg<BASE_ADDR> timing4;
+        TimeoutCtrlReg<BASE_ADDR> timeout_ctrl;
+        TargetIdReg<BASE_ADDR> target_id;
+        AcqdataReg<BASE_ADDR> acqdata;
+        TxdataReg<BASE_ADDR> txdata;
+        HostTimeoutCtrlReg<BASE_ADDR> host_timeout_ctrl;
+        };
 
     
 } // namespace I2C
