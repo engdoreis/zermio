@@ -48,8 +48,7 @@ pub mod cpp {
     #[template(
         ext = "txt",
         source = "
-     class {{ data.name|pascal_case }} { 
-        protected:
+     struct {{ data.name|pascal_case }} { 
         {% for register in data.registers -%}
         {{ register|pascal_case }}Reg {{register|lower}};
         {% endfor %}
@@ -129,7 +128,11 @@ pub mod cpp {
             let (peripheral_header, mut peripheral_handler) = get_path(&out_dir, &peripheral_name)?;
 
             writeln!(peripheral_handler, r###"#include  "mmio.hh" "###)?;
-            writeln!(peripheral_handler, "namespace MMIO {{",)?;
+            writeln!(
+                peripheral_handler,
+                "namespace {} {{",
+                peripheral_name.clone().to_uppercase()
+            )?;
 
             let mut peripheral = mmio::Peripheral::new(&peripheral_name);
             for register_iter in &registers.register {

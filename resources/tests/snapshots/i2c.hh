@@ -5,7 +5,7 @@
 
 #pragma once
 #include  "mmio.hh" 
-namespace MMIO {
+namespace I2C {
 
      /* I2C Control Register */
      struct CtrlReg: Mmio<CtrlReg> { 
@@ -243,8 +243,7 @@ namespace MMIO {
 
     
 
-     class I2c { 
-        protected:
+     struct I2c { 
         CtrlReg ctrl;
         StatusReg status;
         RdataReg rdata;
