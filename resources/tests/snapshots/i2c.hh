@@ -8,237 +8,399 @@
 namespace I2C {
 
      /* I2C Control Register */
-     struct CtrlReg: Mmio<CtrlReg> { 
+     union CtrlReg { 
+        Register reg;
         /* Enable Host I2C functionality */
-        Mmio::BitField<CtrlReg, 0, 1> enablehost;
+        BitField<0, 1> enablehost;
         /* Enable Target I2C functionality */
-        Mmio::BitField<CtrlReg, 1, 1> enabletarget;
+        BitField<1, 1> enabletarget;
         /* Enable I2C line loopback testIf line loopback is enabled, the internal design sees ACQ and RX data as "1" */
-        Mmio::BitField<CtrlReg, 2, 1> llpbk;
-        constexpr CtrlReg (uintptr_t addr): Mmio(addr + 0x10),enablehost(this),enabletarget(this),llpbk(this){}
+        BitField<2, 1> llpbk;
+        constexpr CtrlReg (uintptr_t addr): reg{.addr = addr + 0x10}
+        {}
+
+        void commit() { reg.commit(); }
+
+        CtrlReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C Live Status Register */
-     struct StatusReg: Mmio<StatusReg> { 
+     union StatusReg { 
+        Register reg;
         /* FMT FIFO is full */
-        Mmio::BitField<StatusReg, 0, 1> fmtfull;
+        BitField<0, 1> fmtfull;
         /* RX FIFO is full */
-        Mmio::BitField<StatusReg, 1, 1> rxfull;
+        BitField<1, 1> rxfull;
         /* FMT FIFO is empty */
-        Mmio::BitField<StatusReg, 2, 1> fmtempty;
+        BitField<2, 1> fmtempty;
         /* RX FIFO is empty */
-        Mmio::BitField<StatusReg, 5, 1> rxempty;
+        BitField<5, 1> rxempty;
         /* Host functionality is idle. No Host transaction is in progress */
-        Mmio::BitField<StatusReg, 3, 1> hostidle;
+        BitField<3, 1> hostidle;
         /* Target functionality is idle. No Target transaction is in progress */
-        Mmio::BitField<StatusReg, 4, 1> targetidle;
+        BitField<4, 1> targetidle;
         /* TX FIFO is full */
-        Mmio::BitField<StatusReg, 6, 1> txfull;
+        BitField<6, 1> txfull;
         /* ACQ FIFO is full */
-        Mmio::BitField<StatusReg, 7, 1> acqfull;
+        BitField<7, 1> acqfull;
         /* TX FIFO is empty */
-        Mmio::BitField<StatusReg, 8, 1> txempty;
+        BitField<8, 1> txempty;
         /* ACQ FIFO is empty */
-        Mmio::BitField<StatusReg, 9, 1> acqempty;
-        constexpr StatusReg (uintptr_t addr): Mmio(addr + 0x14),fmtfull(this),rxfull(this),fmtempty(this),rxempty(this),hostidle(this),targetidle(this),txfull(this),acqfull(this),txempty(this),acqempty(this){}
+        BitField<9, 1> acqempty;
+        constexpr StatusReg (uintptr_t addr): reg{.addr = addr + 0x14}
+        {}
+
+        void commit() { reg.commit(); }
+
+        StatusReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C Read Data */
-     struct RdataReg: Mmio<RdataReg> { 
+     union RdataReg { 
+        Register reg;
         /* Value */
-        Mmio::BitField<RdataReg, 0, 8> value;
-        constexpr RdataReg (uintptr_t addr): Mmio(addr + 0x18),value(this){}
+        BitField<0, 8> value;
+        constexpr RdataReg (uintptr_t addr): reg{.addr = addr + 0x18}
+        {}
+
+        void commit() { reg.commit(); }
+
+        RdataReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C Format Data */
-     struct FdataReg: Mmio<FdataReg> { 
+     union FdataReg { 
+        Register reg;
         /* Format Byte. Directly transmitted if no flags are set. */
-        Mmio::BitField<FdataReg, 0, 8> fbyte;
+        BitField<0, 8> fbyte;
         /* Issue a START condition before transmitting BYTE. */
-        Mmio::BitField<FdataReg, 8, 1> start;
+        BitField<8, 1> start;
         /* Issue a STOP condition after this operation */
-        Mmio::BitField<FdataReg, 9, 1> stop;
+        BitField<9, 1> stop;
         /* Read BYTE bytes from I2C. (256 if BYTE==0) */
-        Mmio::BitField<FdataReg, 10, 1> read;
+        BitField<10, 1> read;
         /* Do not NACK the last byte read, let the read operation continue */
-        Mmio::BitField<FdataReg, 11, 1> rcont;
+        BitField<11, 1> rcont;
         /* Do not signal an exception if the current byte is not ACK'd */
-        Mmio::BitField<FdataReg, 12, 1> nakok;
-        constexpr FdataReg (uintptr_t addr): Mmio(addr + 0x1c),fbyte(this),start(this),stop(this),read(this),rcont(this),nakok(this){}
+        BitField<12, 1> nakok;
+        constexpr FdataReg (uintptr_t addr): reg{.addr = addr + 0x1c}
+        {}
+
+        void commit() { reg.commit(); }
+
+        FdataReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C FIFO control register */
-     struct FifoCtrlReg: Mmio<FifoCtrlReg> { 
+     union FifoCtrlReg { 
+        Register reg;
         /* RX fifo reset. Write 1 to the register resets RX_FIFO. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 0, 1> rxrst;
+        BitField<0, 1> rxrst;
         /* FMT fifo reset. Write 1 to the register resets FMT_FIFO. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 1, 1> fmtrst;
+        BitField<1, 1> fmtrst;
         /* Trigger level for RX interrupts. If the FIFO depth exceedsthis setting, it raises rx_threshold interrupt. */
-        Mmio::BitField<FifoCtrlReg, 2, 3> rxilvl;
+        BitField<2, 3> rxilvl;
         /* Trigger level for FMT interrupts. If the FIFO depth falls belowthis setting, it raises fmt_threshold interrupt. */
-        Mmio::BitField<FifoCtrlReg, 5, 2> fmtilvl;
+        BitField<5, 2> fmtilvl;
         /* ACQ FIFO reset. Write 1 to the register resets it. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 7, 1> acqrst;
+        BitField<7, 1> acqrst;
         /* TX FIFO reset. Write 1 to the register resets it. Read returns 0 */
-        Mmio::BitField<FifoCtrlReg, 8, 1> txrst;
-        constexpr FifoCtrlReg (uintptr_t addr): Mmio(addr + 0x20),rxrst(this),fmtrst(this),rxilvl(this),fmtilvl(this),acqrst(this),txrst(this){}
+        BitField<8, 1> txrst;
+        constexpr FifoCtrlReg (uintptr_t addr): reg{.addr = addr + 0x20}
+        {}
+
+        void commit() { reg.commit(); }
+
+        FifoCtrlReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C FIFO status register */
-     struct FifoStatusReg: Mmio<FifoStatusReg> { 
+     union FifoStatusReg { 
+        Register reg;
         /* Current fill level of FMT fifo */
-        Mmio::BitField<FifoStatusReg, 0, 7> fmtlvl;
+        BitField<0, 7> fmtlvl;
         /* Current fill level of RX fifo */
-        Mmio::BitField<FifoStatusReg, 16, 7> rxlvl;
+        BitField<16, 7> rxlvl;
         /* Current fill level of TX fifo */
-        Mmio::BitField<FifoStatusReg, 8, 7> txlvl;
+        BitField<8, 7> txlvl;
         /* Current fill level of ACQ fifo */
-        Mmio::BitField<FifoStatusReg, 24, 7> acqlvl;
-        constexpr FifoStatusReg (uintptr_t addr): Mmio(addr + 0x24),fmtlvl(this),rxlvl(this),txlvl(this),acqlvl(this){}
+        BitField<24, 7> acqlvl;
+        constexpr FifoStatusReg (uintptr_t addr): reg{.addr = addr + 0x24}
+        {}
+
+        void commit() { reg.commit(); }
+
+        FifoStatusReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C Override Control Register */
-     struct OvrdReg: Mmio<OvrdReg> { 
+     union OvrdReg { 
+        Register reg;
         /* Override the SDA and SCL TX signals. */
-        Mmio::BitField<OvrdReg, 0, 1> txovrden;
+        BitField<0, 1> txovrden;
         /* Value for SCL Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-        Mmio::BitField<OvrdReg, 1, 1> sclval;
+        BitField<1, 1> sclval;
         /* Value for SDA Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-        Mmio::BitField<OvrdReg, 2, 1> sdaval;
-        constexpr OvrdReg (uintptr_t addr): Mmio(addr + 0x58),txovrden(this),sclval(this),sdaval(this){}
+        BitField<2, 1> sdaval;
+        constexpr OvrdReg (uintptr_t addr): reg{.addr = addr + 0x58}
+        {}
+
+        void commit() { reg.commit(); }
+
+        OvrdReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* Oversampled RX values */
-     struct ValReg: Mmio<ValReg> { 
+     union ValReg { 
+        Register reg;
         /* Last 16 oversampled values of SCL. Most recent bit is bit 0, oldest 15. */
-        Mmio::BitField<ValReg, 0, 16> scl_rx;
+        BitField<0, 16> scl_rx;
         /* Last 16 oversampled values of SDA. Most recent bit is bit 16, oldest 31. */
-        Mmio::BitField<ValReg, 16, 16> sda_rx;
-        constexpr ValReg (uintptr_t addr): Mmio(addr + 0x5c),scl_rx(this),sda_rx(this){}
+        BitField<16, 16> sda_rx;
+        constexpr ValReg (uintptr_t addr): reg{.addr = addr + 0x5c}
+        {}
+
+        void commit() { reg.commit(); }
+
+        ValReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly. */
-     struct Timing0Reg: Mmio<Timing0Reg> { 
+     union Timing0Reg { 
+        Register reg;
         /* The actual time to hold SCL high in a given pulse: in host mode, when there is no stretching this value is 3 cycles longer as tracked in issue #18962 */
-        Mmio::BitField<Timing0Reg, 0, 16> thigh;
+        BitField<0, 16> thigh;
         /* The actual time to hold SCL low between any two SCL pulses */
-        Mmio::BitField<Timing0Reg, 16, 16> tlow;
-        constexpr Timing0Reg (uintptr_t addr): Mmio(addr + 0x60),thigh(this),tlow(this){}
+        BitField<16, 16> tlow;
+        constexpr Timing0Reg (uintptr_t addr): reg{.addr = addr + 0x60}
+        {}
+
+        void commit() { reg.commit(); }
+
+        Timing0Reg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing1Reg: Mmio<Timing1Reg> { 
+     union Timing1Reg { 
+        Register reg;
         /* The nominal rise time to anticipate for the bus (depends on capacitance) */
-        Mmio::BitField<Timing1Reg, 0, 16> t_r;
+        BitField<0, 16> t_r;
         /* The nominal fall time to anticipate for the bus (influences SDA hold times): this is currently counted twice in host mode as tracked in issue #18958 */
-        Mmio::BitField<Timing1Reg, 16, 16> t_f;
-        constexpr Timing1Reg (uintptr_t addr): Mmio(addr + 0x64),t_r(this),t_f(this){}
+        BitField<16, 16> t_f;
+        constexpr Timing1Reg (uintptr_t addr): reg{.addr = addr + 0x64}
+        {}
+
+        void commit() { reg.commit(); }
+
+        Timing1Reg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing2Reg: Mmio<Timing2Reg> { 
+     union Timing2Reg { 
+        Register reg;
         /* Actual setup time for repeated start signals */
-        Mmio::BitField<Timing2Reg, 0, 16> tsu_sta;
+        BitField<0, 16> tsu_sta;
         /* Actual hold time for start signals */
-        Mmio::BitField<Timing2Reg, 16, 16> thd_sta;
-        constexpr Timing2Reg (uintptr_t addr): Mmio(addr + 0x68),tsu_sta(this),thd_sta(this){}
+        BitField<16, 16> thd_sta;
+        constexpr Timing2Reg (uintptr_t addr): reg{.addr = addr + 0x68}
+        {}
+
+        void commit() { reg.commit(); }
+
+        Timing2Reg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing3Reg: Mmio<Timing3Reg> { 
+     union Timing3Reg { 
+        Register reg;
         /* Actual setup time for data (or ack) bits */
-        Mmio::BitField<Timing3Reg, 0, 16> tsu_dat;
+        BitField<0, 16> tsu_dat;
         /* Actual hold time for data (or ack) bits(Note, where required, the parameters TVD_DAT is taken to be THD_DAT+T_F) */
-        Mmio::BitField<Timing3Reg, 16, 16> thd_dat;
-        constexpr Timing3Reg (uintptr_t addr): Mmio(addr + 0x6c),tsu_dat(this),thd_dat(this){}
+        BitField<16, 16> thd_dat;
+        constexpr Timing3Reg (uintptr_t addr): reg{.addr = addr + 0x6c}
+        {}
+
+        void commit() { reg.commit(); }
+
+        Timing3Reg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
-     struct Timing4Reg: Mmio<Timing4Reg> { 
+     union Timing4Reg { 
+        Register reg;
         /* Actual setup time for stop signals */
-        Mmio::BitField<Timing4Reg, 0, 16> tsu_sto;
+        BitField<0, 16> tsu_sto;
         /* Actual time between each STOP signal and the following START signal */
-        Mmio::BitField<Timing4Reg, 16, 16> t_buf;
-        constexpr Timing4Reg (uintptr_t addr): Mmio(addr + 0x70),tsu_sto(this),t_buf(this){}
+        BitField<16, 16> t_buf;
+        constexpr Timing4Reg (uintptr_t addr): reg{.addr = addr + 0x70}
+        {}
+
+        void commit() { reg.commit(); }
+
+        Timing4Reg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C clock stretching timeout control */
-     struct TimeoutCtrlReg: Mmio<TimeoutCtrlReg> { 
+     union TimeoutCtrlReg { 
+        Register reg;
         /* Clock stretching timeout value (in units of input clock frequency) */
-        Mmio::BitField<TimeoutCtrlReg, 0, 31> val;
+        BitField<0, 31> val;
         /* Enable timeout feature */
-        Mmio::BitField<TimeoutCtrlReg, 31, 1> en;
-        constexpr TimeoutCtrlReg (uintptr_t addr): Mmio(addr + 0x74),val(this),en(this){}
+        BitField<31, 1> en;
+        constexpr TimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x74}
+        {}
+
+        void commit() { reg.commit(); }
+
+        TimeoutCtrlReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C target address and mask pairs */
-     struct TargetIdReg: Mmio<TargetIdReg> { 
+     union TargetIdReg { 
+        Register reg;
         /* I2C target address number 0 */
-        Mmio::BitField<TargetIdReg, 0, 7> address0;
+        BitField<0, 7> address0;
         /* I2C target mask number 0 */
-        Mmio::BitField<TargetIdReg, 7, 7> mask0;
+        BitField<7, 7> mask0;
         /* I2C target address number 1 */
-        Mmio::BitField<TargetIdReg, 14, 7> address1;
+        BitField<14, 7> address1;
         /* I2C target mask number 1 */
-        Mmio::BitField<TargetIdReg, 21, 7> mask1;
-        constexpr TargetIdReg (uintptr_t addr): Mmio(addr + 0x78),address0(this),mask0(this),address1(this),mask1(this){}
+        BitField<21, 7> mask1;
+        constexpr TargetIdReg (uintptr_t addr): reg{.addr = addr + 0x78}
+        {}
+
+        void commit() { reg.commit(); }
+
+        TargetIdReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C target acquired data */
-     struct AcqdataReg: Mmio<AcqdataReg> { 
+     union AcqdataReg { 
+        Register reg;
         /* Address for accepted transaction or acquired byte */
-        Mmio::BitField<AcqdataReg, 0, 8> abyte;
+        BitField<0, 8> abyte;
         /* Host issued a START before transmitting ABYTE, a STOP or a RESTART after the preceeding ABYTE */
-        Mmio::BitField<AcqdataReg, 8, 2> signal;
-        constexpr AcqdataReg (uintptr_t addr): Mmio(addr + 0x7c),abyte(this),signal(this){}
+        BitField<8, 2> signal;
+        constexpr AcqdataReg (uintptr_t addr): reg{.addr = addr + 0x7c}
+        {}
+
+        void commit() { reg.commit(); }
+
+        AcqdataReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C target transmit data */
-     struct TxdataReg: Mmio<TxdataReg> { 
+     union TxdataReg { 
+        Register reg;
         /* Value */
-        Mmio::BitField<TxdataReg, 0, 8> value;
-        constexpr TxdataReg (uintptr_t addr): Mmio(addr + 0x80),value(this){}
+        BitField<0, 8> value;
+        constexpr TxdataReg (uintptr_t addr): reg{.addr = addr + 0x80}
+        {}
+
+        void commit() { reg.commit(); }
+
+        TxdataReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     
 
      /* I2C host clock generation timeout value (in units of input clock frequency) */
-     struct HostTimeoutCtrlReg: Mmio<HostTimeoutCtrlReg> { 
+     union HostTimeoutCtrlReg { 
+        Register reg;
         /* Value */
-        Mmio::BitField<HostTimeoutCtrlReg, 0, 32> value;
-        constexpr HostTimeoutCtrlReg (uintptr_t addr): Mmio(addr + 0x84),value(this){}
+        BitField<0, 32> value;
+        constexpr HostTimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x84}
+        {}
+
+        void commit() { reg.commit(); }
+
+        HostTimeoutCtrlReg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     

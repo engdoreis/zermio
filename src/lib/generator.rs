@@ -71,17 +71,22 @@ pub mod cpp {
         ext = "txt",
         source = "
      /* {{ data.desc }} */
-     struct {{ data.name|pascal_case }}Reg: Mmio<{{ data.name|pascal_case }}Reg> { 
+     union {{ data.name|pascal_case }}Reg { 
+        Register reg;
         {% for bitfield in data.bitfields -%}
         /* {{ bitfield.desc }} */
-        Mmio::BitField<{{ data.name|pascal_case }}Reg, {{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
+        BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
         {% endfor -%}
         
-        constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): Mmio(addr + {{ data.offset }}),
-        {%- for bitfield in data.bitfields -%}
-            {{ bitfield.name|lower }}(this) {%- if !loop.last -%},{%- endif -%}
-        {%- endfor -%}
+        constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): reg{.addr = addr + {{ data.offset }}}
         {}
+
+        void commit() { reg.commit(); }
+
+        {{ data.name|pascal_case }}Reg& fetch() {
+            reg.fetch();
+            return *this;
+        }
      };
 
     "
