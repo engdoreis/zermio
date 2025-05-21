@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-pub struct Peripheral<'a> {
+pub struct Device<'a> {
     pub name: &'a str,
     pub registers: Vec<&'a str>,
 }
 
-impl<'a> Peripheral<'a> {
+impl<'a> Device<'a> {
     pub fn new(name: &'a str) -> Self {
         Self {
             name,
@@ -52,12 +52,12 @@ impl<'a> Bitfields<'a> {
     }
 }
 
-pub struct PeripheralAddress {
+pub struct DeviceAddress {
     pub name: String,
     pub address: String,
 }
 
-pub struct PeripheralAddresses<'a> {
+pub struct DeviceAddresses<'a> {
     pub name: &'a str,
-    pub peripherals: Vec<PeripheralAddress>,
+    pub devices: Vec<DeviceAddress>,
 }

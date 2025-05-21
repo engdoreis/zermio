@@ -19,7 +19,7 @@ static FILE_HEADER: &str = r#"
  */
 "#;
 
-fn peripheral_name(s: &str) -> String {
+fn device_name(s: &str) -> String {
     let re = Regex::new(r"\d+$").unwrap();
     // Remove trailing digits
     re.replace(s, "").to_string().to_lowercase()
@@ -33,21 +33,24 @@ pub mod cpp {
         ext = "txt",
         source = "
     #include <cstdint>
-    enum Peripherals: uintptr_t{ 
-        {% for peripheral in data.peripherals -%}
-        {{ peripheral.name|pascal_case }} = {{peripheral.address}},
-        {% endfor -%}
+    namespace platform {
+        enum Devices: uintptr_t{ 
+            {% for device in data.devices -%}
+            {{ device.name|pascal_case }} = {{device.address}},
+            {% endfor -%}
+        };
     };
     "
     )]
-    pub struct PeripheralAddresses<'a> {
-        pub data: &'a mmio::PeripheralAddresses<'a>,
+    pub struct DeviceAddresses<'a> {
+        pub data: &'a mmio::DeviceAddresses<'a>,
     }
 
     #[derive(Template)]
     #[template(
         ext = "txt",
         source = "
+     /* To facilitate compiler optimization of this abstraction, prefer using this struct within a small scope.*/
      struct {{ data.name|pascal_case }} { 
         {% for register in data.registers -%}
         {{ register|pascal_case }}Reg {{register|lower}};
@@ -62,8 +65,8 @@ pub mod cpp {
 
     "
     )]
-    pub struct Peripheral<'a> {
-        pub data: &'a mmio::Peripheral<'a>,
+    pub struct Device<'a> {
+        pub data: &'a mmio::Device<'a>,
     }
 
     #[derive(Template)]
@@ -72,18 +75,18 @@ pub mod cpp {
         source = "
      /* {{ data.desc }} */
      union {{ data.name|pascal_case }}Reg { 
-        Register reg;
+        reismmio::Register reg;
         {% for bitfield in data.bitfields -%}
         /* {{ bitfield.desc }} */
-        BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
+        reismmio::BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
         {% endfor -%}
         
         constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): reg{.addr = addr + {{ data.offset }}}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        {{ data.name|pascal_case }}Reg& fetch() {
+        inline {{ data.name|pascal_case }}Reg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -110,38 +113,38 @@ pub mod cpp {
             Ok((filename, file))
         };
         let name = soc.name.replace(" ", "_").to_lowercase();
-        // Store all the peripheral addresses which will be rendered later in a single header under
+        // Store all the device addresses which will be rendered later in a single header under
         // a enum.
-        let mut periph_addr = mmio::PeripheralAddresses {
+        let mut device_addr = mmio::DeviceAddresses {
             name: &name,
-            peripherals: Vec::new(),
+            devices: Vec::new(),
         };
 
-        for periph_iter in &soc.peripherals.peripheral {
-            let name = periph_iter.name.replace(" ", "_").to_uppercase();
-            periph_addr.peripherals.push(mmio::PeripheralAddress {
+        for device_iter in &soc.peripherals.peripheral {
+            let name = device_iter.name.replace(" ", "_").to_uppercase();
+            device_addr.devices.push(mmio::DeviceAddress {
                 name,
-                address: format!("{:#x}", periph_iter.base_address),
+                address: format!("{:#x}", device_iter.base_address),
             });
 
-            let Some(registers) = &periph_iter.registers.as_ref() else {
+            let Some(registers) = &device_iter.registers.as_ref() else {
                 continue;
             };
 
-            let peripheral_name = peripheral_name(&periph_iter.name);
+            let device_name = device_name(&device_iter.name);
 
-            let (peripheral_header, mut peripheral_handler) = get_path(&out_dir, &peripheral_name)?;
+            let (device_header, mut device_handler) = get_path(&out_dir, &device_name)?;
 
-            writeln!(peripheral_handler, r###"#include  "mmio.hh" "###)?;
+            writeln!(device_handler, r###"#include  "mmio.hh" "###)?;
             writeln!(
-                peripheral_handler,
-                "namespace {} {{",
-                peripheral_name.clone().to_uppercase()
+                device_handler,
+                "namespace mmio {{\nnamespace {} {{",
+                device_name.clone().to_lowercase()
             )?;
 
-            let mut peripheral = mmio::Peripheral::new(&peripheral_name);
+            let mut device = mmio::Device::new(&device_name);
             for register_iter in &registers.register {
-                peripheral.registers.push(&register_iter.name);
+                device.registers.push(&register_iter.name);
 
                 let mut register = mmio::Register::new(
                     &register_iter.name,
@@ -157,32 +160,32 @@ pub mod cpp {
                     ));
                 }
                 writeln!(
-                    peripheral_handler,
+                    device_handler,
                     "{}",
                     Register { data: &register }.render().unwrap()
                 )?;
             }
             writeln!(
-                peripheral_handler,
+                device_handler,
                 "{}",
-                Peripheral { data: &peripheral }.render().unwrap()
+                Device { data: &device }.render().unwrap()
             )?;
             writeln!(
-                peripheral_handler,
-                "}} // namespace {}",
-                peripheral_name.to_uppercase()
+                device_handler,
+                "}} // namespace {}\n}} // namespace mmio",
+                device_name.to_lowercase()
             )?;
-            println!("{} generated", peripheral_header.display());
+            println!("{} generated", device_header.display());
         }
 
         let (platform_header, mut platform_header_handle) = get_path(
             &addr_dir,
-            &format!("{}_peripherals", soc.name.replace(" ", "_").to_lowercase()),
+            &format!("{}_devices", soc.name.replace(" ", "_").to_lowercase()),
         )?;
         writeln!(
             platform_header_handle,
             "{}",
-            PeripheralAddresses { data: &periph_addr }.render().unwrap()
+            DeviceAddresses { data: &device_addr }.render().unwrap()
         )?;
         println!("{} generated", platform_header.display());
         std::fs::write(

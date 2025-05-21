@@ -5,23 +5,24 @@
 
 #pragma once
 #include  "mmio.hh" 
-namespace I2C {
+namespace mmio {
+namespace i2c {
 
      /* I2C Control Register */
      union CtrlReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Enable Host I2C functionality */
-        BitField<0, 1> enablehost;
+        reismmio::BitField<0, 1> enablehost;
         /* Enable Target I2C functionality */
-        BitField<1, 1> enabletarget;
+        reismmio::BitField<1, 1> enabletarget;
         /* Enable I2C line loopback testIf line loopback is enabled, the internal design sees ACQ and RX data as "1" */
-        BitField<2, 1> llpbk;
+        reismmio::BitField<2, 1> llpbk;
         constexpr CtrlReg (uintptr_t addr): reg{.addr = addr + 0x10}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        CtrlReg& fetch() {
+        inline CtrlReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -31,33 +32,33 @@ namespace I2C {
 
      /* I2C Live Status Register */
      union StatusReg { 
-        Register reg;
+        reismmio::Register reg;
         /* FMT FIFO is full */
-        BitField<0, 1> fmtfull;
+        reismmio::BitField<0, 1> fmtfull;
         /* RX FIFO is full */
-        BitField<1, 1> rxfull;
+        reismmio::BitField<1, 1> rxfull;
         /* FMT FIFO is empty */
-        BitField<2, 1> fmtempty;
+        reismmio::BitField<2, 1> fmtempty;
         /* RX FIFO is empty */
-        BitField<5, 1> rxempty;
+        reismmio::BitField<5, 1> rxempty;
         /* Host functionality is idle. No Host transaction is in progress */
-        BitField<3, 1> hostidle;
+        reismmio::BitField<3, 1> hostidle;
         /* Target functionality is idle. No Target transaction is in progress */
-        BitField<4, 1> targetidle;
+        reismmio::BitField<4, 1> targetidle;
         /* TX FIFO is full */
-        BitField<6, 1> txfull;
+        reismmio::BitField<6, 1> txfull;
         /* ACQ FIFO is full */
-        BitField<7, 1> acqfull;
+        reismmio::BitField<7, 1> acqfull;
         /* TX FIFO is empty */
-        BitField<8, 1> txempty;
+        reismmio::BitField<8, 1> txempty;
         /* ACQ FIFO is empty */
-        BitField<9, 1> acqempty;
+        reismmio::BitField<9, 1> acqempty;
         constexpr StatusReg (uintptr_t addr): reg{.addr = addr + 0x14}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        StatusReg& fetch() {
+        inline StatusReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -67,15 +68,15 @@ namespace I2C {
 
      /* I2C Read Data */
      union RdataReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Value */
-        BitField<0, 8> value;
+        reismmio::BitField<0, 8> value;
         constexpr RdataReg (uintptr_t addr): reg{.addr = addr + 0x18}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        RdataReg& fetch() {
+        inline RdataReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -85,25 +86,25 @@ namespace I2C {
 
      /* I2C Format Data */
      union FdataReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Format Byte. Directly transmitted if no flags are set. */
-        BitField<0, 8> fbyte;
+        reismmio::BitField<0, 8> fbyte;
         /* Issue a START condition before transmitting BYTE. */
-        BitField<8, 1> start;
+        reismmio::BitField<8, 1> start;
         /* Issue a STOP condition after this operation */
-        BitField<9, 1> stop;
+        reismmio::BitField<9, 1> stop;
         /* Read BYTE bytes from I2C. (256 if BYTE==0) */
-        BitField<10, 1> read;
+        reismmio::BitField<10, 1> read;
         /* Do not NACK the last byte read, let the read operation continue */
-        BitField<11, 1> rcont;
+        reismmio::BitField<11, 1> rcont;
         /* Do not signal an exception if the current byte is not ACK'd */
-        BitField<12, 1> nakok;
+        reismmio::BitField<12, 1> nakok;
         constexpr FdataReg (uintptr_t addr): reg{.addr = addr + 0x1c}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        FdataReg& fetch() {
+        inline FdataReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -113,25 +114,25 @@ namespace I2C {
 
      /* I2C FIFO control register */
      union FifoCtrlReg { 
-        Register reg;
+        reismmio::Register reg;
         /* RX fifo reset. Write 1 to the register resets RX_FIFO. Read returns 0 */
-        BitField<0, 1> rxrst;
+        reismmio::BitField<0, 1> rxrst;
         /* FMT fifo reset. Write 1 to the register resets FMT_FIFO. Read returns 0 */
-        BitField<1, 1> fmtrst;
+        reismmio::BitField<1, 1> fmtrst;
         /* Trigger level for RX interrupts. If the FIFO depth exceedsthis setting, it raises rx_threshold interrupt. */
-        BitField<2, 3> rxilvl;
+        reismmio::BitField<2, 3> rxilvl;
         /* Trigger level for FMT interrupts. If the FIFO depth falls belowthis setting, it raises fmt_threshold interrupt. */
-        BitField<5, 2> fmtilvl;
+        reismmio::BitField<5, 2> fmtilvl;
         /* ACQ FIFO reset. Write 1 to the register resets it. Read returns 0 */
-        BitField<7, 1> acqrst;
+        reismmio::BitField<7, 1> acqrst;
         /* TX FIFO reset. Write 1 to the register resets it. Read returns 0 */
-        BitField<8, 1> txrst;
+        reismmio::BitField<8, 1> txrst;
         constexpr FifoCtrlReg (uintptr_t addr): reg{.addr = addr + 0x20}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        FifoCtrlReg& fetch() {
+        inline FifoCtrlReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -141,21 +142,21 @@ namespace I2C {
 
      /* I2C FIFO status register */
      union FifoStatusReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Current fill level of FMT fifo */
-        BitField<0, 7> fmtlvl;
+        reismmio::BitField<0, 7> fmtlvl;
         /* Current fill level of RX fifo */
-        BitField<16, 7> rxlvl;
+        reismmio::BitField<16, 7> rxlvl;
         /* Current fill level of TX fifo */
-        BitField<8, 7> txlvl;
+        reismmio::BitField<8, 7> txlvl;
         /* Current fill level of ACQ fifo */
-        BitField<24, 7> acqlvl;
+        reismmio::BitField<24, 7> acqlvl;
         constexpr FifoStatusReg (uintptr_t addr): reg{.addr = addr + 0x24}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        FifoStatusReg& fetch() {
+        inline FifoStatusReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -165,19 +166,19 @@ namespace I2C {
 
      /* I2C Override Control Register */
      union OvrdReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Override the SDA and SCL TX signals. */
-        BitField<0, 1> txovrden;
+        reismmio::BitField<0, 1> txovrden;
         /* Value for SCL Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-        BitField<1, 1> sclval;
+        reismmio::BitField<1, 1> sclval;
         /* Value for SDA Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-        BitField<2, 1> sdaval;
+        reismmio::BitField<2, 1> sdaval;
         constexpr OvrdReg (uintptr_t addr): reg{.addr = addr + 0x58}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        OvrdReg& fetch() {
+        inline OvrdReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -187,17 +188,17 @@ namespace I2C {
 
      /* Oversampled RX values */
      union ValReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Last 16 oversampled values of SCL. Most recent bit is bit 0, oldest 15. */
-        BitField<0, 16> scl_rx;
+        reismmio::BitField<0, 16> scl_rx;
         /* Last 16 oversampled values of SDA. Most recent bit is bit 16, oldest 31. */
-        BitField<16, 16> sda_rx;
+        reismmio::BitField<16, 16> sda_rx;
         constexpr ValReg (uintptr_t addr): reg{.addr = addr + 0x5c}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        ValReg& fetch() {
+        inline ValReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -207,17 +208,17 @@ namespace I2C {
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly. */
      union Timing0Reg { 
-        Register reg;
+        reismmio::Register reg;
         /* The actual time to hold SCL high in a given pulse: in host mode, when there is no stretching this value is 3 cycles longer as tracked in issue #18962 */
-        BitField<0, 16> thigh;
+        reismmio::BitField<0, 16> thigh;
         /* The actual time to hold SCL low between any two SCL pulses */
-        BitField<16, 16> tlow;
+        reismmio::BitField<16, 16> tlow;
         constexpr Timing0Reg (uintptr_t addr): reg{.addr = addr + 0x60}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        Timing0Reg& fetch() {
+        inline Timing0Reg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -227,17 +228,17 @@ namespace I2C {
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
      union Timing1Reg { 
-        Register reg;
+        reismmio::Register reg;
         /* The nominal rise time to anticipate for the bus (depends on capacitance) */
-        BitField<0, 16> t_r;
+        reismmio::BitField<0, 16> t_r;
         /* The nominal fall time to anticipate for the bus (influences SDA hold times): this is currently counted twice in host mode as tracked in issue #18958 */
-        BitField<16, 16> t_f;
+        reismmio::BitField<16, 16> t_f;
         constexpr Timing1Reg (uintptr_t addr): reg{.addr = addr + 0x64}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        Timing1Reg& fetch() {
+        inline Timing1Reg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -247,17 +248,17 @@ namespace I2C {
 
      /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
      union Timing2Reg { 
-        Register reg;
+        reismmio::Register reg;
         /* Actual setup time for repeated start signals */
-        BitField<0, 16> tsu_sta;
+        reismmio::BitField<0, 16> tsu_sta;
         /* Actual hold time for start signals */
-        BitField<16, 16> thd_sta;
+        reismmio::BitField<16, 16> thd_sta;
         constexpr Timing2Reg (uintptr_t addr): reg{.addr = addr + 0x68}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        Timing2Reg& fetch() {
+        inline Timing2Reg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -267,17 +268,17 @@ namespace I2C {
 
      /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
      union Timing3Reg { 
-        Register reg;
+        reismmio::Register reg;
         /* Actual setup time for data (or ack) bits */
-        BitField<0, 16> tsu_dat;
+        reismmio::BitField<0, 16> tsu_dat;
         /* Actual hold time for data (or ack) bits(Note, where required, the parameters TVD_DAT is taken to be THD_DAT+T_F) */
-        BitField<16, 16> thd_dat;
+        reismmio::BitField<16, 16> thd_dat;
         constexpr Timing3Reg (uintptr_t addr): reg{.addr = addr + 0x6c}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        Timing3Reg& fetch() {
+        inline Timing3Reg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -287,17 +288,17 @@ namespace I2C {
 
      /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
      union Timing4Reg { 
-        Register reg;
+        reismmio::Register reg;
         /* Actual setup time for stop signals */
-        BitField<0, 16> tsu_sto;
+        reismmio::BitField<0, 16> tsu_sto;
         /* Actual time between each STOP signal and the following START signal */
-        BitField<16, 16> t_buf;
+        reismmio::BitField<16, 16> t_buf;
         constexpr Timing4Reg (uintptr_t addr): reg{.addr = addr + 0x70}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        Timing4Reg& fetch() {
+        inline Timing4Reg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -307,17 +308,17 @@ namespace I2C {
 
      /* I2C clock stretching timeout control */
      union TimeoutCtrlReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Clock stretching timeout value (in units of input clock frequency) */
-        BitField<0, 31> val;
+        reismmio::BitField<0, 31> val;
         /* Enable timeout feature */
-        BitField<31, 1> en;
+        reismmio::BitField<31, 1> en;
         constexpr TimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x74}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        TimeoutCtrlReg& fetch() {
+        inline TimeoutCtrlReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -327,21 +328,21 @@ namespace I2C {
 
      /* I2C target address and mask pairs */
      union TargetIdReg { 
-        Register reg;
+        reismmio::Register reg;
         /* I2C target address number 0 */
-        BitField<0, 7> address0;
+        reismmio::BitField<0, 7> address0;
         /* I2C target mask number 0 */
-        BitField<7, 7> mask0;
+        reismmio::BitField<7, 7> mask0;
         /* I2C target address number 1 */
-        BitField<14, 7> address1;
+        reismmio::BitField<14, 7> address1;
         /* I2C target mask number 1 */
-        BitField<21, 7> mask1;
+        reismmio::BitField<21, 7> mask1;
         constexpr TargetIdReg (uintptr_t addr): reg{.addr = addr + 0x78}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        TargetIdReg& fetch() {
+        inline TargetIdReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -351,17 +352,17 @@ namespace I2C {
 
      /* I2C target acquired data */
      union AcqdataReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Address for accepted transaction or acquired byte */
-        BitField<0, 8> abyte;
+        reismmio::BitField<0, 8> abyte;
         /* Host issued a START before transmitting ABYTE, a STOP or a RESTART after the preceeding ABYTE */
-        BitField<8, 2> signal;
+        reismmio::BitField<8, 2> signal;
         constexpr AcqdataReg (uintptr_t addr): reg{.addr = addr + 0x7c}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        AcqdataReg& fetch() {
+        inline AcqdataReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -371,15 +372,15 @@ namespace I2C {
 
      /* I2C target transmit data */
      union TxdataReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Value */
-        BitField<0, 8> value;
+        reismmio::BitField<0, 8> value;
         constexpr TxdataReg (uintptr_t addr): reg{.addr = addr + 0x80}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        TxdataReg& fetch() {
+        inline TxdataReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -389,15 +390,15 @@ namespace I2C {
 
      /* I2C host clock generation timeout value (in units of input clock frequency) */
      union HostTimeoutCtrlReg { 
-        Register reg;
+        reismmio::Register reg;
         /* Value */
-        BitField<0, 32> value;
+        reismmio::BitField<0, 32> value;
         constexpr HostTimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x84}
         {}
 
-        void commit() { reg.commit(); }
+        inline void commit() { reg.commit(); }
 
-        HostTimeoutCtrlReg& fetch() {
+        inline HostTimeoutCtrlReg& fetch() {
             reg.fetch();
             return *this;
         }
@@ -405,6 +406,7 @@ namespace I2C {
 
     
 
+     /* To facilitate compiler optimization of this abstraction, prefer using this struct within a small scope.*/
      struct I2c { 
         CtrlReg ctrl;
         StatusReg status;
@@ -430,4 +432,5 @@ namespace I2C {
      };
 
     
-} // namespace I2C
+} // namespace i2c
+} // namespace mmio

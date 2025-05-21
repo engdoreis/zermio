@@ -6,7 +6,7 @@
 #pragma once
 
     #include <cstdint>
-    enum Peripherals: uintptr_t{ 
+    enum Devices: uintptr_t{ 
         I2c0 = 0x80200000,
         };
     

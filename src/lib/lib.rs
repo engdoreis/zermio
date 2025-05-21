@@ -40,7 +40,7 @@ mod libtest {
         };
 
         check_eq("i2c.hh", None);
-        check_eq("test_peripherals.hh", None);
+        check_eq("test_devices.hh", None);
         check_eq("mmio.hh", Some("../../mmio.hh"));
     }
 
