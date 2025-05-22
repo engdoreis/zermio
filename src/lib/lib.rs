@@ -40,7 +40,8 @@ mod libtest {
         };
 
         check_eq("i2c.hh", None);
-        check_eq("test_devices.hh", None);
+        check_eq("timer.hh", None);
+        check_eq("test_platform.hh", None);
         check_eq("mmio.hh", Some("../../mmio.hh"));
     }
 

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::mmio;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -101,16 +102,7 @@ pub struct Field {
     #[serde(rename = "bitRange", deserialize_with = "from_bitrange")]
     pub bit_range: AddressBlock,
     #[serde(deserialize_with = "from_acess")]
-    pub access: Permissions,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Permissions {
-    pub read: bool,
-    pub write: bool,
-    pub clear: bool,
-    pub execute: bool,
+    pub access: mmio::Permissions,
 }
 
 // Helper function to deserialize hexadecimal strings
@@ -126,32 +118,11 @@ where
     }
 }
 
-fn from_acess<'de, D>(deserializer: D) -> Result<Permissions, D::Error>
+fn from_acess<'de, D>(deserializer: D) -> Result<mmio::Permissions, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let s = String::deserialize(deserializer)?;
-    Ok(match &s[..] {
-        "read-only" => Permissions {
-            read: true,
-            write: false,
-            clear: false,
-            execute: false,
-        },
-        "write-only" => Permissions {
-            read: false,
-            write: true,
-            clear: true,
-            execute: false,
-        },
-        "read-write" => Permissions {
-            read: true,
-            write: true,
-            clear: true,
-            execute: false,
-        },
-        _ => panic!("{} unsuported", s),
-    })
+    Ok(String::deserialize(deserializer)?.as_str().into())
 }
 
 fn from_bitrange<'de, D>(deserializer: D) -> Result<AddressBlock, D::Error>
