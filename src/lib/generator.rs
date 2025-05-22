@@ -82,7 +82,7 @@ union {{ data.name|pascal_case }}Reg {
     reismmio::Register reg;
     {% for bitfield in data.bitfields -%}
     /* {{ bitfield.desc }} */
-    reismmio::BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}> {{ bitfield.name|lower }};
+    reismmio::BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}, reismmio::Permissions::{{ bitfield.permissions }}> {{ bitfield.name|lower }};
     {% endfor -%}
     
     constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): reg{.addr = addr + {{ data.offset }}}

@@ -14,7 +14,7 @@ namespace timer {
 union MtimelReg { 
     reismmio::Register reg;
     /* mtime low */
-    reismmio::BitField<0, 32> value;
+    reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
     constexpr MtimelReg (uintptr_t addr): reg{.addr = addr + 0x0}
     {}
 
@@ -32,7 +32,7 @@ union MtimelReg {
 union MtimehReg { 
     reismmio::Register reg;
     /* mtime high */
-    reismmio::BitField<0, 32> value;
+    reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
     constexpr MtimehReg (uintptr_t addr): reg{.addr = addr + 0x4}
     {}
 
@@ -50,7 +50,7 @@ union MtimehReg {
 union MtimecmplReg { 
     reismmio::Register reg;
     /* mtime cmp low */
-    reismmio::BitField<0, 32> value;
+    reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
     constexpr MtimecmplReg (uintptr_t addr): reg{.addr = addr + 0x8}
     {}
 
@@ -68,7 +68,7 @@ union MtimecmplReg {
 union MtimecmphReg { 
     reismmio::Register reg;
     /* mtime cmp high */
-    reismmio::BitField<0, 32> value;
+    reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
     constexpr MtimecmphReg (uintptr_t addr): reg{.addr = addr + 0xc}
     {}
 

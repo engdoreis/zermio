@@ -2,46 +2,20 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-#[derive(Debug, Clone)]
-pub struct Permissions {
-    pub read: bool,
-    pub write: bool,
-    pub clear: bool,
-    pub execute: bool,
-}
-
-impl Default for Permissions {
-    fn default() -> Self {
-        Self {
-            read: true,
-            write: true,
-            clear: false,
-            execute: false,
-        }
-    }
+#[derive(Debug, Clone, strum::Display, strum::IntoStaticStr)]
+#[strum(serialize_all = "PascalCase")]
+pub enum Permissions {
+    Read,
+    Write,
+    ReadWrite,
 }
 
 impl From<&str> for Permissions {
     fn from(s: &str) -> Self {
         match &s[..] {
-            "read-only" => Self {
-                read: true,
-                write: false,
-                clear: false,
-                execute: false,
-            },
-            "write-only" => Self {
-                read: false,
-                write: true,
-                clear: true,
-                execute: false,
-            },
-            "read-write" => Self {
-                read: true,
-                write: true,
-                clear: true,
-                execute: false,
-            },
+            "read-only" => Self::Read,
+            "write-only" => Self::Write,
+            "read-write" => Self::ReadWrite,
             _ => panic!("{} unsuported", s),
         }
     }

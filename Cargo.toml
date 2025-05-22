@@ -11,6 +11,7 @@ function_name = "0.3.0"
 quick-xml = { version = "0.37.5", features = ["serialize"] }
 regex = "1.11.1"
 serde = { version = "1.0.219", features = ["derive"] }
+strum = { version = "0.27.1", features = ["derive"] }
 
 [lib]
 name = "reismmiolib"

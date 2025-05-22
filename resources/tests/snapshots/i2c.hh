@@ -14,11 +14,11 @@ namespace i2c {
 union CtrlReg { 
     reismmio::Register reg;
     /* Enable Host I2C functionality */
-    reismmio::BitField<0, 1> enablehost;
+    reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> enablehost;
     /* Enable Target I2C functionality */
-    reismmio::BitField<1, 1> enabletarget;
+    reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> enabletarget;
     /* Enable I2C line loopback testIf line loopback is enabled, the internal design sees ACQ and RX data as "1" */
-    reismmio::BitField<2, 1> llpbk;
+    reismmio::BitField<2, 1, reismmio::Permissions::ReadWrite> llpbk;
     constexpr CtrlReg (uintptr_t addr): reg{.addr = addr + 0x10}
     {}
 
@@ -36,25 +36,25 @@ union CtrlReg {
 union StatusReg { 
     reismmio::Register reg;
     /* FMT FIFO is full */
-    reismmio::BitField<0, 1> fmtfull;
+    reismmio::BitField<0, 1, reismmio::Permissions::Read> fmtfull;
     /* RX FIFO is full */
-    reismmio::BitField<1, 1> rxfull;
+    reismmio::BitField<1, 1, reismmio::Permissions::Read> rxfull;
     /* FMT FIFO is empty */
-    reismmio::BitField<2, 1> fmtempty;
+    reismmio::BitField<2, 1, reismmio::Permissions::Read> fmtempty;
     /* RX FIFO is empty */
-    reismmio::BitField<5, 1> rxempty;
+    reismmio::BitField<5, 1, reismmio::Permissions::Read> rxempty;
     /* Host functionality is idle. No Host transaction is in progress */
-    reismmio::BitField<3, 1> hostidle;
+    reismmio::BitField<3, 1, reismmio::Permissions::Read> hostidle;
     /* Target functionality is idle. No Target transaction is in progress */
-    reismmio::BitField<4, 1> targetidle;
+    reismmio::BitField<4, 1, reismmio::Permissions::Read> targetidle;
     /* TX FIFO is full */
-    reismmio::BitField<6, 1> txfull;
+    reismmio::BitField<6, 1, reismmio::Permissions::Read> txfull;
     /* ACQ FIFO is full */
-    reismmio::BitField<7, 1> acqfull;
+    reismmio::BitField<7, 1, reismmio::Permissions::Read> acqfull;
     /* TX FIFO is empty */
-    reismmio::BitField<8, 1> txempty;
+    reismmio::BitField<8, 1, reismmio::Permissions::Read> txempty;
     /* ACQ FIFO is empty */
-    reismmio::BitField<9, 1> acqempty;
+    reismmio::BitField<9, 1, reismmio::Permissions::Read> acqempty;
     constexpr StatusReg (uintptr_t addr): reg{.addr = addr + 0x14}
     {}
 
@@ -72,7 +72,7 @@ union StatusReg {
 union RdataReg { 
     reismmio::Register reg;
     /* Value */
-    reismmio::BitField<0, 8> value;
+    reismmio::BitField<0, 8, reismmio::Permissions::Read> value;
     constexpr RdataReg (uintptr_t addr): reg{.addr = addr + 0x18}
     {}
 
@@ -90,17 +90,17 @@ union RdataReg {
 union FdataReg { 
     reismmio::Register reg;
     /* Format Byte. Directly transmitted if no flags are set. */
-    reismmio::BitField<0, 8> fbyte;
+    reismmio::BitField<0, 8, reismmio::Permissions::Write> fbyte;
     /* Issue a START condition before transmitting BYTE. */
-    reismmio::BitField<8, 1> start;
+    reismmio::BitField<8, 1, reismmio::Permissions::Write> start;
     /* Issue a STOP condition after this operation */
-    reismmio::BitField<9, 1> stop;
+    reismmio::BitField<9, 1, reismmio::Permissions::Write> stop;
     /* Read BYTE bytes from I2C. (256 if BYTE==0) */
-    reismmio::BitField<10, 1> read;
+    reismmio::BitField<10, 1, reismmio::Permissions::Write> read;
     /* Do not NACK the last byte read, let the read operation continue */
-    reismmio::BitField<11, 1> rcont;
+    reismmio::BitField<11, 1, reismmio::Permissions::Write> rcont;
     /* Do not signal an exception if the current byte is not ACK'd */
-    reismmio::BitField<12, 1> nakok;
+    reismmio::BitField<12, 1, reismmio::Permissions::Write> nakok;
     constexpr FdataReg (uintptr_t addr): reg{.addr = addr + 0x1c}
     {}
 
@@ -118,17 +118,17 @@ union FdataReg {
 union FifoCtrlReg { 
     reismmio::Register reg;
     /* RX fifo reset. Write 1 to the register resets RX_FIFO. Read returns 0 */
-    reismmio::BitField<0, 1> rxrst;
+    reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> rxrst;
     /* FMT fifo reset. Write 1 to the register resets FMT_FIFO. Read returns 0 */
-    reismmio::BitField<1, 1> fmtrst;
+    reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> fmtrst;
     /* Trigger level for RX interrupts. If the FIFO depth exceedsthis setting, it raises rx_threshold interrupt. */
-    reismmio::BitField<2, 3> rxilvl;
+    reismmio::BitField<2, 3, reismmio::Permissions::ReadWrite> rxilvl;
     /* Trigger level for FMT interrupts. If the FIFO depth falls belowthis setting, it raises fmt_threshold interrupt. */
-    reismmio::BitField<5, 2> fmtilvl;
+    reismmio::BitField<5, 2, reismmio::Permissions::ReadWrite> fmtilvl;
     /* ACQ FIFO reset. Write 1 to the register resets it. Read returns 0 */
-    reismmio::BitField<7, 1> acqrst;
+    reismmio::BitField<7, 1, reismmio::Permissions::ReadWrite> acqrst;
     /* TX FIFO reset. Write 1 to the register resets it. Read returns 0 */
-    reismmio::BitField<8, 1> txrst;
+    reismmio::BitField<8, 1, reismmio::Permissions::ReadWrite> txrst;
     constexpr FifoCtrlReg (uintptr_t addr): reg{.addr = addr + 0x20}
     {}
 
@@ -146,13 +146,13 @@ union FifoCtrlReg {
 union FifoStatusReg { 
     reismmio::Register reg;
     /* Current fill level of FMT fifo */
-    reismmio::BitField<0, 7> fmtlvl;
+    reismmio::BitField<0, 7, reismmio::Permissions::Read> fmtlvl;
     /* Current fill level of RX fifo */
-    reismmio::BitField<16, 7> rxlvl;
+    reismmio::BitField<16, 7, reismmio::Permissions::Read> rxlvl;
     /* Current fill level of TX fifo */
-    reismmio::BitField<8, 7> txlvl;
+    reismmio::BitField<8, 7, reismmio::Permissions::Read> txlvl;
     /* Current fill level of ACQ fifo */
-    reismmio::BitField<24, 7> acqlvl;
+    reismmio::BitField<24, 7, reismmio::Permissions::Read> acqlvl;
     constexpr FifoStatusReg (uintptr_t addr): reg{.addr = addr + 0x24}
     {}
 
@@ -170,11 +170,11 @@ union FifoStatusReg {
 union OvrdReg { 
     reismmio::Register reg;
     /* Override the SDA and SCL TX signals. */
-    reismmio::BitField<0, 1> txovrden;
+    reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> txovrden;
     /* Value for SCL Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-    reismmio::BitField<1, 1> sclval;
+    reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> sclval;
     /* Value for SDA Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
-    reismmio::BitField<2, 1> sdaval;
+    reismmio::BitField<2, 1, reismmio::Permissions::ReadWrite> sdaval;
     constexpr OvrdReg (uintptr_t addr): reg{.addr = addr + 0x58}
     {}
 
@@ -192,9 +192,9 @@ union OvrdReg {
 union ValReg { 
     reismmio::Register reg;
     /* Last 16 oversampled values of SCL. Most recent bit is bit 0, oldest 15. */
-    reismmio::BitField<0, 16> scl_rx;
+    reismmio::BitField<0, 16, reismmio::Permissions::Read> scl_rx;
     /* Last 16 oversampled values of SDA. Most recent bit is bit 16, oldest 31. */
-    reismmio::BitField<16, 16> sda_rx;
+    reismmio::BitField<16, 16, reismmio::Permissions::Read> sda_rx;
     constexpr ValReg (uintptr_t addr): reg{.addr = addr + 0x5c}
     {}
 
@@ -212,9 +212,9 @@ union ValReg {
 union Timing0Reg { 
     reismmio::Register reg;
     /* The actual time to hold SCL high in a given pulse: in host mode, when there is no stretching this value is 3 cycles longer as tracked in issue #18962 */
-    reismmio::BitField<0, 16> thigh;
+    reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> thigh;
     /* The actual time to hold SCL low between any two SCL pulses */
-    reismmio::BitField<16, 16> tlow;
+    reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> tlow;
     constexpr Timing0Reg (uintptr_t addr): reg{.addr = addr + 0x60}
     {}
 
@@ -232,9 +232,9 @@ union Timing0Reg {
 union Timing1Reg { 
     reismmio::Register reg;
     /* The nominal rise time to anticipate for the bus (depends on capacitance) */
-    reismmio::BitField<0, 16> t_r;
+    reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> t_r;
     /* The nominal fall time to anticipate for the bus (influences SDA hold times): this is currently counted twice in host mode as tracked in issue #18958 */
-    reismmio::BitField<16, 16> t_f;
+    reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> t_f;
     constexpr Timing1Reg (uintptr_t addr): reg{.addr = addr + 0x64}
     {}
 
@@ -252,9 +252,9 @@ union Timing1Reg {
 union Timing2Reg { 
     reismmio::Register reg;
     /* Actual setup time for repeated start signals */
-    reismmio::BitField<0, 16> tsu_sta;
+    reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> tsu_sta;
     /* Actual hold time for start signals */
-    reismmio::BitField<16, 16> thd_sta;
+    reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> thd_sta;
     constexpr Timing2Reg (uintptr_t addr): reg{.addr = addr + 0x68}
     {}
 
@@ -272,9 +272,9 @@ union Timing2Reg {
 union Timing3Reg { 
     reismmio::Register reg;
     /* Actual setup time for data (or ack) bits */
-    reismmio::BitField<0, 16> tsu_dat;
+    reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> tsu_dat;
     /* Actual hold time for data (or ack) bits(Note, where required, the parameters TVD_DAT is taken to be THD_DAT+T_F) */
-    reismmio::BitField<16, 16> thd_dat;
+    reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> thd_dat;
     constexpr Timing3Reg (uintptr_t addr): reg{.addr = addr + 0x6c}
     {}
 
@@ -292,9 +292,9 @@ union Timing3Reg {
 union Timing4Reg { 
     reismmio::Register reg;
     /* Actual setup time for stop signals */
-    reismmio::BitField<0, 16> tsu_sto;
+    reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> tsu_sto;
     /* Actual time between each STOP signal and the following START signal */
-    reismmio::BitField<16, 16> t_buf;
+    reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> t_buf;
     constexpr Timing4Reg (uintptr_t addr): reg{.addr = addr + 0x70}
     {}
 
@@ -312,9 +312,9 @@ union Timing4Reg {
 union TimeoutCtrlReg { 
     reismmio::Register reg;
     /* Clock stretching timeout value (in units of input clock frequency) */
-    reismmio::BitField<0, 31> val;
+    reismmio::BitField<0, 31, reismmio::Permissions::ReadWrite> val;
     /* Enable timeout feature */
-    reismmio::BitField<31, 1> en;
+    reismmio::BitField<31, 1, reismmio::Permissions::ReadWrite> en;
     constexpr TimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x74}
     {}
 
@@ -332,13 +332,13 @@ union TimeoutCtrlReg {
 union TargetIdReg { 
     reismmio::Register reg;
     /* I2C target address number 0 */
-    reismmio::BitField<0, 7> address0;
+    reismmio::BitField<0, 7, reismmio::Permissions::ReadWrite> address0;
     /* I2C target mask number 0 */
-    reismmio::BitField<7, 7> mask0;
+    reismmio::BitField<7, 7, reismmio::Permissions::ReadWrite> mask0;
     /* I2C target address number 1 */
-    reismmio::BitField<14, 7> address1;
+    reismmio::BitField<14, 7, reismmio::Permissions::ReadWrite> address1;
     /* I2C target mask number 1 */
-    reismmio::BitField<21, 7> mask1;
+    reismmio::BitField<21, 7, reismmio::Permissions::ReadWrite> mask1;
     constexpr TargetIdReg (uintptr_t addr): reg{.addr = addr + 0x78}
     {}
 
@@ -356,9 +356,9 @@ union TargetIdReg {
 union AcqdataReg { 
     reismmio::Register reg;
     /* Address for accepted transaction or acquired byte */
-    reismmio::BitField<0, 8> abyte;
+    reismmio::BitField<0, 8, reismmio::Permissions::Read> abyte;
     /* Host issued a START before transmitting ABYTE, a STOP or a RESTART after the preceeding ABYTE */
-    reismmio::BitField<8, 2> signal;
+    reismmio::BitField<8, 2, reismmio::Permissions::Read> signal;
     constexpr AcqdataReg (uintptr_t addr): reg{.addr = addr + 0x7c}
     {}
 
@@ -376,7 +376,7 @@ union AcqdataReg {
 union TxdataReg { 
     reismmio::Register reg;
     /* Value */
-    reismmio::BitField<0, 8> value;
+    reismmio::BitField<0, 8, reismmio::Permissions::Write> value;
     constexpr TxdataReg (uintptr_t addr): reg{.addr = addr + 0x80}
     {}
 
@@ -394,7 +394,7 @@ union TxdataReg {
 union HostTimeoutCtrlReg { 
     reismmio::Register reg;
     /* Value */
-    reismmio::BitField<0, 32> value;
+    reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
     constexpr HostTimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x84}
     {}
 
