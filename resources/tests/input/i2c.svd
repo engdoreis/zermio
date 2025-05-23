@@ -499,5 +499,89 @@
 				</register>
 			</registers>
 		</peripheral>
+		<peripheral derivedFrom="I2C0">
+			<name>I2C1</name>
+			<baseAddress>0x80200100</baseAddress>
+			<size>0x20</size>
+		</peripheral>
+    <peripheral>
+      <name>TIMER0</name>
+      <version>1</version>
+      <description>Controls timer</description>
+      <baseAddress>0x80040000</baseAddress>
+      <size>32</size>
+      <addressBlock>
+        <offset>0</offset>
+        <size>0x1000</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <interrupt>
+        <name>TIMER_IRQ_0</name>
+        <value>7</value>
+      </interrupt>
+      <registers>
+        <register>
+          <name>MTIMEL</name>
+          <description>mtime low</description>
+          <addressOffset>0x0000</addressOffset>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>VALUE</name>
+              <description>mtime low</description>
+              <bitRange>[31:0]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MTIMEH</name>
+          <description>mtime high</description>
+          <addressOffset>0x0004</addressOffset>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>VALUE</name>
+              <description>mtime high</description>
+              <bitRange>[31:0]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MTIMECMPL</name>
+          <description>mtime cmp low</description>
+          <addressOffset>0x0008</addressOffset>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>VALUE</name>
+              <description>mtime cmp low</description>
+              <bitRange>[31:0]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MTIMECMPH</name>
+          <description>mtime cmp high</description>
+          <addressOffset>0x000C</addressOffset>
+          <resetValue>0x00000000</resetValue>
+          <fields>
+            <field>
+              <name>VALUE</name>
+              <description>mtime cmp high</description>
+              <bitRange>[31:0]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+		<peripheral derivedFrom="TIMER0">
+			<name>TIMER1</name>
+			<baseAddress>0x80400100</baseAddress>
+			<size>0x20</size>
+		</peripheral>
   </peripherals>
 </device>

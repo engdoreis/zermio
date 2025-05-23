@@ -6,80 +6,104 @@
 
 #include <cstdint>
 #include <limits>
+namespace reismmio {
+  enum Permissions:uint8_t{Read = 0x01, Write = 0x02, ReadWrite=0x03};
 
-template <typename DERIVED>
-struct Mmio {
-  const std::size_t addr;
-  std::size_t cache;
+  template <Permissions P>
+    concept Writable = (P & Permissions::Write) == Permissions::Write;
 
-  constexpr Mmio(std::size_t addr) : addr(addr), cache{0} {}
+  template <Permissions P>
+    concept Readable = (P & Permissions::Read) == Permissions::Read;
 
-  void commit() { *(reinterpret_cast<volatile std::size_t*>(addr)) = cache; }
+  struct Register{
+    const std::size_t addr = 0;
+    std::size_t cache = 0;
 
-  DERIVED& fetch() {
-    cache = *(reinterpret_cast<volatile std::size_t*>(addr));
-    return *static_cast<DERIVED*>(this);
-  }
-
-  DERIVED& operator ()() {return fetch();}
-
-  template <typename BITFIELD, std::size_t OFFSET, std::size_t BITS>
-  class BitField {
-    BITFIELD* const reg;
-
-   public:
-    constexpr BitField(BITFIELD* reg) : reg(reg) {}
-
-    constexpr std::size_t mask() {
-      static_assert(BITS <= sizeof(std::size_t) * 8);
-      if constexpr (BITS == sizeof(std::size_t) * 8) {
-        return std::numeric_limits<std::size_t>::max();
-      }
-      return ((0x01 << BITS) - 1) << OFFSET;
-    }
-
-    // This function only exist if BITS > 1
-    constexpr BITFIELD& write(const std::size_t value)
-      requires(BITS > 1)
-    {
-      clear();
-      reg->cache |= ((value << OFFSET) & mask());
-      return *reg;
-    }
-
-    // This function only exist if BITS == 1
-    constexpr BITFIELD& set()
-      requires(BITS == 1)
-    {
-      reg->cache |= (0x01 << OFFSET);
-      return *reg;
-    }
-
-    // This function only exist if BITS == 1
-    constexpr BITFIELD& reset()
-      requires(BITS == 1)
-    {
-      clear();
-      return *reg;
-    }
-
-    // This function only exist if BITS == 1
-    constexpr bool is_set()
-      requires(BITS == 1)
-    {
-      return (reg->cache & mask()) == mask();
-    }
-
-    // This function only exist if BITS > 1
-    constexpr std::size_t get()
-      requires(BITS > 1)
-    {
-      return (reg->cache & mask()) >> OFFSET;
-    }
-
-    constexpr BITFIELD& clear() {
-      reg->cache &= ~mask();
-      return *reg;
+    inline void commit() { *(reinterpret_cast<volatile std::size_t*>(addr)) = cache; }
+    inline void fetch() {
+      cache = *(reinterpret_cast<volatile std::size_t*>(addr));
     }
   };
+
+  template <std::size_t OFFSET, std::size_t BITS, Permissions P>
+    class BitField {
+      Register reg{0};
+
+      public:
+      static consteval std::size_t mask() {
+        static_assert(BITS <= sizeof(std::size_t) * 8);
+        if constexpr (BITS == sizeof(std::size_t) * 8) {
+          return std::numeric_limits<std::size_t>::max();
+        }
+        return ((0x01 << BITS) - 1) << OFFSET;
+      }
+
+      static consteval std::size_t max() {
+        return (1 << BITS) - 1;
+      }
+
+      inline constexpr auto& write(const std::size_t value) {
+        static_assert(BITS > 1, ">> Error: This bitfield isn't multibit. Try using set or reset. <<");
+        static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
+        clear();
+        reg.cache |= ((value << OFFSET) & mask());
+        return *this;
+      }
+
+      inline constexpr auto& set() {
+        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
+        reg.cache |= (0x01 << OFFSET);
+        return *this;
+      }
+
+      inline constexpr auto& reset() {
+        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
+        clear();
+        return *this;
+      }
+
+      inline constexpr auto& toggle() {
+        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
+        reg.cache ^= (0x01 << OFFSET);
+        return *this;
+      }
+
+      inline constexpr auto& bit_mask(std::size_t value, std::size_t offset) {
+        static_assert(BITS > 1, ">> Error: This bitfield isn't multibit. Try using set or reset. <<");
+        static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
+        reg.cache &= ~((0x01 << (OFFSET+offset)) & mask());
+        reg.cache |= ((value << (OFFSET+offset)) & mask());
+        return *this;
+      }
+
+      inline constexpr auto& bit (bool bit)  {
+        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
+        reg.cache |= (static_cast<std::size_t>(bit) << OFFSET);
+        return *this;
+      }
+
+      inline constexpr bool is_set() { 
+        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(Readable<P>, ">> Error: This bitfield can't be read. <<");
+        return (reg.cache & mask()) == mask();
+      }
+
+      inline constexpr std::size_t get() {
+        static_assert(BITS > 1, ">> Error: This bitfield isn't multibit. Try using set or reset. <<");
+        static_assert(Readable<P>, ">> Error: This bitfield can't be read. <<");
+        return (reg.cache & mask()) >> OFFSET;
+      }
+
+      inline constexpr auto& clear() {
+        static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
+        reg.cache &= ~mask();
+        return *this;
+      }
+
+      inline void commit() { reg.commit(); }
+    };
 };

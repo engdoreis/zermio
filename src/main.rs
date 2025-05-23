@@ -14,7 +14,7 @@ use std::io::BufReader;
 
 #[derive(Subcommand, Debug)]
 enum Input {
-    InportSvd {
+    ImportSvd {
         /// A path to a svd file
         #[arg(long, short, value_parser =  PathBuf::from_str)]
         svd: PathBuf,
@@ -48,7 +48,7 @@ fn main() -> anyhow::Result<(), &'static str> {
     let args: Args = Args::parse();
 
     let (device, output) = match args.input {
-        Input::InportSvd { svd, output } => {
+        Input::ImportSvd { svd, output } => {
             if !svd.exists() {
                 return Err("Svd does not exist!");
             }
