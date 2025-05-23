@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::schema;
 #[derive(Debug, Clone, strum::Display, strum::IntoStaticStr)]
 #[strum(serialize_all = "PascalCase")]
 pub enum Permissions {
@@ -12,7 +13,7 @@ pub enum Permissions {
 
 impl From<&str> for Permissions {
     fn from(s: &str) -> Self {
-        match &s[..] {
+        match s {
             "read-only" => Self::Read,
             "write-only" => Self::Write,
             "read-write" => Self::ReadWrite,
@@ -39,42 +40,41 @@ pub struct Register<'a> {
     pub name: &'a str,
     pub desc: &'a str,
     pub offset: String,
-    pub bitfields: Vec<Bitfields<'a>>,
+    pub bitfields: Vec<Bitfield>,
 }
 
 impl<'a> Register<'a> {
-    pub fn new(name: &'a str, offset: u32, desc: Option<&'a str>) -> Self {
+    pub fn new(
+        name: &'a str,
+        offset: u32,
+        desc: Option<&'a str>,
+        bitfields: Vec<Bitfield>,
+    ) -> Self {
         Self {
             name,
             desc: desc.unwrap_or(name),
             offset: format!("{:#x}", offset),
-            bitfields: vec![],
+            bitfields,
         }
     }
 }
 
-pub struct Bitfields<'a> {
-    pub name: &'a str,
-    pub desc: &'a str,
+pub struct Bitfield {
+    pub name: String,
+    pub desc: String,
     pub bit_size: u32,
     pub offset: u32,
     pub permissions: Permissions,
 }
 
-impl<'a> Bitfields<'a> {
-    pub fn new(
-        name: &'a str,
-        offset: u32,
-        bit_size: u32,
-        permissions: Permissions,
-        desc: Option<&'a str>,
-    ) -> Self {
+impl From<&schema::Field> for Bitfield {
+    fn from(reg: &schema::Field) -> Self {
         Self {
-            name,
-            offset,
-            bit_size,
-            permissions,
-            desc: desc.unwrap_or(name),
+            name: reg.name.clone(),
+            offset: reg.bit_range.offset as u32,
+            bit_size: reg.bit_range.size as u32,
+            permissions: reg.access.clone(),
+            desc: reg.description.clone(),
         }
     }
 }
@@ -113,9 +113,15 @@ impl Platform {
             found.devices.push(new_device);
         } else {
             self.device_types.push(DeviceTypes {
-                type_name: type_name,
+                type_name,
                 devices: vec![new_device],
             });
         }
+    }
+}
+
+impl Default for Platform {
+    fn default() -> Self {
+        Self::new()
     }
 }
