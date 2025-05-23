@@ -127,7 +127,7 @@ union {{ data.name|pascal_case }}Reg {
             let device_name = device_iter.name.replace(" ", "_").to_uppercase();
             // i.e UART
             let device_type =
-                device_type(&device_iter.derived_from.as_ref().unwrap_or(&device_name));
+                device_type(device_iter.derived_from.as_ref().unwrap_or(&device_name));
 
             platform.add(device_type.clone(), device_name.clone(), device_addr);
 
@@ -149,20 +149,20 @@ union {{ data.name|pascal_case }}Reg {
             for register_iter in &registers.register {
                 device.registers.push(&register_iter.name);
 
-                let mut register = mmio::Register::new(
+                let bitfields: Vec<mmio::Bitfield> = register_iter
+                    .fields
+                    .field
+                    .iter()
+                    .map(mmio::Bitfield::from)
+                    .collect::<Vec<_>>();
+
+                let register = mmio::Register::new(
                     &register_iter.name,
                     register_iter.address_offset as u32,
                     Some(&register_iter.description),
+                    bitfields,
                 );
-                for register_field in &register_iter.fields.field {
-                    register.bitfields.push(mmio::Bitfields::new(
-                        &register_field.name,
-                        register_field.bit_range.offset as u32,
-                        register_field.bit_range.size as u32,
-                        register_field.access.clone(),
-                        Some(&register_field.description),
-                    ));
-                }
+
                 writeln!(
                     device_handler,
                     "{}",
