@@ -34,8 +34,9 @@ namespace reismmio {
         static_assert(BITS <= sizeof(std::size_t) * 8);
         if constexpr (BITS == sizeof(std::size_t) * 8) {
           return std::numeric_limits<std::size_t>::max();
+        } else {
+          return ((0x01 << BITS) - 1) << OFFSET;
         }
-        return ((0x01 << BITS) - 1) << OFFSET;
       }
 
       static consteval std::size_t max() {
