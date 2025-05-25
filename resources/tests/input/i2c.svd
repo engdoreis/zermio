@@ -35,6 +35,10 @@
 				<name>Event IRQ</name>
 				<value>2</value>
 			</interrupt>
+			<interrupt>
+				<name>Error IRQ</name>
+				<value>3</value>
+			</interrupt>
 			<addressBlock>
 				<offset>0x0</offset>
 				<size>0x1000</size>
