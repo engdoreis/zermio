@@ -11,9 +11,12 @@ namespace reismmio {
 
   template <Permissions P>
     concept Writable = (P & Permissions::Write) == Permissions::Write;
+  static_assert(Writable<Write> && Writable<ReadWrite> && !Writable<Read>);
 
   template <Permissions P>
     concept Readable = (P & Permissions::Read) == Permissions::Read;
+  static_assert(Readable<Read> && Readable<ReadWrite> && !Readable<Write>);
+
 
   struct Register{
     const std::size_t addr = 0;
@@ -34,8 +37,9 @@ namespace reismmio {
         static_assert(BITS <= sizeof(std::size_t) * 8);
         if constexpr (BITS == sizeof(std::size_t) * 8) {
           return std::numeric_limits<std::size_t>::max();
+        } else {
+          return ((0x01 << BITS) - 1) << OFFSET;
         }
-        return ((0x01 << BITS) - 1) << OFFSET;
       }
 
       static consteval std::size_t max() {
@@ -43,7 +47,7 @@ namespace reismmio {
       }
 
       inline constexpr auto& write(const std::size_t value) {
-        static_assert(BITS > 1, ">> Error: This bitfield isn't multibit. Try using set or reset. <<");
+        static_assert(BITS > 1, ">> Error: This bitfield is multibit. Try using set or reset. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
         clear();
         reg.cache |= ((value << OFFSET) & mask());
@@ -51,28 +55,28 @@ namespace reismmio {
       }
 
       inline constexpr auto& set() {
-        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(BITS == 1, ">> Error: This bitfield isn't multibit. Try using write or clear. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
         reg.cache |= (0x01 << OFFSET);
         return *this;
       }
 
       inline constexpr auto& reset() {
-        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(BITS == 1, ">> Error: This bitfield isn't multibit. Try using write or clear. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
         clear();
         return *this;
       }
 
       inline constexpr auto& toggle() {
-        static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
+        static_assert(BITS == 1, ">> Error: This bitfield isn't multibit. Try using write or clear. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
         reg.cache ^= (0x01 << OFFSET);
         return *this;
       }
 
       inline constexpr auto& bit_mask(std::size_t value, std::size_t offset) {
-        static_assert(BITS > 1, ">> Error: This bitfield isn't multibit. Try using set or reset. <<");
+        static_assert(BITS > 1, ">> Error: This bitfield is multibit. Try using set or reset. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
         reg.cache &= ~((0x01 << (OFFSET+offset)) & mask());
         reg.cache |= ((value << (OFFSET+offset)) & mask());
@@ -93,7 +97,7 @@ namespace reismmio {
       }
 
       inline constexpr std::size_t get() {
-        static_assert(BITS > 1, ">> Error: This bitfield isn't multibit. Try using set or reset. <<");
+        static_assert(BITS > 1, ">> Error: This bitfield is multibit. Try using set or reset. <<");
         static_assert(Readable<P>, ">> Error: This bitfield can't be read. <<");
         return (reg.cache & mask()) >> OFFSET;
       }

@@ -6,7 +6,7 @@
 pub fn pascal_case<T: std::fmt::Display>(s: T, _: &dyn askama::Values) -> askama::Result<String> {
     let s = s.to_string();
     let result = s
-        .split('_')
+        .split(['_', ' '])
         .filter(|part| !part.is_empty())
         .map(|word| {
             let mut chars = word.chars();
