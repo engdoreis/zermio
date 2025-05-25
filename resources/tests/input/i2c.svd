@@ -32,8 +32,8 @@
 			<baseAddress>0x80200000</baseAddress>
 			<size>0x20</size>
 			<interrupt>
-				<name>I2C0 IRQ</name>
-				<value>7</value>
+				<name>Event IRQ</name>
+				<value>2</value>
 			</interrupt>
 			<addressBlock>
 				<offset>0x0</offset>
@@ -503,6 +503,10 @@
 			<name>I2C1</name>
 			<baseAddress>0x80200100</baseAddress>
 			<size>0x20</size>
+			<interrupt>
+				<name>Event IRQ</name>
+				<value>3</value>
+			</interrupt>
 		</peripheral>
     <peripheral>
       <name>TIMER0</name>
@@ -516,8 +520,8 @@
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
-        <name>TIMER_IRQ_0</name>
-        <value>7</value>
+        <name>Finish IRQ</name>
+        <value>10</value>
       </interrupt>
       <registers>
         <register>
@@ -581,7 +585,11 @@
 		<peripheral derivedFrom="TIMER0">
 			<name>TIMER1</name>
 			<baseAddress>0x80400100</baseAddress>
-			<size>0x20</size>
+			<size>0x11</size>
+			<interrupt>
+				<name>Finish IRQ</name>
+				<value>10</value>
+			</interrupt>
 		</peripheral>
   </peripherals>
 </device>

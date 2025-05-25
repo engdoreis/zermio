@@ -91,16 +91,18 @@ pub struct DeviceTypes {
 
 pub struct Platform {
     pub device_types: Vec<DeviceTypes>,
+    pub interrupts: Vec<schema::Interrupt>,
 }
 
 impl Platform {
     pub fn new() -> Self {
         Self {
             device_types: Vec::new(),
+            interrupts: Vec::new(),
         }
     }
 
-    pub fn add(&mut self, type_name: String, device_name: String, address: u64) {
+    pub fn add_register(&mut self, type_name: String, device_name: String, address: u64) {
         let new_device = DeviceAddr {
             name: device_name,
             address: format!("{:#x}", address),
@@ -117,6 +119,10 @@ impl Platform {
                 devices: vec![new_device],
             });
         }
+    }
+
+    pub fn add_interrupt(&mut self, interrupt: schema::Interrupt) {
+        self.interrupts.push(interrupt);
     }
 }
 

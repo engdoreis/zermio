@@ -43,6 +43,12 @@ namespace platform  {
     };
 
 {% endfor -%}
+
+enum Interrupt: uintptr_t{ 
+    {%- for interrupt in data.interrupts -%}
+        {{ interrupt.name|pascal_case }} = {{interrupt.value}},
+    {%- endfor -%}
+};
 } // namespace platform
 "
     )]
@@ -129,7 +135,13 @@ union {{ data.name|pascal_case }}Reg {
             let device_type =
                 device_type(device_iter.derived_from.as_ref().unwrap_or(&device_name));
 
-            platform.add(device_type.clone(), device_name.clone(), device_addr);
+            platform.add_register(device_type.clone(), device_name.clone(), device_addr);
+
+            if let Some(interrupt) = &device_iter.interrupt {
+                let mut interrupt = interrupt.clone();
+                interrupt.name = format!("{}_{}", device_name, interrupt.name);
+                platform.add_interrupt(interrupt);
+            };
 
             let Some(registers) = &device_iter.registers.as_ref() else {
                 continue;
