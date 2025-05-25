@@ -49,7 +49,8 @@ pub struct Peripheral {
     #[serde(deserialize_with = "from_hex_string", default)]
     pub size: u64,
     pub address_block: Option<AddressBlock>,
-    pub interrupt: Option<Interrupt>,
+    #[serde(default)]
+    pub interrupt: Vec<Interrupt>,
     pub registers: Option<Registers>,
     #[serde(rename = "@derivedFrom")]
     pub derived_from: Option<String>,

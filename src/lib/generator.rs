@@ -46,7 +46,7 @@ namespace platform  {
 
 enum Interrupt: uintptr_t{ 
     {%- for interrupt in data.interrupts -%}
-        {{ interrupt.name|pascal_case }} = {{interrupt.value}},
+        {{ interrupt.name|pascal_case }} = {{interrupt.value}}, 
     {%- endfor -%}
 };
 } // namespace platform
@@ -137,17 +137,17 @@ union {{ data.name|pascal_case }}Reg {
 
             platform.add_register(device_type.clone(), device_name.clone(), device_addr);
 
-            if let Some(interrupt) = &device_iter.interrupt {
+            for interrupt in &device_iter.interrupt {
                 let mut interrupt = interrupt.clone();
                 interrupt.name = format!("{}_{}", device_name, interrupt.name);
                 platform.add_interrupt(interrupt);
-            };
+            }
 
             let Some(registers) = &device_iter.registers.as_ref() else {
                 continue;
             };
 
-            let (device_header, mut device_handler) = get_path(&out_dir, &device_type)?;
+            let (device_fd, mut device_handler) = get_path(&out_dir, &device_type)?;
 
             write_device_header_top(&mut device_handler)?;
 
@@ -191,7 +191,7 @@ union {{ data.name|pascal_case }}Reg {
                 "}} // namespace {}\n}} // namespace mmio",
                 device_type.to_lowercase()
             )?;
-            println!("{} generated", device_header.display());
+            println!("{} generated", device_fd.display());
         }
 
         let (platform_fname, mut platform_fd) = get_path(
