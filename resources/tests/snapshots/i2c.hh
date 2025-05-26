@@ -12,20 +12,22 @@ namespace i2c {
 
 /* I2C Control Register */
 union CtrlReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Enable Host I2C functionality */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> enablehost;
     /* Enable Target I2C functionality */
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> enabletarget;
     /* Enable I2C line loopback testIf line loopback is enabled, the internal design sees ACQ and RX data as "1" */
     reismmio::BitField<2, 1, reismmio::Permissions::ReadWrite> llpbk;
-    constexpr CtrlReg (uintptr_t addr): reg{.addr = addr + 0x10}
+    constexpr CtrlReg (uintptr_t addr): reg_{.addr = addr + 0x10}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline CtrlReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -34,7 +36,9 @@ union CtrlReg {
 
 /* I2C Live Status Register */
 union StatusReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* FMT FIFO is full */
     reismmio::BitField<0, 1, reismmio::Permissions::Read> fmtfull;
     /* RX FIFO is full */
@@ -55,13 +59,13 @@ union StatusReg {
     reismmio::BitField<8, 1, reismmio::Permissions::Read> txempty;
     /* ACQ FIFO is empty */
     reismmio::BitField<9, 1, reismmio::Permissions::Read> acqempty;
-    constexpr StatusReg (uintptr_t addr): reg{.addr = addr + 0x14}
+    constexpr StatusReg (uintptr_t addr): reg_{.addr = addr + 0x14}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline StatusReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -70,16 +74,18 @@ union StatusReg {
 
 /* I2C Read Data */
 union RdataReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Value */
     reismmio::BitField<0, 8, reismmio::Permissions::Read> value;
-    constexpr RdataReg (uintptr_t addr): reg{.addr = addr + 0x18}
+    constexpr RdataReg (uintptr_t addr): reg_{.addr = addr + 0x18}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline RdataReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -88,7 +94,9 @@ union RdataReg {
 
 /* I2C Format Data */
 union FdataReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Format Byte. Directly transmitted if no flags are set. */
     reismmio::BitField<0, 8, reismmio::Permissions::Write> fbyte;
     /* Issue a START condition before transmitting BYTE. */
@@ -101,13 +109,13 @@ union FdataReg {
     reismmio::BitField<11, 1, reismmio::Permissions::Write> rcont;
     /* Do not signal an exception if the current byte is not ACK'd */
     reismmio::BitField<12, 1, reismmio::Permissions::Write> nakok;
-    constexpr FdataReg (uintptr_t addr): reg{.addr = addr + 0x1c}
+    constexpr FdataReg (uintptr_t addr): reg_{.addr = addr + 0x1c}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline FdataReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -116,7 +124,9 @@ union FdataReg {
 
 /* I2C FIFO control register */
 union FifoCtrlReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* RX fifo reset. Write 1 to the register resets RX_FIFO. Read returns 0 */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> rxrst;
     /* FMT fifo reset. Write 1 to the register resets FMT_FIFO. Read returns 0 */
@@ -129,13 +139,13 @@ union FifoCtrlReg {
     reismmio::BitField<7, 1, reismmio::Permissions::ReadWrite> acqrst;
     /* TX FIFO reset. Write 1 to the register resets it. Read returns 0 */
     reismmio::BitField<8, 1, reismmio::Permissions::ReadWrite> txrst;
-    constexpr FifoCtrlReg (uintptr_t addr): reg{.addr = addr + 0x20}
+    constexpr FifoCtrlReg (uintptr_t addr): reg_{.addr = addr + 0x20}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline FifoCtrlReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -144,7 +154,9 @@ union FifoCtrlReg {
 
 /* I2C FIFO status register */
 union FifoStatusReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Current fill level of FMT fifo */
     reismmio::BitField<0, 7, reismmio::Permissions::Read> fmtlvl;
     /* Current fill level of RX fifo */
@@ -153,13 +165,13 @@ union FifoStatusReg {
     reismmio::BitField<8, 7, reismmio::Permissions::Read> txlvl;
     /* Current fill level of ACQ fifo */
     reismmio::BitField<24, 7, reismmio::Permissions::Read> acqlvl;
-    constexpr FifoStatusReg (uintptr_t addr): reg{.addr = addr + 0x24}
+    constexpr FifoStatusReg (uintptr_t addr): reg_{.addr = addr + 0x24}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline FifoStatusReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -168,20 +180,22 @@ union FifoStatusReg {
 
 /* I2C Override Control Register */
 union OvrdReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Override the SDA and SCL TX signals. */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> txovrden;
     /* Value for SCL Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> sclval;
     /* Value for SDA Override. Set to 0 to drive TX Low, and set to 1 for high-Z */
     reismmio::BitField<2, 1, reismmio::Permissions::ReadWrite> sdaval;
-    constexpr OvrdReg (uintptr_t addr): reg{.addr = addr + 0x58}
+    constexpr OvrdReg (uintptr_t addr): reg_{.addr = addr + 0x58}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline OvrdReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -190,18 +204,20 @@ union OvrdReg {
 
 /* Oversampled RX values */
 union ValReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Last 16 oversampled values of SCL. Most recent bit is bit 0, oldest 15. */
     reismmio::BitField<0, 16, reismmio::Permissions::Read> scl_rx;
     /* Last 16 oversampled values of SDA. Most recent bit is bit 16, oldest 31. */
     reismmio::BitField<16, 16, reismmio::Permissions::Read> sda_rx;
-    constexpr ValReg (uintptr_t addr): reg{.addr = addr + 0x5c}
+    constexpr ValReg (uintptr_t addr): reg_{.addr = addr + 0x5c}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline ValReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -210,18 +226,20 @@ union ValReg {
 
 /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly. */
 union Timing0Reg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* The actual time to hold SCL high in a given pulse: in host mode, when there is no stretching this value is 3 cycles longer as tracked in issue #18962 */
     reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> thigh;
     /* The actual time to hold SCL low between any two SCL pulses */
     reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> tlow;
-    constexpr Timing0Reg (uintptr_t addr): reg{.addr = addr + 0x60}
+    constexpr Timing0Reg (uintptr_t addr): reg_{.addr = addr + 0x60}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline Timing0Reg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -230,18 +248,20 @@ union Timing0Reg {
 
 /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
 union Timing1Reg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* The nominal rise time to anticipate for the bus (depends on capacitance) */
     reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> t_r;
     /* The nominal fall time to anticipate for the bus (influences SDA hold times): this is currently counted twice in host mode as tracked in issue #18958 */
     reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> t_f;
-    constexpr Timing1Reg (uintptr_t addr): reg{.addr = addr + 0x64}
+    constexpr Timing1Reg (uintptr_t addr): reg_{.addr = addr + 0x64}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline Timing1Reg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -250,18 +270,20 @@ union Timing1Reg {
 
 /* Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period. */
 union Timing2Reg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Actual setup time for repeated start signals */
     reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> tsu_sta;
     /* Actual hold time for start signals */
     reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> thd_sta;
-    constexpr Timing2Reg (uintptr_t addr): reg{.addr = addr + 0x68}
+    constexpr Timing2Reg (uintptr_t addr): reg_{.addr = addr + 0x68}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline Timing2Reg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -270,18 +292,20 @@ union Timing2Reg {
 
 /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
 union Timing3Reg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Actual setup time for data (or ack) bits */
     reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> tsu_dat;
     /* Actual hold time for data (or ack) bits(Note, where required, the parameters TVD_DAT is taken to be THD_DAT+T_F) */
     reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> thd_dat;
-    constexpr Timing3Reg (uintptr_t addr): reg{.addr = addr + 0x6c}
+    constexpr Timing3Reg (uintptr_t addr): reg_{.addr = addr + 0x6c}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline Timing3Reg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -290,18 +314,20 @@ union Timing3Reg {
 
 /* Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period. */
 union Timing4Reg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Actual setup time for stop signals */
     reismmio::BitField<0, 16, reismmio::Permissions::ReadWrite> tsu_sto;
     /* Actual time between each STOP signal and the following START signal */
     reismmio::BitField<16, 16, reismmio::Permissions::ReadWrite> t_buf;
-    constexpr Timing4Reg (uintptr_t addr): reg{.addr = addr + 0x70}
+    constexpr Timing4Reg (uintptr_t addr): reg_{.addr = addr + 0x70}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline Timing4Reg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -310,18 +336,20 @@ union Timing4Reg {
 
 /* I2C clock stretching timeout control */
 union TimeoutCtrlReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Clock stretching timeout value (in units of input clock frequency) */
     reismmio::BitField<0, 31, reismmio::Permissions::ReadWrite> val;
     /* Enable timeout feature */
     reismmio::BitField<31, 1, reismmio::Permissions::ReadWrite> en;
-    constexpr TimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x74}
+    constexpr TimeoutCtrlReg (uintptr_t addr): reg_{.addr = addr + 0x74}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline TimeoutCtrlReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -330,7 +358,9 @@ union TimeoutCtrlReg {
 
 /* I2C target address and mask pairs */
 union TargetIdReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* I2C target address number 0 */
     reismmio::BitField<0, 7, reismmio::Permissions::ReadWrite> address0;
     /* I2C target mask number 0 */
@@ -339,13 +369,13 @@ union TargetIdReg {
     reismmio::BitField<14, 7, reismmio::Permissions::ReadWrite> address1;
     /* I2C target mask number 1 */
     reismmio::BitField<21, 7, reismmio::Permissions::ReadWrite> mask1;
-    constexpr TargetIdReg (uintptr_t addr): reg{.addr = addr + 0x78}
+    constexpr TargetIdReg (uintptr_t addr): reg_{.addr = addr + 0x78}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline TargetIdReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -354,18 +384,20 @@ union TargetIdReg {
 
 /* I2C target acquired data */
 union AcqdataReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Address for accepted transaction or acquired byte */
     reismmio::BitField<0, 8, reismmio::Permissions::Read> abyte;
     /* Host issued a START before transmitting ABYTE, a STOP or a RESTART after the preceeding ABYTE */
     reismmio::BitField<8, 2, reismmio::Permissions::Read> signal;
-    constexpr AcqdataReg (uintptr_t addr): reg{.addr = addr + 0x7c}
+    constexpr AcqdataReg (uintptr_t addr): reg_{.addr = addr + 0x7c}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline AcqdataReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -374,16 +406,18 @@ union AcqdataReg {
 
 /* I2C target transmit data */
 union TxdataReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Value */
     reismmio::BitField<0, 8, reismmio::Permissions::Write> value;
-    constexpr TxdataReg (uintptr_t addr): reg{.addr = addr + 0x80}
+    constexpr TxdataReg (uintptr_t addr): reg_{.addr = addr + 0x80}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline TxdataReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
@@ -392,16 +426,18 @@ union TxdataReg {
 
 /* I2C host clock generation timeout value (in units of input clock frequency) */
 union HostTimeoutCtrlReg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     /* Value */
     reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
-    constexpr HostTimeoutCtrlReg (uintptr_t addr): reg{.addr = addr + 0x84}
+    constexpr HostTimeoutCtrlReg (uintptr_t addr): reg_{.addr = addr + 0x84}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline HostTimeoutCtrlReg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
