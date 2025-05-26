@@ -85,19 +85,21 @@ struct {{ data.name|pascal_case }} {
         source = "
 /* {{ data.desc }} */
 union {{ data.name|pascal_case }}Reg { 
-    reismmio::Register reg;
+    private:
+      reismmio::Register reg_;
+    public:
     {% for bitfield in data.bitfields -%}
     /* {{ bitfield.desc }} */
     reismmio::BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}, reismmio::Permissions::{{ bitfield.permissions }}> {{ bitfield.name|lower }};
     {% endfor -%}
     
-    constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): reg{.addr = addr + {{ data.offset }}}
+    constexpr {{ data.name|pascal_case }}Reg (uintptr_t addr): reg_{.addr = addr + {{ data.offset }}}
     {}
 
-    inline void commit() { reg.commit(); }
+    inline void commit() { reg_.commit(); }
 
     inline {{ data.name|pascal_case }}Reg& fetch() {
-        reg.fetch();
+        reg_.fetch();
         return *this;
     }
 };
