@@ -9,7 +9,6 @@ use std::path::PathBuf;
 
 use crate::filters;
 use crate::mmio;
-use crate::schema;
 
 use regex::Regex;
 
@@ -107,11 +106,11 @@ union {{ data.name|pascal_case }}Reg {
 "
     )]
     pub struct Register<'a> {
-        pub data: &'a mmio::Register<'a>,
+        pub data: &'a mmio::Register,
     }
 
     pub fn generate(
-        soc: &schema::Device,
+        soc: &svd_rs::device::Device,
         out_dir: PathBuf,
         addr_dir: PathBuf,
     ) -> anyhow::Result<()> {
@@ -128,7 +127,11 @@ union {{ data.name|pascal_case }}Reg {
         // Store all the device addresses which will be rendered later in a single header under
         // a enum.
         let mut platform = mmio::Platform::new();
-        for device_iter in &soc.peripherals.peripheral {
+        for maybe_device in &soc.peripherals {
+            let device_iter = match maybe_device {
+                svd_rs::peripheral::Peripheral::Single(peripheral) => peripheral,
+                _ => panic!("Not supported"),
+            };
             // i.e 0x8000_0000
             let device_addr = device_iter.base_address;
             // i.e UART0
@@ -140,12 +143,12 @@ union {{ data.name|pascal_case }}Reg {
             platform.add_register(device_type.clone(), device_name.clone(), device_addr);
 
             for interrupt in &device_iter.interrupt {
-                let mut interrupt = interrupt.clone();
+                let mut interrupt: mmio::Interrupt = interrupt.into();
                 interrupt.name = format!("{}_{}", device_name, interrupt.name);
                 platform.add_interrupt(interrupt);
             }
 
-            let Some(registers) = &device_iter.registers.as_ref() else {
+            let Some(ref registers) = device_iter.registers else {
                 continue;
             };
 
@@ -160,20 +163,49 @@ union {{ data.name|pascal_case }}Reg {
             )?;
 
             let mut device = mmio::Device::new(&device_type);
-            for register_iter in &registers.register {
+            for register_cluster in registers {
+                let register = match register_cluster {
+                    svd_rs::registercluster::RegisterCluster::Register(register) => register,
+                    svd_rs::registercluster::RegisterCluster::Cluster(_) => {
+                        panic!(
+                            "Register cluster not supported in peripheral {}",
+                            device_name
+                        )
+                    }
+                };
+
+                let register_iter = match register {
+                    svd_rs::register::Register::Single(info) => info,
+                    svd_rs::register::Register::Array(_, _) => {
+                        panic!("Register Array not supported in peripheral {}", device_name)
+                    }
+                };
+
                 device.registers.push(&register_iter.name);
 
-                let bitfields: Vec<mmio::Bitfield> = register_iter
-                    .fields
-                    .field
-                    .iter()
-                    .map(mmio::Bitfield::from)
-                    .collect::<Vec<_>>();
+                let bitfields = if let Some(ref bitfields) = register_iter.fields {
+                    bitfields
+                        .iter()
+                        .map(|field| {
+                            mmio::Bitfield::from(match field {
+                                svd_rs::field::Field::Single(info) => info,
+                                svd_rs::field::Field::Array(_, _) => {
+                                    panic!(
+                                        "Field Array not supported in peripheral {}::{}",
+                                        device_name, register_iter.name
+                                    )
+                                }
+                            })
+                        })
+                        .collect::<Vec<mmio::Bitfield>>()
+                } else {
+                    vec![mmio::Bitfield::default()]
+                };
 
                 let register = mmio::Register::new(
-                    &register_iter.name,
+                    register_iter.name.clone(),
                     register_iter.address_offset as u32,
-                    Some(&register_iter.description),
+                    register_iter.description.clone(),
                     bitfields,
                 );
 

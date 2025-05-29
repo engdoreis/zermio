@@ -8,10 +8,6 @@ use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use quick_xml::de::from_reader;
-use std::fs::File;
-use std::io::BufReader;
-
 #[derive(Subcommand, Debug)]
 enum Input {
     ImportSvd {
@@ -52,10 +48,10 @@ fn main() -> anyhow::Result<(), &'static str> {
             if !svd.exists() {
                 return Err("Svd does not exist!");
             }
+
             println!("Loading the {}...", svd.display());
-            let file = File::open(svd).unwrap();
-            let reader = BufReader::new(file);
-            (from_reader(reader).unwrap(), output)
+            let xml = std::fs::read_to_string(&svd).unwrap();
+            (svd_parser::parse(&xml).unwrap(), output)
         }
     };
 
