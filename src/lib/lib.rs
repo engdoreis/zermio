@@ -21,7 +21,7 @@ mod libtest {
         let _ = std::fs::create_dir(&output_dir);
 
         let xml = std::fs::read_to_string(&svd).unwrap();
-        let device = svd_parser::parse(&xml).unwrap();
+        let device = svd_parser::parse(&xml).unwrap().try_into().unwrap();
 
         generator::cpp::generate(&device, output_dir.clone(), output_dir.clone()).unwrap();
 
