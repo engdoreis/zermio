@@ -40,29 +40,30 @@ struct Args {
     input: Input,
 }
 
-fn main() -> anyhow::Result<(), &'static str> {
+fn main() -> anyhow::Result<(), String> {
     let args: Args = Args::parse();
 
     let (device, output) = match args.input {
         Input::ImportSvd { svd, output } => {
             if !svd.exists() {
-                return Err("Svd does not exist!");
+                return Err("Svd does not exist!".to_string());
             }
 
             println!("Loading the {}...", svd.display());
             let xml = std::fs::read_to_string(&svd).unwrap();
-            (svd_parser::parse(&xml).unwrap(), output)
+            let svd_rs = svd_parser::parse(&xml).unwrap().try_into()?;
+            (svd_rs, output)
         }
     };
 
     match output {
         Output::ExportCpp { dir, periph_dir } => {
             if !dir.is_dir() {
-                return Err("Output path is not a dir!");
+                return Err("Output path is not a dir!".to_string());
             }
             let periph_dir = periph_dir.unwrap_or(dir.clone());
             if !periph_dir.is_dir() {
-                return Err("Addresses path is not a dir!");
+                return Err("Addresses path is not a dir!".to_string());
             }
 
             generator::cpp::generate(&device, dir, periph_dir).unwrap();
