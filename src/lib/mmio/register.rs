@@ -95,14 +95,8 @@ impl Register {
     }
 }
 
-impl TryFrom<&register::Register> for Register {
-    type Error = String;
-    fn try_from(register: &register::Register) -> Result<Self, Self::Error> {
-        let (register, dim) = match register {
-            register::Register::Single(info) => (info, None),
-            register::Register::Array(info, dim) => (info, Some(dim)),
-        };
-
+impl From<&register::RegisterInfo> for Register {
+    fn from(register: &register::RegisterInfo) -> Self {
         let bitfields = if let Some(ref bitfields) = register.fields {
             bitfields
                 .iter()
@@ -116,37 +110,45 @@ impl TryFrom<&register::Register> for Register {
             vec![Bitfield::default()]
         };
 
-        let mut register = Self::new(
+        Self::new(
             register.name.clone(),
             register.address_offset as u32,
             register.description.clone(),
             bitfields,
-        );
+        )
+    }
+}
 
-        if let Some(dim) = dim {
-            // TODO: repeated code.
-            let index = dim
-                .dim_index
-                .clone()
-                .unwrap_or((0..dim.dim).map(|n| n.to_string()).collect::<Vec<_>>());
-            let mut indexes = index.iter();
-            let index = indexes.next().unwrap();
-            let type_name = dim
-                .dim_name
-                .clone()
-                .unwrap_or(register.info[0].name.clone());
-            register.info[0].name = super::device_cluster_name(&type_name, &index, "");
-            let mut offset = dim.dim_increment + register.info[0].offset;
-            for index in indexes {
-                let name = super::device_cluster_name(&type_name, &index, "");
-                register.info.push(RegisterInfo::new(
-                    name,
-                    Some(type_name.clone()),
-                    None,
-                    offset,
-                ));
-                offset += dim.dim_increment;
-            }
+impl TryFrom<&register::Register> for Register {
+    type Error = String;
+    fn try_from(register: &register::Register) -> Result<Self, Self::Error> {
+        let (mut register, dim): (Self, _) = match register {
+            register::Register::Single(info) => return Ok(info.into()),
+            register::Register::Array(info, dim) => (info.into(), dim),
+        };
+
+        // TODO: repeated code.
+        let index = dim
+            .dim_index
+            .clone()
+            .unwrap_or((0..dim.dim).map(|n| n.to_string()).collect::<Vec<_>>());
+        let mut indexes = index.iter();
+        let index = indexes.next().unwrap();
+        let type_name = dim
+            .dim_name
+            .clone()
+            .unwrap_or(register.info[0].name.clone());
+        register.info[0].name = super::device_cluster_name(&type_name, &index, "");
+        let mut offset = dim.dim_increment + register.info[0].offset;
+        for index in indexes {
+            let name = super::device_cluster_name(&type_name, &index, "");
+            register.info.push(RegisterInfo::new(
+                name,
+                Some(type_name.clone()),
+                None,
+                offset,
+            ));
+            offset += dim.dim_increment;
         }
         Ok(register)
     }
