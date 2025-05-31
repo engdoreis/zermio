@@ -140,7 +140,7 @@ union {{ register.info[0].type_|pascal_case }}Reg {
                     }
                     .render()
                     .unwrap()
-                    .replace(",\n\n",",\n")
+                    .replace(",\n\n", ",\n")
                 )?;
             }
             writeln!(
@@ -151,7 +151,7 @@ union {{ register.info[0].type_|pascal_case }}Reg {
                 }
                 .render()
                 .unwrap()
-                .replace(",\n\n",",\n")
+                .replace(",\n\n", ",\n")
             )?;
             writeln!(
                 device_handler,

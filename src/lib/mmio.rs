@@ -139,11 +139,9 @@ impl Register {
 impl TryFrom<&svd_rs::register::Register> for Register {
     type Error = String;
     fn try_from(register: &svd_rs::register::Register) -> Result<Self, Self::Error> {
-        let register = match register {
-            svd_rs::register::Register::Single(info) => info,
-            svd_rs::register::Register::Array(_, _) => {
-                return Err("Register Array not supported".to_string());
-            }
+        let (register, dim) = match register {
+            svd_rs::register::Register::Single(info) => (info, None),
+            svd_rs::register::Register::Array(info, dim) => (info, Some(dim)),
         };
 
         let bitfields = if let Some(ref bitfields) = register.fields {
@@ -159,12 +157,39 @@ impl TryFrom<&svd_rs::register::Register> for Register {
             vec![Bitfield::default()]
         };
 
-        Ok(Self::new(
+        let mut register = Self::new(
             register.name.clone(),
             register.address_offset as u32,
             register.description.clone(),
             bitfields,
-        ))
+        );
+
+        if let Some(dim) = dim {
+            // TODO: repeated code.
+            let index = dim
+                .dim_index
+                .clone()
+                .unwrap_or((0..dim.dim).map(|n| n.to_string()).collect::<Vec<_>>());
+            let mut indexes = index.iter();
+            let index = indexes.next().unwrap();
+            let type_name = dim
+                .dim_name
+                .clone()
+                .unwrap_or(register.info[0].name.clone());
+            register.info[0].name = device_cluster_name(&type_name, &index, "");
+            let mut offset = dim.dim_increment + register.info[0].offset;
+            for index in indexes {
+                let name = device_cluster_name(&type_name, &index, "");
+                register.info.push(RegisterInfo::new(
+                    name,
+                    Some(type_name.clone()),
+                    None,
+                    offset,
+                ));
+                offset += dim.dim_increment;
+            }
+        }
+        Ok(register)
     }
 }
 
