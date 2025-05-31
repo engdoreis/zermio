@@ -2,10 +2,17 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
+static WIDTH: u32 = 32;
 pub fn device_type(s: &str) -> String {
     let re = regex::Regex::new(r"\d+$").unwrap();
     // Remove trailing digits
     re.replace(s, "").to_string().to_lowercase()
+}
+
+pub fn device_cluster_name(base: &str, index: &str, reg: &str) -> String {
+    let name = base.to_string().replace("%s", "");
+    let reg = reg.to_string().replace(&name, "");
+    format!("{}{}{}", name, index, &reg)
 }
 
 #[derive(Debug, Clone, Default, strum::Display, strum::IntoStaticStr)]
@@ -41,10 +48,32 @@ impl From<svd_rs::access::Access> for Permissions {
     }
 }
 
-pub struct Register {
+pub struct RegisterInfo {
     pub name: String,
+    pub type_: String,
     pub desc: String,
-    pub offset: String,
+    pub offset: u32,
+}
+
+impl RegisterInfo {
+    pub fn new(
+        name: impl Into<String>,
+        type_name: Option<String>,
+        desc: Option<String>,
+        offset: u32,
+    ) -> Self {
+        let name = name.into();
+        RegisterInfo {
+            name: name.clone(),
+            type_: type_name.unwrap_or(name.clone()),
+            desc: desc.unwrap_or(name),
+            offset: offset,
+        }
+    }
+}
+
+pub struct Register {
+    pub info: Vec<RegisterInfo>, // Must have at least one.
     pub bitfields: Vec<Bitfield>,
 }
 
@@ -55,13 +84,87 @@ impl Register {
         desc: Option<String>,
         bitfields: Vec<Bitfield>,
     ) -> Self {
-        let name = name.into();
         Self {
-            name: name.clone(),
-            desc: desc.unwrap_or(name),
-            offset: format!("{:#x}", offset),
+            info: vec![RegisterInfo::new(name, None, desc, offset)],
             bitfields,
         }
+    }
+
+    fn try_from(cluster: &svd_rs::cluster::Cluster) -> Result<Vec<Self>, String> {
+        match cluster {
+            svd_rs::cluster::Cluster::Array(info, dim) => {
+                let mut res = Vec::new();
+                let index = dim.dim_index.clone().unwrap_or(
+                    (0..info.children.len())
+                        .map(|n| n.to_string())
+                        .collect::<Vec<_>>(),
+                );
+                for children in info.children.iter() {
+                    let mut indexes = index.iter();
+                    match children {
+                        svd_rs::registercluster::RegisterCluster::Register(register) => {
+                            let mut register: Register = register.try_into()?;
+                            let index = indexes.next().unwrap();
+                            let type_name = dim
+                                .dim_name
+                                .clone()
+                                .unwrap_or(register.info[0].name.clone());
+                            register.info[0].name =
+                                device_cluster_name(&info.name, &index, &type_name);
+                            let mut offset = dim.dim_increment + register.info[0].offset;
+                            for index in indexes {
+                                let name = device_cluster_name(&info.name, &index, &type_name);
+                                register.info.push(RegisterInfo::new(
+                                    name,
+                                    Some(type_name.clone()),
+                                    None,
+                                    offset,
+                                ));
+                                offset += dim.dim_increment;
+                            }
+                            res.push(register);
+                        }
+                        svd_rs::registercluster::RegisterCluster::Cluster(_) => {
+                            panic!("Too much recursion")
+                        }
+                    }
+                }
+                return Ok(res);
+            }
+            svd_rs::cluster::Cluster::Single(_) => unreachable!(),
+        }
+    }
+}
+
+impl TryFrom<&svd_rs::register::Register> for Register {
+    type Error = String;
+    fn try_from(register: &svd_rs::register::Register) -> Result<Self, Self::Error> {
+        let register = match register {
+            svd_rs::register::Register::Single(info) => info,
+            svd_rs::register::Register::Array(_, _) => {
+                return Err("Register Array not supported".to_string());
+            }
+        };
+
+        let bitfields = if let Some(ref bitfields) = register.fields {
+            bitfields
+                .iter()
+                .map(|field| {
+                    field
+                        .try_into()
+                        .unwrap_or_else(|e| panic!("{} register {}", e, register.name))
+                })
+                .collect::<Vec<Bitfield>>()
+        } else {
+            vec![Bitfield::default()]
+        };
+
+        Ok(Self::new(
+            register.name.clone(),
+            register.address_offset as u32,
+            register.description.clone(),
+            bitfields,
+        ))
     }
 }
 
@@ -96,7 +199,7 @@ impl Default for Bitfield {
         Self::new(
             "value".to_string(),
             "value".to_string(),
-            32,
+            WIDTH,
             0,
             Permissions::default(),
         )
@@ -244,51 +347,24 @@ impl TryFrom<svd_rs::device::Device> for Platform {
 
             let mut device = Device::new(&device_name, &device_type);
             for register_cluster in registers {
-                let register = match register_cluster {
-                    svd_rs::registercluster::RegisterCluster::Register(register) => register,
-                    svd_rs::registercluster::RegisterCluster::Cluster(_) => {
-                        println!(
-                            "Warning: Register cluster not supported in peripheral {}, skipping.",
-                            device_name
-                        );
-                        continue;
+                match register_cluster {
+                    svd_rs::registercluster::RegisterCluster::Register(register) => {
+                        match register.try_into() {
+                            Ok(register) => device.registers.push(register),
+                            Err(msg) => println!("Warning: {} in {}, skipping.", msg, device_name),
+                        }
+                    }
+                    svd_rs::registercluster::RegisterCluster::Cluster(cluster) => {
+                        match Register::try_from(cluster) {
+                            Ok(registers) => {
+                                for reg in registers {
+                                    device.registers.push(reg);
+                                }
+                            }
+                            Err(msg) => println!("Warning: {} in {}, skipping.", msg, device_name),
+                        }
                     }
                 };
-
-                let register_iter = match register {
-                    svd_rs::register::Register::Single(info) => info,
-                    svd_rs::register::Register::Array(_, _) => {
-                        println!(
-                            "Warning: Register Array not supported in peripheral {}, skipping.",
-                            device_name
-                        );
-                        continue;
-                    }
-                };
-
-                let bitfields = if let Some(ref bitfields) = register_iter.fields {
-                    bitfields
-                        .iter()
-                        .map(|field| {
-                            field.try_into().unwrap_or_else(|e| {
-                                panic!("{} {}::{}", e, device_name, register_iter.name)
-                            })
-                        })
-                        .collect::<Vec<Bitfield>>()
-                } else {
-                    let mut default = Bitfield::default();
-                    default.bit_size = svd_device.width;
-                    vec![default]
-                };
-
-                let register = Register::new(
-                    register_iter.name.clone(),
-                    register_iter.address_offset as u32,
-                    register_iter.description.clone(),
-                    bitfields,
-                );
-
-                device.registers.push(register);
             }
             this.devices.push(device);
         }

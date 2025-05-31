@@ -17,7 +17,7 @@ union MtimelReg {
     public:
     /* mtime low */
     reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
-    constexpr MtimelReg (uintptr_t addr): reg_{.addr = addr + 0x0}
+    constexpr MtimelReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -37,7 +37,7 @@ union MtimehReg {
     public:
     /* mtime high */
     reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
-    constexpr MtimehReg (uintptr_t addr): reg_{.addr = addr + 0x4}
+    constexpr MtimehReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -57,7 +57,7 @@ union MtimecmplReg {
     public:
     /* mtime cmp low */
     reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
-    constexpr MtimecmplReg (uintptr_t addr): reg_{.addr = addr + 0x8}
+    constexpr MtimecmplReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -77,7 +77,7 @@ union MtimecmphReg {
     public:
     /* mtime cmp high */
     reismmio::BitField<0, 32, reismmio::Permissions::ReadWrite> value;
-    constexpr MtimecmphReg (uintptr_t addr): reg_{.addr = addr + 0xc}
+    constexpr MtimecmphReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -92,13 +92,13 @@ union MtimecmphReg {
 
 /* To facilitate compiler optimization of this abstraction, prefer using this struct within a small scope.*/
 struct Timer { 
-    MtimelReg mtimel;
+MtimelReg mtimel;
     MtimehReg mtimeh;
     MtimecmplReg mtimecmpl;
     MtimecmphReg mtimecmph;
     
     
-    constexpr Timer (platform::Timer addr):mtimel(addr),mtimeh(addr),mtimecmpl(addr),mtimecmph(addr){}
+    constexpr Timer (platform::Timer addr):mtimel(addr + 0x0), mtimeh(addr + 0x4), mtimecmpl(addr + 0x8), mtimecmph(addr + 0xc){}
 };
 
 
