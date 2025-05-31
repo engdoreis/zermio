@@ -53,14 +53,19 @@ enum Interrupt: uintptr_t{
         source = "
 /* To facilitate compiler optimization of this abstraction, prefer using this struct within a small scope.*/
 struct {{ device.type_|pascal_case }} { 
-    {% for register in device.registers -%}
-    {{ register.name|pascal_case }}Reg {{register.name|lower}};
-    {% endfor %}
+{% for register in device.registers %}
+    {%- for info in register.info -%}
+    {{ info.type_|pascal_case }}Reg {{info.name|lower}};
+    {% endfor -%}
+{% endfor %}
     
     constexpr {{ device.type_|pascal_case }} (platform::{{ device.type_|pascal_case }} addr): 
-    {%- for register in device.registers -%}
-        {{register.name|lower}}(addr) {%- if !loop.last -%},{%- endif -%}
+{%- for register in device.registers -%}
+    {%- for info in register.info -%}
+        {{info.name|lower}}(addr + {{ info.offset|hex }}){%- if !loop.last -%}, {% endif %}
     {%- endfor -%}
+    {%- if !loop.last -%}, {% endif -%}
+{%- endfor -%}
     {}
 };
 
@@ -74,8 +79,8 @@ struct {{ device.type_|pascal_case }} {
     #[template(
         ext = "txt",
         source = "
-/* {{ register.desc }} */
-union {{ register.name|pascal_case }}Reg { 
+/* {{ register.info[0].desc }} */
+union {{ register.info[0].type_|pascal_case }}Reg { 
     private:
       reismmio::Register reg_;
     public:
@@ -84,12 +89,12 @@ union {{ register.name|pascal_case }}Reg {
     reismmio::BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}, reismmio::Permissions::{{ bitfield.permissions }}> {{ bitfield.name|lower }};
     {% endfor -%}
     
-    constexpr {{ register.name|pascal_case }}Reg (uintptr_t addr): reg_{.addr = addr + {{ register.offset }}}
+    constexpr {{ register.info[0].type_|pascal_case }}Reg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
 
-    inline {{ register.name|pascal_case }}Reg& fetch() {
+    inline {{ register.info[0].name|pascal_case }}Reg& fetch() {
         reg_.fetch();
         return *this;
     }
@@ -135,6 +140,7 @@ union {{ register.name|pascal_case }}Reg {
                     }
                     .render()
                     .unwrap()
+                    .replace(",\n\n",",\n")
                 )?;
             }
             writeln!(
@@ -145,6 +151,7 @@ union {{ register.name|pascal_case }}Reg {
                 }
                 .render()
                 .unwrap()
+                .replace(",\n\n",",\n")
             )?;
             writeln!(
                 device_handler,
