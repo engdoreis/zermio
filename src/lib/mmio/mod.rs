@@ -17,14 +17,3 @@ pub use platform::Platform;
 pub use register::Register;
 
 static WIDTH: u32 = 32;
-pub fn device_type(s: &str) -> String {
-    let re = regex::Regex::new(r"\d+$").unwrap();
-    // Remove trailing digits
-    re.replace(s, "").to_string().to_lowercase()
-}
-
-pub fn device_cluster_name(base: &str, index: &str, reg: &str) -> String {
-    let name = base.to_string().replace("%s", "");
-    let reg = reg.to_string().replace(&name, "");
-    format!("{}{}{}", name, index, &reg)
-}

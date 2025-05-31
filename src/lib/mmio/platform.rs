@@ -8,18 +8,20 @@ pub use crate::mmio::Register;
 
 use svd_rs::device;
 use svd_rs::peripheral;
-use svd_rs::registercluster;
 
+#[derive(Debug)]
 pub struct DeviceAddr {
     pub name: String,
     pub address: String,
 }
 
+#[derive(Debug)]
 pub struct DeviceTypes {
     pub type_name: String,
     pub devices: Vec<DeviceAddr>,
 }
 
+#[derive(Debug)]
 pub struct Platform {
     pub name: String,
     pub device_types: Vec<DeviceTypes>,
@@ -30,7 +32,7 @@ pub struct Platform {
 }
 
 impl Platform {
-    pub fn add_register(&mut self, type_name: String, device_name: String, address: u64) {
+    pub fn add_device_addr(&mut self, type_name: String, device_name: String, address: u64) {
         let new_device = DeviceAddr {
             name: device_name,
             address: format!("{:#x}", address),
@@ -61,56 +63,23 @@ impl TryFrom<device::Device> for Platform {
             devices: Vec::new(),
         };
 
-        for periph in &svd_device.peripherals {
-            let device_iter = match periph {
-                peripheral::Peripheral::Single(info) => info,
-                peripheral::Peripheral::Array(_, _) => {
-                    return Err("Peripheral array not supported".to_string());
-                }
+        for peripheral in &svd_device.peripherals {
+            let peripheral::Peripheral::Single(info) = peripheral else {
+                return Err("PeripheralInfo array not supported".to_string());
             };
+            let device: Device = info.try_into()?;
 
-            // i.e 0x8000_0000
-            let device_addr = device_iter.base_address;
-            // i.e UART0
-            let device_name = device_iter.name.replace(" ", "_").to_uppercase();
-            // i.e UART
-            let device_type =
-                super::device_type(device_iter.derived_from.as_ref().unwrap_or(&device_name));
+            this.add_device_addr(device.type_.clone(), device.name.clone(), info.base_address);
 
-            this.add_register(device_type.clone(), device_name.clone(), device_addr);
-
-            for interrupt in &device_iter.interrupt {
+            for interrupt in &info.interrupt {
                 let mut interrupt: Interrupt = interrupt.into();
-                interrupt.name = format!("{}_{}", device_name, interrupt.name);
+                interrupt.name = format!("{}_{}", device.name, interrupt.name);
                 this.interrupts.push(interrupt);
             }
-
-            let Some(ref registers) = device_iter.registers else {
-                continue;
-            };
-
-            let mut device = Device::new(&device_name, &device_type);
-            for register_cluster in registers {
-                match register_cluster {
-                    registercluster::RegisterCluster::Register(register) => {
-                        match register.try_into() {
-                            Ok(register) => device.registers.push(register),
-                            Err(msg) => println!("Warning: {} in {}, skipping.", msg, device_name),
-                        }
-                    }
-                    registercluster::RegisterCluster::Cluster(cluster) => {
-                        match Register::try_from(cluster) {
-                            Ok(registers) => {
-                                for reg in registers {
-                                    device.registers.push(reg);
-                                }
-                            }
-                            Err(msg) => println!("Warning: {} in {}, skipping.", msg, device_name),
-                        }
-                    }
-                };
+            // If it's empty, it's likely derived and should not generate a type.
+            if !device.registers.is_empty() {
+                this.devices.push(device);
             }
-            this.devices.push(device);
         }
         Ok(this)
     }
