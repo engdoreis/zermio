@@ -13,6 +13,9 @@ namespace platform  {
 /* Addresses for the devices of the type Timer.*/
     enum Timer: uintptr_t{Timer0 = 0x80040000,Timer1 = 0x80400100,};
 
-enum Interrupt: uintptr_t{I2c0EventIrq = 2,I2c0ErrorIrq = 3,I2c1EventIrq = 3,Timer0FinishIrq = 10,Timer1FinishIrq = 10,};
+/* Addresses for the devices of the type IoBank.*/
+    enum IoBank: uintptr_t{IoBank0 = 0x40014000,};
+
+enum Interrupt: uintptr_t{I2c0EventIrq = 2,I2c0ErrorIrq = 3,I2c1EventIrq = 3,Timer0FinishIrq = 10,Timer1FinishIrq = 10,IoBank0IoIrqBank0 = 13,};
 } // namespace platform
 
