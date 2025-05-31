@@ -5,7 +5,6 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
-use crate::filters;
 use crate::mmio;
 
 #[derive(Template)]

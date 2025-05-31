@@ -73,7 +73,7 @@ union GpioCtrlReg {
 
 
 /* Raw Interrupts */
-union Intr%sReg { 
+union IntrReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -141,7 +141,7 @@ union Intr%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::Read> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::Read> gpio0_level_low;
-    constexpr Intr%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr IntrReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -155,7 +155,7 @@ union Intr%sReg {
 
 
 /* Interrupt Enable for proc0 */
-union Proc0Inte%sReg { 
+union Proc0InteReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -223,7 +223,7 @@ union Proc0Inte%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> gpio0_level_low;
-    constexpr Proc0Inte%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr Proc0InteReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -237,7 +237,7 @@ union Proc0Inte%sReg {
 
 
 /* Interrupt Force for proc0 */
-union Proc0Intf%sReg { 
+union Proc0IntfReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -305,7 +305,7 @@ union Proc0Intf%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> gpio0_level_low;
-    constexpr Proc0Intf%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr Proc0IntfReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -319,7 +319,7 @@ union Proc0Intf%sReg {
 
 
 /* Interrupt status after masking & forcing for proc0 */
-union Proc0Ints%sReg { 
+union Proc0IntsReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -387,7 +387,7 @@ union Proc0Ints%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::Read> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::Read> gpio0_level_low;
-    constexpr Proc0Ints%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr Proc0IntsReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -401,7 +401,7 @@ union Proc0Ints%sReg {
 
 
 /* Interrupt Enable for proc1 */
-union Proc1Inte%sReg { 
+union Proc1InteReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -469,7 +469,7 @@ union Proc1Inte%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> gpio0_level_low;
-    constexpr Proc1Inte%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr Proc1InteReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -483,7 +483,7 @@ union Proc1Inte%sReg {
 
 
 /* Interrupt Force for proc1 */
-union Proc1Intf%sReg { 
+union Proc1IntfReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -551,7 +551,7 @@ union Proc1Intf%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> gpio0_level_low;
-    constexpr Proc1Intf%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr Proc1IntfReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -565,7 +565,7 @@ union Proc1Intf%sReg {
 
 
 /* Interrupt status after masking & forcing for proc1 */
-union Proc1Ints%sReg { 
+union Proc1IntsReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -633,7 +633,7 @@ union Proc1Ints%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::Read> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::Read> gpio0_level_low;
-    constexpr Proc1Ints%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr Proc1IntsReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -647,7 +647,7 @@ union Proc1Ints%sReg {
 
 
 /* Interrupt Enable for dormant_wake */
-union DormantWakeInte%sReg { 
+union DormantWakeInteReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -715,7 +715,7 @@ union DormantWakeInte%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> gpio0_level_low;
-    constexpr DormantWakeInte%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr DormantWakeInteReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -729,7 +729,7 @@ union DormantWakeInte%sReg {
 
 
 /* Interrupt Force for dormant_wake */
-union DormantWakeIntf%sReg { 
+union DormantWakeIntfReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -797,7 +797,7 @@ union DormantWakeIntf%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::ReadWrite> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::ReadWrite> gpio0_level_low;
-    constexpr DormantWakeIntf%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr DormantWakeIntfReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -811,7 +811,7 @@ union DormantWakeIntf%sReg {
 
 
 /* Interrupt status after masking & forcing for dormant_wake */
-union DormantWakeInts%sReg { 
+union DormantWakeIntsReg { 
     private:
       reismmio::Register reg_;
     public:
@@ -879,7 +879,7 @@ union DormantWakeInts%sReg {
     reismmio::BitField<1, 1, reismmio::Permissions::Read> gpio0_level_high;
     /* GPIO0_LEVEL_LOW */
     reismmio::BitField<0, 1, reismmio::Permissions::Read> gpio0_level_low;
-    constexpr DormantWakeInts%sReg (uintptr_t addr): reg_{.addr = addr}
+    constexpr DormantWakeIntsReg (uintptr_t addr): reg_{.addr = addr}
     {}
 
     inline void commit() { reg_.commit(); }
@@ -954,46 +954,46 @@ GpioStatusReg gpio0_status;
     GpioCtrlReg gpio27_ctrl;
     GpioCtrlReg gpio28_ctrl;
     GpioCtrlReg gpio29_ctrl;
-    Intr%sReg intr0;
-    Intr%sReg intr1;
-    Intr%sReg intr2;
-    Intr%sReg intr3;
-    Proc0Inte%sReg proc0_inte0;
-    Proc0Inte%sReg proc0_inte1;
-    Proc0Inte%sReg proc0_inte2;
-    Proc0Inte%sReg proc0_inte3;
-    Proc0Intf%sReg proc0_intf0;
-    Proc0Intf%sReg proc0_intf1;
-    Proc0Intf%sReg proc0_intf2;
-    Proc0Intf%sReg proc0_intf3;
-    Proc0Ints%sReg proc0_ints0;
-    Proc0Ints%sReg proc0_ints1;
-    Proc0Ints%sReg proc0_ints2;
-    Proc0Ints%sReg proc0_ints3;
-    Proc1Inte%sReg proc1_inte0;
-    Proc1Inte%sReg proc1_inte1;
-    Proc1Inte%sReg proc1_inte2;
-    Proc1Inte%sReg proc1_inte3;
-    Proc1Intf%sReg proc1_intf0;
-    Proc1Intf%sReg proc1_intf1;
-    Proc1Intf%sReg proc1_intf2;
-    Proc1Intf%sReg proc1_intf3;
-    Proc1Ints%sReg proc1_ints0;
-    Proc1Ints%sReg proc1_ints1;
-    Proc1Ints%sReg proc1_ints2;
-    Proc1Ints%sReg proc1_ints3;
-    DormantWakeInte%sReg dormant_wake_inte0;
-    DormantWakeInte%sReg dormant_wake_inte1;
-    DormantWakeInte%sReg dormant_wake_inte2;
-    DormantWakeInte%sReg dormant_wake_inte3;
-    DormantWakeIntf%sReg dormant_wake_intf0;
-    DormantWakeIntf%sReg dormant_wake_intf1;
-    DormantWakeIntf%sReg dormant_wake_intf2;
-    DormantWakeIntf%sReg dormant_wake_intf3;
-    DormantWakeInts%sReg dormant_wake_ints0;
-    DormantWakeInts%sReg dormant_wake_ints1;
-    DormantWakeInts%sReg dormant_wake_ints2;
-    DormantWakeInts%sReg dormant_wake_ints3;
+    IntrReg intr0;
+    IntrReg intr1;
+    IntrReg intr2;
+    IntrReg intr3;
+    Proc0InteReg proc0_inte0;
+    Proc0InteReg proc0_inte1;
+    Proc0InteReg proc0_inte2;
+    Proc0InteReg proc0_inte3;
+    Proc0IntfReg proc0_intf0;
+    Proc0IntfReg proc0_intf1;
+    Proc0IntfReg proc0_intf2;
+    Proc0IntfReg proc0_intf3;
+    Proc0IntsReg proc0_ints0;
+    Proc0IntsReg proc0_ints1;
+    Proc0IntsReg proc0_ints2;
+    Proc0IntsReg proc0_ints3;
+    Proc1InteReg proc1_inte0;
+    Proc1InteReg proc1_inte1;
+    Proc1InteReg proc1_inte2;
+    Proc1InteReg proc1_inte3;
+    Proc1IntfReg proc1_intf0;
+    Proc1IntfReg proc1_intf1;
+    Proc1IntfReg proc1_intf2;
+    Proc1IntfReg proc1_intf3;
+    Proc1IntsReg proc1_ints0;
+    Proc1IntsReg proc1_ints1;
+    Proc1IntsReg proc1_ints2;
+    Proc1IntsReg proc1_ints3;
+    DormantWakeInteReg dormant_wake_inte0;
+    DormantWakeInteReg dormant_wake_inte1;
+    DormantWakeInteReg dormant_wake_inte2;
+    DormantWakeInteReg dormant_wake_inte3;
+    DormantWakeIntfReg dormant_wake_intf0;
+    DormantWakeIntfReg dormant_wake_intf1;
+    DormantWakeIntfReg dormant_wake_intf2;
+    DormantWakeIntfReg dormant_wake_intf3;
+    DormantWakeIntsReg dormant_wake_ints0;
+    DormantWakeIntsReg dormant_wake_ints1;
+    DormantWakeIntsReg dormant_wake_ints2;
+    DormantWakeIntsReg dormant_wake_ints3;
     
     
     constexpr IoBank (platform::IoBank addr):gpio0_status(addr + 0x0), gpio1_status(addr + 0x8), gpio2_status(addr + 0x10), gpio3_status(addr + 0x18), gpio4_status(addr + 0x20), gpio5_status(addr + 0x28), gpio6_status(addr + 0x30), gpio7_status(addr + 0x38), gpio8_status(addr + 0x40), gpio9_status(addr + 0x48), gpio10_status(addr + 0x50), gpio11_status(addr + 0x58), gpio12_status(addr + 0x60), gpio13_status(addr + 0x68), gpio14_status(addr + 0x70), gpio15_status(addr + 0x78), gpio16_status(addr + 0x80), gpio17_status(addr + 0x88), gpio18_status(addr + 0x90), gpio19_status(addr + 0x98), gpio20_status(addr + 0xa0), gpio21_status(addr + 0xa8), gpio22_status(addr + 0xb0), gpio23_status(addr + 0xb8), gpio24_status(addr + 0xc0), gpio25_status(addr + 0xc8), gpio26_status(addr + 0xd0), gpio27_status(addr + 0xd8), gpio28_status(addr + 0xe0), gpio29_status(addr + 0xe8), gpio0_ctrl(addr + 0x4), gpio1_ctrl(addr + 0xc), gpio2_ctrl(addr + 0x14), gpio3_ctrl(addr + 0x1c), gpio4_ctrl(addr + 0x24), gpio5_ctrl(addr + 0x2c), gpio6_ctrl(addr + 0x34), gpio7_ctrl(addr + 0x3c), gpio8_ctrl(addr + 0x44), gpio9_ctrl(addr + 0x4c), gpio10_ctrl(addr + 0x54), gpio11_ctrl(addr + 0x5c), gpio12_ctrl(addr + 0x64), gpio13_ctrl(addr + 0x6c), gpio14_ctrl(addr + 0x74), gpio15_ctrl(addr + 0x7c), gpio16_ctrl(addr + 0x84), gpio17_ctrl(addr + 0x8c), gpio18_ctrl(addr + 0x94), gpio19_ctrl(addr + 0x9c), gpio20_ctrl(addr + 0xa4), gpio21_ctrl(addr + 0xac), gpio22_ctrl(addr + 0xb4), gpio23_ctrl(addr + 0xbc), gpio24_ctrl(addr + 0xc4), gpio25_ctrl(addr + 0xcc), gpio26_ctrl(addr + 0xd4), gpio27_ctrl(addr + 0xdc), gpio28_ctrl(addr + 0xe4), gpio29_ctrl(addr + 0xec), intr0(addr + 0xf0), intr1(addr + 0xf4), intr2(addr + 0xf8), intr3(addr + 0xfc), proc0_inte0(addr + 0x100), proc0_inte1(addr + 0x104), proc0_inte2(addr + 0x108), proc0_inte3(addr + 0x10c), proc0_intf0(addr + 0x110), proc0_intf1(addr + 0x114), proc0_intf2(addr + 0x118), proc0_intf3(addr + 0x11c), proc0_ints0(addr + 0x120), proc0_ints1(addr + 0x124), proc0_ints2(addr + 0x128), proc0_ints3(addr + 0x12c), proc1_inte0(addr + 0x130), proc1_inte1(addr + 0x134), proc1_inte2(addr + 0x138), proc1_inte3(addr + 0x13c), proc1_intf0(addr + 0x140), proc1_intf1(addr + 0x144), proc1_intf2(addr + 0x148), proc1_intf3(addr + 0x14c), proc1_ints0(addr + 0x150), proc1_ints1(addr + 0x154), proc1_ints2(addr + 0x158), proc1_ints3(addr + 0x15c), dormant_wake_inte0(addr + 0x160), dormant_wake_inte1(addr + 0x164), dormant_wake_inte2(addr + 0x168), dormant_wake_inte3(addr + 0x16c), dormant_wake_intf0(addr + 0x170), dormant_wake_intf1(addr + 0x174), dormant_wake_intf2(addr + 0x178), dormant_wake_intf3(addr + 0x17c), dormant_wake_ints0(addr + 0x180), dormant_wake_ints1(addr + 0x184), dormant_wake_ints2(addr + 0x188), dormant_wake_ints3(addr + 0x18c){}

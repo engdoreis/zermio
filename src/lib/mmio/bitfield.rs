@@ -5,6 +5,7 @@
 pub use crate::mmio::Permissions;
 use svd_rs::field;
 
+#[derive(Debug)]
 pub struct Bitfield {
     pub name: String,
     pub desc: String,

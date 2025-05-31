@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pub use crate::mmio::Bitfield;
+pub use crate::mmio::Device;
 use svd_rs::cluster;
 use svd_rs::register;
 use svd_rs::registercluster;
 
+#[derive(Debug)]
 pub struct RegisterInfo {
     pub name: String,
     pub type_: String,
@@ -24,13 +26,14 @@ impl RegisterInfo {
         let name = name.into();
         RegisterInfo {
             name: name.clone(),
-            type_: type_name.unwrap_or(name.clone()),
+            type_: type_name.unwrap_or(name.clone().replace("%s", "")),
             desc: desc.unwrap_or(name),
-            offset: offset,
+            offset,
         }
     }
 }
 
+#[derive(Debug)]
 pub struct Register {
     pub info: Vec<RegisterInfo>, // Must have at least one.
     pub bitfields: Vec<Bitfield>,
@@ -50,48 +53,29 @@ impl Register {
     }
 
     pub fn try_from(cluster: &cluster::Cluster) -> Result<Vec<Self>, String> {
-        match cluster {
-            cluster::Cluster::Array(info, dim) => {
-                let mut res = Vec::new();
-                let index = dim
-                    .dim_index
-                    .clone()
-                    .unwrap_or((0..dim.dim).map(|n| n.to_string()).collect::<Vec<_>>());
-                for children in info.children.iter() {
-                    let mut indexes = index.iter();
-                    match children {
-                        registercluster::RegisterCluster::Register(register) => {
-                            let mut register: Register = register.try_into()?;
-                            let index = indexes.next().unwrap();
-                            let type_name = dim
-                                .dim_name
-                                .clone()
-                                .unwrap_or(register.info[0].name.clone());
-                            register.info[0].name =
-                                super::device_cluster_name(&info.name, &index, &type_name);
-                            let mut offset = dim.dim_increment + register.info[0].offset;
-                            for index in indexes {
-                                let name =
-                                    super::device_cluster_name(&info.name, &index, &type_name);
-                                register.info.push(RegisterInfo::new(
-                                    name,
-                                    Some(type_name.clone()),
-                                    None,
-                                    offset,
-                                ));
-                                offset += dim.dim_increment;
-                            }
-                            res.push(register);
-                        }
-                        registercluster::RegisterCluster::Cluster(_) => {
-                            panic!("Too much recursion")
-                        }
-                    }
-                }
-                return Ok(res);
-            }
-            cluster::Cluster::Single(_) => unreachable!(),
-        }
+        let cluster::Cluster::Array(info, dim) = cluster else {
+            unreachable!()
+        };
+
+        let res = info
+            .children
+            .iter()
+            .map(|children| {
+                let registercluster::RegisterCluster::Register(register) = children else {
+                    panic!("Too much recursion")
+                };
+                let mut dim = dim.clone();
+                dim.dim_name = Some(info.name.clone());
+                // This is a hack to reuse the `TryFrom<&register::Register> for Register`
+                // and avoid reimplementing the cluster parsing. We rely on the fact that
+                // the type `MaybeArray` implements `Deref`, so we deref register twice
+                // to get in inner type (`RegisterInfo`), then we create a
+                // `Register::Array` to be able to call `into`.
+                let register = register::Register::Array((**register).clone(), dim);
+                (&register).into()
+            })
+            .collect::<Vec<_>>();
+        Ok(res)
     }
 }
 
@@ -119,29 +103,30 @@ impl From<&register::RegisterInfo> for Register {
     }
 }
 
-impl TryFrom<&register::Register> for Register {
-    type Error = String;
-    fn try_from(register: &register::Register) -> Result<Self, Self::Error> {
+impl From<&register::Register> for Register {
+    fn from(register: &register::Register) -> Self {
         let (mut register, dim): (Self, _) = match register {
-            register::Register::Single(info) => return Ok(info.into()),
+            register::Register::Single(info) => return info.into(),
             register::Register::Array(info, dim) => (info.into(), dim),
         };
 
-        // TODO: repeated code.
-        let index = dim
-            .dim_index
-            .clone()
-            .unwrap_or((0..dim.dim).map(|n| n.to_string()).collect::<Vec<_>>());
-        let mut indexes = index.iter();
-        let index = indexes.next().unwrap();
-        let type_name = dim
+        let base_name = dim
             .dim_name
             .clone()
             .unwrap_or(register.info[0].name.clone());
-        register.info[0].name = super::device_cluster_name(&type_name, &index, "");
+        let type_name = register.info[0].type_.clone();
+
+        let index: Vec<_> = dim
+            .dim_index
+            .clone()
+            .unwrap_or((0..dim.dim).map(|n| n.to_string()).collect());
+        let mut indexes = index.iter();
+        let index = indexes.next().unwrap();
+        register.info[0].name = Device::get_cluster_name(&base_name, &index, &type_name);
+
         let mut offset = dim.dim_increment + register.info[0].offset;
         for index in indexes {
-            let name = super::device_cluster_name(&type_name, &index, "");
+            let name = Device::get_cluster_name(&base_name, &index, &type_name);
             register.info.push(RegisterInfo::new(
                 name,
                 Some(type_name.clone()),
@@ -150,6 +135,6 @@ impl TryFrom<&register::Register> for Register {
             ));
             offset += dim.dim_increment;
         }
-        Ok(register)
+        register
     }
 }
