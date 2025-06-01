@@ -70,11 +70,11 @@ pub struct Device<'a> {
 /* {{ register.info[0].desc }} */
 union {{ register.info[0].type_|pascal_case }}Reg { 
     private:
-      reismmio::Register reg_;
+      zermio::Register reg_;
     public:
     {% for bitfield in register.bitfields -%}
     /* {{ bitfield.desc }} */
-    reismmio::BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}, reismmio::Permissions::{{ bitfield.permissions }}> {{ bitfield.name|lower }};
+    zermio::BitField<{{ bitfield.offset }}, {{ bitfield.bit_size }}, zermio::Permissions::{{ bitfield.permissions }}> {{ bitfield.name|lower }};
     {% endfor -%}
     
     constexpr {{ register.info[0].type_|pascal_case }}Reg (uintptr_t addr): reg_{.addr = addr}

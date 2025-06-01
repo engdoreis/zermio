@@ -1,5 +1,5 @@
 [package]
-name = "reismmio"
+name = "zermio"
 version = "0.1.0"
 edition = "2024"
 
@@ -15,10 +15,10 @@ svd-parser = "0.14.9"
 svd-rs = "0.14.12"
 
 [lib]
-name = "reismmiolib"
+name = "zermiolib"
 path = "src/lib/lib.rs"
 
 
 [[bin]]
-name = "reismmio_cli"
+name = "zermio_cli"
 path = "src/main.rs"
