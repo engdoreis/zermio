@@ -281,21 +281,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
-name = "reismmio"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "askama",
- "clap",
- "function_name",
- "regex",
- "serde",
- "strum",
- "svd-parser",
- "svd-rs",
-]
-
-[[package]]
 name = "roxmltree"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -531,4 +516,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c06928c8748d81b05c9be96aad92e1b6ff01833332f281e8cfca3be4b35fc9ec"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "zermio"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "askama",
+ "clap",
+ "function_name",
+ "regex",
+ "serde",
+ "strum",
+ "svd-parser",
+ "svd-rs",
 ]

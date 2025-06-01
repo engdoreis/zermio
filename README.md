@@ -1,7 +1,8 @@
-Reis MMIO is a toolkit based on svd2rust that can ingest SVDs files and generate C++ abstractions to write and read mmios in a very efficiente way.
+zermio (ZERo cost Memory mapped Input and Output) is a toolkit based on svd2rust that can ingest SVDs files and generate C++ abstractions to write and read mmios in a very efficiente way.
+In tests with gcc 15 and clang 19 with optimization `O2` the abstraction was completed inlined to a few instructions.
 
 ## Usage
-To generate the C++  MMIO abstractions for Ibex demo system run:
+Generating the C++ MMIO abstractions for Ibex demo system with the command:
 
 ```sh
 wget https://raw.githubusercontent.com/lowRISC/ibex-demo-system/refs/heads/main/data/ibex.svd -O /tmp/ibex.svd

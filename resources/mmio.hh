@@ -6,7 +6,7 @@
 
 #include <cstdint>
 #include <limits>
-namespace reismmio {
+namespace zermio {
   enum Permissions:uint8_t{Read = 0x01, Write = 0x02, ReadWrite=0x03};
 
   template <Permissions P>
