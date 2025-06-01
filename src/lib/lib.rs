@@ -5,12 +5,10 @@
 mod filters;
 pub mod generator;
 pub mod mmio;
-pub mod schema;
 
 #[cfg(test)]
 mod libtest {
     use super::*;
-    use std::fs::File;
     use std::path::PathBuf;
 
     #[test]
@@ -22,11 +20,10 @@ mod libtest {
 
         let _ = std::fs::create_dir(&output_dir);
 
-        let file = File::open(svd).unwrap();
-        let reader = std::io::BufReader::new(file);
-        let schema = quick_xml::de::from_reader(reader).unwrap();
+        let xml = std::fs::read_to_string(&svd).unwrap();
+        let device = svd_parser::parse(&xml).unwrap().try_into().unwrap();
 
-        generator::cpp::generate(&schema, output_dir.clone(), output_dir.clone()).unwrap();
+        generator::cpp::generate(&device, output_dir.clone(), output_dir.clone()).unwrap();
 
         let check_eq = |name: &str, snapshot: Option<&str>| {
             let res = output_dir.join(name);
@@ -41,6 +38,7 @@ mod libtest {
 
         check_eq("i2c.hh", None);
         check_eq("timer.hh", None);
+        check_eq("io_bank.hh", None);
         check_eq("test_platform.hh", None);
         check_eq("mmio.hh", Some("../../mmio.hh"));
     }

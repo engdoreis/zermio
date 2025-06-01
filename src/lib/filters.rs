@@ -21,3 +21,10 @@ pub fn pascal_case<T: std::fmt::Display>(s: T, _: &dyn askama::Values) -> askama
         .collect();
     Ok(result)
 }
+
+pub fn hex<T>(num: T, _: &dyn askama::Values) -> askama::Result<String>
+where
+    T: std::fmt::Display + std::fmt::LowerHex,
+{
+    Ok(format!("{:#x}", num))
+}
