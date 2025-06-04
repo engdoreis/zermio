@@ -20,5 +20,5 @@ path = "src/lib/lib.rs"
 
 
 [[bin]]
-name = "zermio_cli"
+name = "zermio-cli"
 path = "src/main.rs"
