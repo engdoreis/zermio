@@ -8,3 +8,9 @@ Generating the C++ MMIO abstractions for Ibex demo system with the command:
 wget https://raw.githubusercontent.com/lowRISC/ibex-demo-system/refs/heads/main/data/ibex.svd -O /tmp/ibex.svd
 cargo run import-svd --svd /tmp/ibex.svd export-cpp --dir /tmp/ --periph-dir /tmp/
 ```
+
+Customizing the license header on each generated source file.
+
+```sh
+cargo run import-svd --header-file=/tmp/header.md --svd /tmp/ibex.svd export-cpp --dir /tmp/ --periph-dir /tmp/
+```

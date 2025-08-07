@@ -94,13 +94,18 @@ pub struct Register<'a> {
     pub register: &'a mmio::Register,
 }
 
-pub fn generate(soc: &mmio::Platform, out_dir: PathBuf, addr_dir: PathBuf) -> anyhow::Result<()> {
+pub fn generate(
+    soc: &mmio::Platform,
+    out_dir: PathBuf,
+    addr_dir: PathBuf,
+    file_header: &str,
+) -> anyhow::Result<()> {
     let get_path = |path: &PathBuf, name: &str| -> anyhow::Result<(PathBuf, File)> {
         let mut filename = path.clone();
         filename.push(name);
         filename.set_extension("hh");
         let mut file = File::create(&filename)?;
-        writeln!(file, "{}", super::FILE_HEADER)?;
+        writeln!(file, "{}", file_header)?;
         writeln!(file, "#pragma once")?;
         Ok((filename, file))
     };
