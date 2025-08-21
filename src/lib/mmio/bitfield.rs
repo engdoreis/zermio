@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pub use crate::mmio::Permissions;
-use svd_rs::field;
+pub use crate::rdljson;
 
 #[derive(Debug)]
 pub struct Bitfield {
@@ -44,8 +44,8 @@ impl Default for Bitfield {
     }
 }
 
-impl From<&field::FieldInfo> for Bitfield {
-    fn from(field: &field::FieldInfo) -> Self {
+impl From<&svd_rs::field::FieldInfo> for Bitfield {
+    fn from(field: &svd_rs::field::FieldInfo) -> Self {
         Self::new(
             field.name.clone(),
             field.description.clone().unwrap_or(field.name.clone()),
@@ -55,14 +55,27 @@ impl From<&field::FieldInfo> for Bitfield {
         )
     }
 }
-impl TryFrom<&field::Field> for Bitfield {
+
+impl TryFrom<&svd_rs::field::Field> for Bitfield {
     type Error = String;
-    fn try_from(field: &field::Field) -> Result<Self, Self::Error> {
+    fn try_from(field: &svd_rs::field::Field) -> Result<Self, Self::Error> {
         Ok(Self::from(match field {
-            field::Field::Single(info) => info,
-            field::Field::Array(_, _) => {
+            svd_rs::field::Field::Single(info) => info,
+            svd_rs::field::Field::Array(_, _) => {
                 return Err("Field Array not supported".to_string());
             }
         }))
+    }
+}
+
+impl From<&rdljson::RegisterField> for Bitfield {
+    fn from(field: &rdljson::RegisterField) -> Self {
+        Self::new(
+            field.name.clone(),
+            field.desc.clone(),
+            field.msb - field.lsb + 1,
+            field.lsb,
+            Permissions::from(field),
+        )
     }
 }

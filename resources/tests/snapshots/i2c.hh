@@ -445,8 +445,8 @@ union HostTimeoutCtrlReg {
 
 
 /* To facilitate compiler optimization of this abstraction, prefer using this struct within a small scope.*/
-struct I2c { 
-CtrlReg ctrl;
+struct I2c {
+    CtrlReg ctrl;
     StatusReg status;
     RdataReg rdata;
     FdataReg fdata;
@@ -465,8 +465,25 @@ CtrlReg ctrl;
     TxdataReg txdata;
     HostTimeoutCtrlReg host_timeout_ctrl;
     
-    
-    constexpr I2c (platform::I2c addr):ctrl(addr + 0x10), status(addr + 0x14), rdata(addr + 0x18), fdata(addr + 0x1c), fifo_ctrl(addr + 0x20), fifo_status(addr + 0x24), ovrd(addr + 0x58), val(addr + 0x5c), timing0(addr + 0x60), timing1(addr + 0x64), timing2(addr + 0x68), timing3(addr + 0x6c), timing4(addr + 0x70), timeout_ctrl(addr + 0x74), target_id(addr + 0x78), acqdata(addr + 0x7c), txdata(addr + 0x80), host_timeout_ctrl(addr + 0x84){}
+    constexpr I2c (platform::I2c addr):
+        ctrl(addr + 0x10), 
+        status(addr + 0x14), 
+        rdata(addr + 0x18), 
+        fdata(addr + 0x1c), 
+        fifo_ctrl(addr + 0x20), 
+        fifo_status(addr + 0x24), 
+        ovrd(addr + 0x58), 
+        val(addr + 0x5c), 
+        timing0(addr + 0x60), 
+        timing1(addr + 0x64), 
+        timing2(addr + 0x68), 
+        timing3(addr + 0x6c), 
+        timing4(addr + 0x70), 
+        timeout_ctrl(addr + 0x74), 
+        target_id(addr + 0x78), 
+        acqdata(addr + 0x7c), 
+        txdata(addr + 0x80), 
+        host_timeout_ctrl(addr + 0x84){}
 };
 
 

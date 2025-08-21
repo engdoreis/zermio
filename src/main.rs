@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use zermiolib::generator;
+use zermiolib::rdljson;
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
@@ -24,6 +25,24 @@ enum Input {
         /// generated file.
         #[arg(long, short, value_parser =  PathBuf::from_str)]
         header_file: Option<PathBuf>,
+        #[command(subcommand)]
+        output: Output,
+    },
+    ImportRdlJson {
+        /// A path to a rdl.json file
+        #[arg(long, short, value_parser =  PathBuf::from_str)]
+        rdl: PathBuf,
+
+        /// A path to a text with containing the licence header that should be added to every
+        /// generated file.
+        #[arg(long, short, value_parser =  PathBuf::from_str)]
+        header_file: Option<PathBuf>,
+
+        /// Whether the parser should try to optimize and group:
+        /// - Devices of the same type;
+        /// - Split homogeneous interfaces of a device into devices.
+        #[arg(long, short, action)]
+        no_optimize: bool,
         #[command(subcommand)]
         output: Output,
     },
@@ -76,7 +95,36 @@ fn main() -> anyhow::Result<(), String> {
             };
             (svd_rs, output, header)
         }
+        Input::ImportRdlJson {
+            rdl,
+            output,
+            no_optimize,
+            header_file,
+        } => {
+            if !rdl.exists() {
+                return Err("Rdljson file does not exist!".to_string());
+            }
+
+            println!("Loading the {}...", rdl.display());
+            let json = std::fs::read_to_string(&rdl).unwrap();
+            let mut soc = rdljson::SoC::try_from(&json).unwrap();
+            if !no_optimize {
+                soc.homogeneous_interfaces_to_periperals();
+            }
+            let soc = soc.into();
+
+            let header = if let Some(header_file) = header_file {
+                if !header_file.exists() {
+                    return Err("File with header does not exist!".to_string());
+                }
+                std::fs::read_to_string(header_file).unwrap() + FILE_HEADER
+            } else {
+                FILE_HEADER.into()
+            };
+            (soc, output, header)
+        }
     };
+    // dbg!(&device);
 
     match output {
         Output::ExportCpp { dir, periph_dir } => {

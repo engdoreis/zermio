@@ -4,8 +4,8 @@
 
 pub use crate::mmio::Bitfield;
 pub use crate::mmio::Device;
+pub use crate::rdljson;
 use svd_rs::cluster;
-use svd_rs::register;
 use svd_rs::registercluster;
 
 #[derive(Debug)]
@@ -42,12 +42,13 @@ pub struct Register {
 impl Register {
     pub fn new(
         name: impl Into<String>,
+        type_name: Option<String>,
         offset: u32,
         desc: Option<String>,
         bitfields: Vec<Bitfield>,
     ) -> Self {
         Self {
-            info: vec![RegisterInfo::new(name, None, desc, offset)],
+            info: vec![RegisterInfo::new(name, type_name, desc, offset)],
             bitfields,
         }
     }
@@ -66,12 +67,12 @@ impl Register {
                 };
                 let mut dim = dim.clone();
                 dim.dim_name = Some(info.name.clone());
-                // This is a hack to reuse the `TryFrom<&register::Register> for Register`
+                // This is a hack to reuse the `TryFrom<&svd_rs::register::Register> for Register`
                 // and avoid reimplementing the cluster parsing. We rely on the fact that
                 // the type `MaybeArray` implements `Deref`, so we deref register twice
                 // to get in inner type (`RegisterInfo`), then we create a
                 // `Register::Array` to be able to call `into`.
-                let register = register::Register::Array((**register).clone(), dim);
+                let register = svd_rs::register::Register::Array((**register).clone(), dim);
                 (&register).into()
             })
             .collect::<Vec<_>>();
@@ -79,8 +80,8 @@ impl Register {
     }
 }
 
-impl From<&register::RegisterInfo> for Register {
-    fn from(register: &register::RegisterInfo) -> Self {
+impl From<&svd_rs::register::RegisterInfo> for Register {
+    fn from(register: &svd_rs::register::RegisterInfo) -> Self {
         let bitfields = if let Some(ref bitfields) = register.fields {
             bitfields
                 .iter()
@@ -96,6 +97,7 @@ impl From<&register::RegisterInfo> for Register {
 
         Self::new(
             register.name.clone(),
+            None,
             register.address_offset,
             register.description.clone(),
             bitfields,
@@ -103,11 +105,11 @@ impl From<&register::RegisterInfo> for Register {
     }
 }
 
-impl From<&register::Register> for Register {
-    fn from(register: &register::Register) -> Self {
+impl From<&svd_rs::register::Register> for Register {
+    fn from(register: &svd_rs::register::Register) -> Self {
         let (mut register, dim): (Self, _) = match register {
-            register::Register::Single(info) => return info.into(),
-            register::Register::Array(info, dim) => (info.into(), dim),
+            svd_rs::register::Register::Single(info) => return info.into(),
+            svd_rs::register::Register::Array(info, dim) => (info.into(), dim),
         };
 
         let base_name = dim
@@ -136,5 +138,40 @@ impl From<&register::Register> for Register {
             offset += dim.dim_increment;
         }
         register
+    }
+}
+
+impl From<&rdljson::Register> for Register {
+    fn from(register: &rdljson::Register) -> Self {
+        let fields: Vec<_> = register.fields.iter().map(|field| field.into()).collect();
+
+        let name = format!(
+            "{}{}",
+            register.name.clone(),
+            if register.offsets.len() > 1 { "0" } else { "" }
+        );
+        let mut this = Self::new(
+            name,
+            Some(register.type_name.clone()),
+            register.offsets[0],
+            register.desc.clone(),
+            fields,
+        );
+        this.info.extend(
+            register
+                .offsets
+                .iter()
+                .enumerate()
+                .skip(1)
+                .map(|(idx, offset)| {
+                    RegisterInfo::new(
+                        format!("{}{}", register.name, idx),
+                        Some(register.type_name.clone()),
+                        register.desc.clone(),
+                        *offset,
+                    )
+                }),
+        );
+        this
     }
 }
