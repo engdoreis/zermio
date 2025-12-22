@@ -51,7 +51,7 @@ impl From<&field::FieldInfo> for Bitfield {
             field.description.clone().unwrap_or(field.name.clone()),
             field.bit_range.width,
             field.bit_range.offset,
-            Permissions::from(field.access.clone().unwrap_or_default()),
+            Permissions::from(field.access.unwrap_or_default()),
         )
     }
 }
