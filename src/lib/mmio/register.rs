@@ -96,7 +96,7 @@ impl From<&register::RegisterInfo> for Register {
 
         Self::new(
             register.name.clone(),
-            register.address_offset as u32,
+            register.address_offset,
             register.description.clone(),
             bitfields,
         )
@@ -122,11 +122,11 @@ impl From<&register::Register> for Register {
             .unwrap_or((0..dim.dim).map(|n| n.to_string()).collect());
         let mut indexes = index.iter();
         let index = indexes.next().unwrap();
-        register.info[0].name = Device::get_cluster_name(&base_name, &index, &type_name);
+        register.info[0].name = Device::get_cluster_name(&base_name, index, &type_name);
 
         let mut offset = dim.dim_increment + register.info[0].offset;
         for index in indexes {
-            let name = Device::get_cluster_name(&base_name, &index, &type_name);
+            let name = Device::get_cluster_name(&base_name, index, &type_name);
             register.info.push(RegisterInfo::new(
                 name,
                 Some(type_name.clone()),

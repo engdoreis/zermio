@@ -125,7 +125,7 @@ pub fn generate(
                 device_handler,
                 "{}",
                 Register {
-                    register: &register_iter
+                    register: register_iter
                 }
                 .render()
                 .unwrap()
@@ -136,7 +136,7 @@ pub fn generate(
             device_handler,
             "{}",
             Device {
-                device: &device_iter
+                device: device_iter
             }
             .render()
             .unwrap()
@@ -154,7 +154,7 @@ pub fn generate(
         &addr_dir,
         &format!("{}_platform", soc.name.replace(" ", "_").to_lowercase()),
     )?;
-    writeln!(platform_fd, "{}", Platform { data: &soc }.render().unwrap())?;
+    writeln!(platform_fd, "{}", Platform { data: soc }.render().unwrap())?;
     println!("{} generated", platform_fname.display());
 
     std::fs::write(

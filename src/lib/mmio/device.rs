@@ -51,10 +51,9 @@ impl TryFrom<&peripheral::PeripheralInfo> for Device {
 
         for register_cluster in registers {
             match register_cluster {
-                registercluster::RegisterCluster::Register(register) => match register.try_into() {
-                    Ok(register) => device.registers.push(register),
-                    Err(msg) => println!("Warning: {} in {}, skipping.", msg, device_name),
-                },
+                registercluster::RegisterCluster::Register(register) => {
+                    device.registers.push(register.into())
+                }
                 registercluster::RegisterCluster::Cluster(cluster) => {
                     match Register::try_from(cluster) {
                         Ok(registers) => {

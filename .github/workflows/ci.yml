@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        components: rustfmt clippy
     - name: Format
       run: cargo fmt --check 
     - name: Linting
@@ -23,10 +26,24 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
+  nix-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v31
+      with:
+        extra_nix_config: |
+          substituters = https://cache.nixos.org/
+          trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+
+    - name: build
+      run: nix build 
+
   windows-build:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
     - name: Build
       run: cargo build --verbose
     - name: Run tests
