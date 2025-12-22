@@ -75,3 +75,11 @@ class Uart {
   }
 };
 ```
+
+## Development
+
+To test the nix package run:
+```sh
+nix build
+nix run
+```

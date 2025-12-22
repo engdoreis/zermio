@@ -2,51 +2,37 @@
   description = "C/C++ environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
+    fenix.url = "github:nix-community/fenix";
   };
 
   outputs = {
     self,
     nixpkgs,
     flake-utils,
-    rust-overlay,
+    fenix,
     ...
   }:
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [rust-overlay.overlays.default];
         };
-        rustToolchain = pkgs.rust-bin.stable.latest.default;
-
-        # This is a derivation to be used downstream.
-        zermio-cli = pkgs.rustPlatform.buildRustPackage rec {
-          pname = "zermio-cli";
-          version = "0.1.0";
-          src = ./.;
-          cargoLock = {
-            lockFile = "${src}/Cargo.lock";
-          };
-
-          doCheck = false;
-          meta = {
-            description = "A CLI tool to generate mmio code from hardware descripition languages";
-            homepage = "https://github.com/engdoreis/zermio";
-          };
+        fenixLib = fenix.packages.${system};
+        rust_toolchain = fenixLib.fromToolchainFile {
+          dir = ./.;
+          sha256 = "sha256-X/4ZBHO3iW0fOenQ3foEvscgAPJYl2abspaBThDOukI=";
         };
+
+        zermio-cli = pkgs.callPackage ./default.nix {};
       in {
         formatter = pkgs.alejandra;
         packages.default = zermio-cli;
-        apps.default = flake-utils.lib.mkApp {
-          drv = zermio-cli;
-        };
 
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            rustup
+            rust_toolchain
             pkg-config
             openssl
             gdb
