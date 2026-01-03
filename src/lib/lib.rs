@@ -5,6 +5,7 @@
 mod filters;
 pub mod generator;
 pub mod mmio;
+pub mod rdljson;
 
 #[cfg(test)]
 mod libtest {
@@ -37,9 +38,9 @@ mod libtest {
             let snapshot = snapshot_dir.join(snapshot.unwrap_or(name));
             assert!(
                 compare_files(&snapshot, &res).unwrap(),
-                "Run the command to check the diff: meld {} {}",
+                "Run the command to check the diff:\nmeld {} {}",
+                res.as_os_str().to_str().unwrap(),
                 snapshot.as_os_str().to_str().unwrap(),
-                res.as_os_str().to_str().unwrap()
             );
         };
 
@@ -50,11 +51,53 @@ mod libtest {
         check_eq("mmio.hh", Some("../../mmio.hh"));
     }
 
+    #[test]
+    #[function_name::named]
+    fn generate_cpp_from_rdljson() {
+        let rdljson = PathBuf::from("resources/tests/input/rdl.json");
+        let snapshot_dir = PathBuf::from("resources/tests/snapshots");
+        let output_dir = PathBuf::from(format!("target/test_{}", function_name!()));
+
+        let _ = std::fs::create_dir(&output_dir);
+
+        let json = std::fs::read_to_string(&rdljson).unwrap();
+        let mut soc = rdljson::SoC::try_from(&json).unwrap();
+        soc.homogeneous_interfaces_to_periperals();
+        let soc = soc.try_into().unwrap();
+
+        generator::cpp::generate(&soc, output_dir.clone(), output_dir.clone(), FILE_HEADER)
+            .unwrap();
+
+        let check_eq = |name: &str, snapshot: Option<&str>| {
+            let res = output_dir.join(name);
+            let snapshot = snapshot_dir
+                .join(function_name!())
+                .join(snapshot.unwrap_or(name));
+            assert!(
+                compare_files(&snapshot, &res).unwrap(),
+                "Run the command to check the diff:\nmeld {} {}",
+                res.as_os_str().to_str().unwrap(),
+                snapshot.as_os_str().to_str().unwrap(),
+            );
+        };
+
+        check_eq("sonata_platform.hh", None);
+        check_eq("timer.hh", None);
+        check_eq("i2c.hh", None);
+        check_eq("pwm.hh", None);
+        check_eq("uart.hh", None);
+        check_eq("gpio.hh", None);
+        check_eq("xadc.hh", None);
+        check_eq("spi.hh", None);
+    }
+
     pub fn compare_files(file_path1: &PathBuf, file_path2: &PathBuf) -> anyhow::Result<bool> {
         // Read the contents of the first file into a vector
         let contents1: Vec<_> = std::fs::read(file_path1)
             .expect(&format!(
-                "Cant't read file {}",
+                "Cant't read file {}\nConsider:\ncp {} {}\n",
+                file_path1.to_str().unwrap(),
+                file_path2.to_str().unwrap(),
                 file_path1.to_str().unwrap()
             ))
             .into_iter()

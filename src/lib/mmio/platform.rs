@@ -6,8 +6,7 @@ pub use crate::mmio::Device;
 pub use crate::mmio::Interrupt;
 pub use crate::mmio::Register;
 
-use svd_rs::device;
-use svd_rs::peripheral;
+pub use crate::rdljson;
 
 #[derive(Debug)]
 pub struct DeviceAddr {
@@ -52,9 +51,9 @@ impl Platform {
     }
 }
 
-impl TryFrom<device::Device> for Platform {
+impl TryFrom<svd_rs::device::Device> for Platform {
     type Error = String;
-    fn try_from(svd_device: device::Device) -> Result<Self, Self::Error> {
+    fn try_from(svd_device: svd_rs::device::Device) -> Result<Self, Self::Error> {
         let mut this = Self {
             name: svd_device.name,
             device_types: Vec::new(),
@@ -64,7 +63,7 @@ impl TryFrom<device::Device> for Platform {
         };
 
         for peripheral in &svd_device.peripherals {
-            let peripheral::Peripheral::Single(info) = peripheral else {
+            let svd_rs::peripheral::Peripheral::Single(info) = peripheral else {
                 return Err("PeripheralInfo array not supported".to_string());
             };
             let device: Device = info.try_into()?;
@@ -82,5 +81,40 @@ impl TryFrom<device::Device> for Platform {
             }
         }
         Ok(this)
+    }
+}
+
+impl From<rdljson::SoC> for Platform {
+    fn from(soc: rdljson::SoC) -> Self {
+        let mut this = Self {
+            name: soc.name,
+            device_types: Vec::new(),
+            interrupts: Vec::new(),
+            bus_width: 32,
+            devices: Vec::new(),
+        };
+
+        for peripheral in &soc.devices {
+            let rdljson::Device::Device(peripheral) = peripheral else {
+                continue;
+            };
+            let device: Device = peripheral.into();
+
+            for (idx, addr) in peripheral.offsets.iter().enumerate() {
+                let suffix = if peripheral.offsets.len() > 1 {
+                    format!("{idx}")
+                } else {
+                    "".to_owned()
+                };
+                this.add_device_addr(
+                    device.type_.clone(),
+                    format!("{}{}", device.name, suffix),
+                    *addr as u64,
+                );
+            }
+
+            this.devices.push(device);
+        }
+        this
     }
 }

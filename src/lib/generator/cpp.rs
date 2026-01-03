@@ -41,17 +41,17 @@ pub struct Platform<'a> {
     source = "
 /* To facilitate compiler optimization of this abstraction, prefer using this struct within a small scope.*/
 struct {{ device.type_|pascal_case }} { 
-{% for register in device.registers %}
-    {%- for info in register.info -%}
+{%- for register in device.registers %}
+    {%- for info in register.info %}
     {{ info.type_|pascal_case }}Reg {{info.name|lower}};
-    {% endfor -%}
-{% endfor %}
+    {%- endfor %}
+{%- endfor %}
     
     constexpr {{ device.type_|pascal_case }} (platform::{{ device.type_|pascal_case }} addr): 
-{%- for register in device.registers -%}
-    {%- for info in register.info -%}
+{%- for register in device.registers %}
+    {%- for info in register.info %}
         {{info.name|lower}}(addr + {{ info.offset|hex }}){%- if !loop.last -%}, {% endif %}
-    {%- endfor -%}
+    {%- endfor %}
     {%- if !loop.last -%}, {% endif -%}
 {%- endfor -%}
     {}
@@ -82,7 +82,7 @@ union {{ register.info[0].type_|pascal_case }}Reg {
 
     inline void commit() { reg_.commit(); }
 
-    inline {{ register.info[0].name|pascal_case }}Reg& fetch() {
+    inline {{ register.info[0].type_|pascal_case }}Reg& fetch() {
         reg_.fetch();
         return *this;
     }

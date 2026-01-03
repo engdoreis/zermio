@@ -10,7 +10,7 @@
 namespace mmio {
 namespace timer {
 
-/* mtime low */
+/*  */
 union MtimelReg { 
     private:
       zermio::Register reg_;
@@ -30,7 +30,7 @@ union MtimelReg {
 
 
 
-/* mtime high */
+/*  */
 union MtimehReg { 
     private:
       zermio::Register reg_;
@@ -50,7 +50,7 @@ union MtimehReg {
 
 
 
-/* mtime cmp low */
+/*  */
 union MtimecmplReg { 
     private:
       zermio::Register reg_;
@@ -70,7 +70,7 @@ union MtimecmplReg {
 
 
 
-/* mtime cmp high */
+/*  */
 union MtimecmphReg { 
     private:
       zermio::Register reg_;

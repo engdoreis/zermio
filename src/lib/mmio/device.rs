@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pub use crate::mmio::Register;
-use svd_rs::peripheral;
-use svd_rs::registercluster;
+pub use crate::rdljson;
 
 #[derive(Debug)]
 pub struct Device {
@@ -35,26 +34,26 @@ impl Device {
     }
 }
 
-impl TryFrom<&peripheral::PeripheralInfo> for Device {
+impl TryFrom<&svd_rs::peripheral::PeripheralInfo> for Device {
     type Error = String;
-    fn try_from(info: &peripheral::PeripheralInfo) -> Result<Self, Self::Error> {
+    fn try_from(periph: &svd_rs::peripheral::PeripheralInfo) -> Result<Self, Self::Error> {
         // i.e UART0
-        let device_name = info.name.replace(" ", "_").to_uppercase();
+        let device_name = periph.name.replace(" ", "_").to_uppercase();
 
         // i.e UART
-        let device_type = Device::get_type(info.derived_from.as_ref().unwrap_or(&device_name));
+        let device_type = Device::get_type(periph.derived_from.as_ref().unwrap_or(&device_name));
 
         let mut device = Device::new(&device_name, &device_type);
-        let Some(ref registers) = info.registers else {
+        let Some(ref registers) = periph.registers else {
             return Ok(device);
         };
 
         for register_cluster in registers {
             match register_cluster {
-                registercluster::RegisterCluster::Register(register) => {
+                svd_rs::registercluster::RegisterCluster::Register(register) => {
                     device.registers.push(register.into())
                 }
-                registercluster::RegisterCluster::Cluster(cluster) => {
+                svd_rs::registercluster::RegisterCluster::Cluster(cluster) => {
                     match Register::try_from(cluster) {
                         Ok(registers) => {
                             device.registers.extend(registers);
@@ -65,5 +64,27 @@ impl TryFrom<&peripheral::PeripheralInfo> for Device {
             };
         }
         Ok(device)
+    }
+}
+
+impl From<&rdljson::Peripheral> for Device {
+    fn from(periph: &rdljson::Peripheral) -> Self {
+        // i.e UART0
+        let device_name = periph.name.replace(" ", "_").to_uppercase();
+
+        // i.e UART
+        let device_type = &periph.type_name;
+
+        let mut device = Device::new(&device_name, device_type);
+        device.registers.extend(
+            periph
+                .interfaces
+                .iter()
+                .flat_map(|inter| inter.regs.iter())
+                .map(|reg| reg.into())
+                .collect::<Vec<_>>(),
+        );
+
+        device
     }
 }

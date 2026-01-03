@@ -79,15 +79,15 @@ namespace zermio {
         return *this;
       }
 
-      inline constexpr auto& bit_mask(std::size_t value, std::size_t offset) {
+      inline constexpr auto& write_mask(std::size_t value, std::size_t offset) {
         static_assert(BITS > 1, ">> Error: This bitfield is multibit. Try using set or reset. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
-        reg.cache &= ~((0x01 << (OFFSET+offset)) & mask());
+        reg.cache &= ~((value << (OFFSET+offset)) & mask());
         reg.cache |= ((value << (OFFSET+offset)) & mask());
         return *this;
       }
 
-      inline constexpr auto& bit (bool bit)  {
+      inline constexpr auto& assign (bool bit)  {
         static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
         reg.cache |= (static_cast<std::size_t>(bit) << OFFSET);
