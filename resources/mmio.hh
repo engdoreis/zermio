@@ -87,7 +87,7 @@ namespace zermio {
         return *this;
       }
 
-      inline constexpr auto& bit (bool bit)  {
+      inline constexpr auto& assign (bool bit)  {
         static_assert(BITS == 1, ">> Error: This bitfield is multibit. Try using write or clear. <<");
         static_assert(Writable<P>, ">> Error: This bitfield can't be write. <<");
         reg.cache |= (static_cast<std::size_t>(bit) << OFFSET);
