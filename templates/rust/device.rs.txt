@@ -1,0 +1,48 @@
+{%- set type_ = inner.type_ %}
+{%- if !inner.registers.is_empty() %}
+
+//! These are the registers present in the {{inner.type_}} 
+//! | Register name      | Description  | Offset | Write | Read| 
+//! | :---               | :---         | :---   | :--   | :-- |
+{%- for reg in inner.registers %}
+  {%- for info in reg.info %}
+//! | {{info.name}} | {{info.desc}} | {{info.offset|hex}} | {{reg.is_writable()}} |{{reg.is_readable()}} |
+  {%- endfor %}
+{%- endfor %}
+
+use super::zermio;
+  {%- set reg = inner.registers[0].info[0].name.to_lowercase() %}
+  {%- set field = inner.registers[0].bitfields[0].name.to_lowercase() %}
+/// ``` rust
+/// {{type_|lower}}.{{reg}}.update(|{{reg}}| {
+///     if {{reg}}.{{field}}().read() == 1 {
+///        {{reg}}.{{field}}().write(0);
+///     }
+/// });
+/// ```
+{%- endif %}
+pub struct {{type_|pascal_case}} {
+{%- for reg in inner.registers %}
+  {%- for info in reg.info %}
+    /// {{info.desc}}  
+    pub {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }},
+  {%- endfor %}
+{%- endfor %}
+}
+
+impl {{type_|pascal_case}} {
+    pub fn new(instance: u32) -> Self {
+{%- if inner.registers.is_empty() %}
+    let _addr = instance as u32;
+{%- else %}
+    let addr = instance as u32;
+{%- endif %}
+      Self {
+{%- for reg in inner.registers %}
+  {%- for info in reg.info %}
+        {{ info.name|lower }} : {{ info.name|lower }}::{{ info.name|pascal_case }}::new(addr + {{info.offset|hex}} ),
+  {%- endfor %}
+{%- endfor %}
+      }
+  }
+}

@@ -53,6 +53,14 @@ impl Register {
         }
     }
 
+    pub fn is_readable(&self) -> bool {
+        self.bitfields.iter().any(|f| f.permissions.is_readable())
+    }
+
+    pub fn is_writable(&self) -> bool {
+        self.bitfields.iter().any(|f| f.permissions.is_writable())
+    }
+
     pub fn try_from(cluster: &cluster::Cluster) -> Result<Vec<Self>, String> {
         let cluster::Cluster::Array(info, dim) = cluster else {
             unreachable!()

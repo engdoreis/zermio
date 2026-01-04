@@ -4,7 +4,7 @@
 pub use crate::rdljson;
 use svd_rs::access as svd_rs;
 
-#[derive(Debug, Clone, Default, strum::Display, strum::IntoStaticStr)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, strum::Display, strum::IntoStaticStr)]
 pub enum Permissions {
     #[default]
     ReadWrite,
@@ -12,6 +12,19 @@ pub enum Permissions {
     Read,
     Write,
     WriteOnce,
+}
+
+impl Permissions {
+    pub fn is_readable(self) -> bool {
+        self == Self::ReadWrite || self == Self::Read || self == Self::ReadWriteOnce
+    }
+
+    pub fn is_writable(self) -> bool {
+        self == Self::ReadWrite
+            || self == Self::WriteOnce
+            || self == Self::Write
+            || self == Self::ReadWriteOnce
+    }
 }
 
 impl From<&str> for Permissions {

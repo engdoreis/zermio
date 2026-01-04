@@ -1,0 +1,53 @@
+{%-set newline = "" %}
+{%- for device_type in inner.device_types %}
+use super::{{device_type.type_name|lower}};
+{%- endfor %}
+{{newline}}
+
+{%- for device_type in inner.device_types %}
+pub enum {{ device_type.type_name|pascal_case }}Offset{ 
+  {%- for device in device_type.devices %}
+  {{ device.name|pascal_case }} = {{device.address}},
+  {%- endfor %}
+}
+{{newline}}
+{%- endfor %}
+
+pub enum Interrupt{ 
+{%- for interrupt in inner.interrupts %}
+  {{ interrupt.name|pascal_case }} = {{interrupt.value}}, 
+{%- endfor %}
+}
+
+#[no_mangle]
+static mut DEVICE_PERIPHERALS: bool = false;
+
+pub struct Peripherals {
+{%- for device_type in inner.device_types %}
+  {%- for device in device_type.devices %}
+  pub {{ device.name|lower}}: {{ device_type.type_name|lower }}::{{ device_type.type_name|pascal_case }},
+  {%- endfor -%}
+{%- endfor -%}
+}
+
+impl Peripherals {
+  #[inline]
+  pub fn take() -> Option<Self> {
+    //TODO: Critical section
+    if unsafe { DEVICE_PERIPHERALS } {
+        return None;
+    }
+    Some(unsafe { Peripherals::steal() })
+  }
+  #[inline]
+  pub unsafe fn steal() -> Self {
+    DEVICE_PERIPHERALS = true;
+    Self {
+{%- for device_type in inner.device_types %}
+  {%- for device in device_type.devices %}
+        {{ device.name|lower}}: {{ device_type.type_name|lower}}::{{ device_type.type_name|pascal_case }}::new({{ device_type.type_name|pascal_case}}Offset::{{ device.name|pascal_case}} as u32),
+  {%- endfor -%}
+{%- endfor -%}
+    }
+  }
+}

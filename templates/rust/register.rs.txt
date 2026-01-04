@@ -1,0 +1,96 @@
+{%- set newline = "" %}
+{%- set type_ = inner.info[0].type_ %}
+
+
+/// {{ inner.info[0].desc }}.  
+pub use self::{{type_|lower}}::*;
+mod {{type_|lower}} {
+
+  use super::*;
+
+  /// # {{type_}} fields.  
+  /// | Field name      | Description  | Offset | Write | Read| 
+  /// | :---               | :---         | :---   | :--   | :-- |
+{%- for bitfield in inner.bitfields %}
+  /// | {{bitfield.name}} | {{bitfield.desc}} | [{{bitfield.offset + bitfield.bit_size -1}}:{{bitfield.offset}}] | {{bitfield.permissions.is_writable()}} |{{bitfield.permissions.is_readable()}} |
+{%- endfor %}
+  pub struct {{type_|pascal_case}} {
+    reg: zermio::Register<u32>,
+  }
+
+  impl {{type_|pascal_case}} {
+    pub fn new(addr: u32) -> Self {
+      Self {
+        reg: zermio::Register::<u32>::new(addr as usize),
+      }
+    }
+
+{%- for bitfield in inner.bitfields %}
+  /// Hardware description: {{bitfield.desc}}
+  ///
+  /// Returns a BitField with {{ bitfield.permissions }} permissions, providing the following functions:
+  /// | Method                | Description                                     |
+  /// | :---                  | :---                                            |
+  {%- if bitfield.permissions.is_readable() %}
+  /// | **`get()`**           | Returns the current value of the field.         |
+  {%- if bitfield.bit_size == 1 %}
+  /// | **`is_set()`**        | Returns `true` if the bit is 1.                 |
+    {%- endif %}
+  {%- endif %}
+  {%- if bitfield.permissions.is_writable() %}
+  /// | **`write(val)`**      | Writes a multi-bit `val` to the field.          |
+  /// | **`clear()`**         | Sets all bits in the field to 0.                |
+  /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
+    {%- if bitfield.bit_size == 1 %}
+  /// | **`set()`**           | Sets a single-bit field to 1.                   |
+  /// | **`reset()`**         | Sets a single-bit field to 0.                   |
+  /// | **`toggle()`**        | Inverts the current state of a single-bit field.|
+  /// | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   |
+    {%- endif %}
+  {%- endif %}
+  /// | **`mask()`**          | Returns the bitmask for this field.             |
+  /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  ///
+    pub fn {{bitfield.name|lower}}(&mut self) -> {{bitfield.name|pascal_case}}Field {
+        {{bitfield.name|pascal_case}}Field::new(&mut self.reg)
+    }
+{{newline}}
+{%- endfor %}
+
+{%- if inner.is_readable() %}
+    /// Run a load instruction to read from MMIO
+    pub fn fetch(&mut self) -> &mut Self {
+      self.reg.fetch();
+      self
+    }
+{%- endif %}
+{%- if inner.is_writable() %}
+    /// Run a store instruction to write the MMIO
+    pub fn commit(&mut self) {
+      self.reg.commit()
+    }
+    /// Call action to update the inner self, then run a store instruction to write it to the MMIO
+    pub fn write<F>(&mut self, action: F)
+    where
+      F: FnOnce(&mut Self),
+    {
+      action(self);
+      self.reg.commit();
+    }
+{%- endif %}
+{%- if inner.is_writable() && inner.is_readable() %}
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// to write it to the MMIO
+    pub fn update<F>(&mut self, action: F)
+    where
+        F: FnOnce(&mut Self),
+    {
+      self.reg.fetch();
+      self.write(action);
+    }
+{%- endif %}
+  }
+{%- for bitfield in inner.bitfields %}
+  type {{ bitfield.name|pascal_case }}Field<'a> = zermio::BitField<'a, {{bitfield.offset}}, {{bitfield.bit_size}}, u32, zermio::access::{{bitfield.permissions}}>;
+{%- endfor %}
+}
