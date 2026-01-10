@@ -87,6 +87,11 @@ impl Peripherals {
     }
     Some(unsafe { Peripherals::steal() })
   }
+  /// Steals the singleton instance.
+  /// # Safety
+  ///
+  /// The caller must ensure that this function is only called once and taht no other references to
+  /// the underlying resource exist.
   #[inline]
   pub unsafe fn steal() -> Self {
     DEVICE_PERIPHERALS = true;
