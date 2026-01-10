@@ -1,10 +1,81 @@
-zermio (ZERo cost Memory mapped Input and Output) is a toolkit based on svd2rust that can ingest SVDs files and generate C++ abstractions to write and read mmios in a very efficiente way.
+zermio (ZERo cost Memory mapped Input and Output) is a toolkit based on svd2rust that can ingest SVDs and rdl2ot files to generate Rust and C++ abstractions to write and read mmios in a very efficiente way.
+
+## Generating Rust register interfaces.
+Generating the Rust MMIO abstractions for Ibex demo system with the command:
+
+```sh
+wget https://raw.githubusercontent.com/lowRISC/ibex-demo-system/refs/heads/main/data/ibex.svd -O /tmp/ibex.svd
+cargo run import-svd --svd /tmp/ibex.svd export-rust --dir /tmp/ 
+```
+
+Customizing the license header on each generated source file.
+
+```sh
+cargo run import-svd --header-file=/tmp/header.md --svd /tmp/ibex.svd export-rust --dir /tmp/ 
+```
+### Examples
+
+This is a simple example of how to write an UART driver using the register interface generate by the previous section.
+```rust
+#![no_main]
+#![no_std]
+extern crate panic_halt as _;
+
+use core::fmt::{self, Write};
+use riscv_rt::entry;
+
+const CPU_CLOCK_HZ: u32 = 50_000_000;
+const BAUD: u64 = 921600;
+
+#[entry]
+fn main() -> ! {
+    let peri = zermio::ibex::Peripherals::take().unwrap();
+    let mut uart = Uart::new(peri.uart);
+    let _ = writeln!(uart, "Hello Rusty!!");
+    loop {}
+}
+
+struct Uart {
+    regs: zermio::uart::Uart,
+}
+
+impl Uart {
+    fn new(mut regs: zermio::uart::Uart) -> Self {
+        let nco = (BAUD << 20) / CPU_CLOCK_HZ as u64;
+        regs.ctrl.write(|ctrl| {
+            ctrl.nco().write(nco as u32);
+            ctrl.tx().set();
+            ctrl.rx().set();
+        });
+        Self { regs }
+    }
+
+    fn write(&mut self, buf: &[u8]) {
+        for c in buf {
+            self.putc(*c);
+        }
+    }
+
+    fn putc(&mut self, c: u8) {
+        while self.regs.status.fetch().txfull().is_set() {}
+        self.regs.wdata.wdata().write(c.into()).commit();
+    }
+}
+
+// Implementing this trait will allow we use the `writeln!` macro to format log messages.
+impl core::fmt::Write for Uart {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write(s.as_bytes());
+        Ok(())
+    }
+}
+```
+
+## Generating C++ register interfaces.
 
 The Generated abstractions are based on C++20 standard, using powerfull and efficient features such as `concepts` and `costexpr` to deliver the size and performance of equivalent C drivers.
 
 In tests with gcc 15 and clang 19 with optimization `O2` the abstraction was completelly inlined to a few instructions.
-
-## Generating C++ register interfaces.
 Generating the C++ MMIO abstractions for Ibex demo system with the command:
 
 ```sh
@@ -18,7 +89,7 @@ Customizing the license header on each generated source file.
 cargo run import-svd --header-file=/tmp/header.md --svd /tmp/ibex.svd export-cpp --dir /tmp/ --periph-dir /tmp/proj/mmio/
 ```
 
-## Examples
+### Examples
 
 This is a simple example of how to write an UART driver using the register interface generate by the previous section.
 ```c++
