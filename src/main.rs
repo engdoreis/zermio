@@ -19,11 +19,11 @@ static FILE_HEADER: &str = r#"
 enum Input {
     ImportSvd {
         /// A path to a svd file
-        #[arg(long, short, value_parser =  PathBuf::from_str)]
+        #[arg(long, value_parser =  PathBuf::from_str)]
         svd: PathBuf,
         /// A path to a text with containing the licence header that should be added to every
         /// generated file.
-        #[arg(long, short, value_parser =  PathBuf::from_str)]
+        #[arg(long, value_parser =  PathBuf::from_str)]
         header_file: Option<PathBuf>,
         #[command(subcommand)]
         output: Output,
@@ -35,13 +35,13 @@ enum Input {
 
         /// A path to a text with containing the licence header that should be added to every
         /// generated file.
-        #[arg(long, short, value_parser =  PathBuf::from_str)]
+        #[arg(long, value_parser =  PathBuf::from_str)]
         header_file: Option<PathBuf>,
 
         /// Whether the parser should try to optimize and group:
         /// - Devices of the same type;
         /// - Split homogeneous interfaces of a device into devices.
-        #[arg(long, short, action)]
+        #[arg(long, action)]
         no_optimize: bool,
         #[command(subcommand)]
         output: Output,
@@ -58,6 +58,11 @@ enum Output {
         /// A dir to output the header with the peripheral addresses.
         #[arg(long, short, value_parser =  PathBuf::from_str)]
         periph_dir: Option<PathBuf>,
+    },
+    ExportRust {
+        /// A dir to output the peripheral implementation.
+        #[arg(long, short, value_parser =  PathBuf::from_str)]
+        dir: PathBuf,
     },
 }
 
@@ -137,6 +142,13 @@ fn main() -> anyhow::Result<(), String> {
             }
 
             generator::cpp::generate(&device, dir, periph_dir, &header).unwrap();
+        }
+        Output::ExportRust { dir } => {
+            if !dir.is_dir() {
+                return Err("Output path is not a dir!".to_string());
+            }
+
+            generator::rust::generate(&device, dir, &header).unwrap();
         }
     }
 

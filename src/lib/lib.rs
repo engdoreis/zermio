@@ -91,6 +91,48 @@ mod libtest {
         check_eq("spi.hh", None);
     }
 
+    #[test]
+    #[function_name::named]
+    fn generate_rust_from_rdljson() {
+        let rdljson = PathBuf::from("resources/tests/input/rdl.json");
+        let snapshot_dir = PathBuf::from("resources/tests/snapshots");
+        let output_dir = PathBuf::from(format!("target/test_{}", function_name!()));
+
+        let _ = std::fs::create_dir(&output_dir);
+
+        let json = std::fs::read_to_string(&rdljson).unwrap();
+        let mut soc = rdljson::SoC::try_from(&json).unwrap();
+        soc.homogeneous_interfaces_to_periperals();
+        let soc = soc.try_into().unwrap();
+
+        generator::rust::generate(&soc, output_dir.clone(), FILE_HEADER).unwrap();
+
+        let check_eq = |name: &str, snapshot: Option<&str>| {
+            let res = output_dir.join(name);
+            let snapshot = snapshot_dir
+                .join(function_name!())
+                .join(snapshot.unwrap_or(name));
+            assert!(
+                compare_files(&snapshot, &res).unwrap(),
+                "Run the command to check the diff:\nmeld {} {}",
+                res.as_os_str().to_str().unwrap(),
+                snapshot.as_os_str().to_str().unwrap(),
+            );
+        };
+
+        check_eq("sonata.rs", None);
+        check_eq("lib.rs", None);
+        check_eq("gpio.rs", None);
+        check_eq("pwm.rs", None);
+        check_eq("xadc.rs", None);
+        check_eq("timer.rs", None);
+        check_eq("uart.rs", None);
+        check_eq("i2c.rs", None);
+        check_eq("spi.rs", None);
+        check_eq("spi.rs", None);
+        check_eq("spi.rs", None);
+    }
+
     pub fn compare_files(file_path1: &PathBuf, file_path2: &PathBuf) -> anyhow::Result<bool> {
         // Read the contents of the first file into a vector
         let contents1: Vec<_> = std::fs::read(file_path1)
