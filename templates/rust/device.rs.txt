@@ -40,7 +40,7 @@ impl {{type_|pascal_case}} {
       Self {
 {%- for reg in inner.registers %}
   {%- for info in reg.info %}
-        {{ info.name|lower }} : {{ info.name|lower }}::{{ info.name|pascal_case }}::new(addr + {{info.offset|hex}} ),
+        {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr + {{info.offset|hex}} ),
   {%- endfor %}
 {%- endfor %}
       }
