@@ -19,7 +19,7 @@ pub enum Interrupt{
 {%- endfor %}
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 static mut DEVICE_PERIPHERALS: bool = false;
 
 pub struct Peripherals {
@@ -41,7 +41,7 @@ impl Peripherals {
   }
   #[inline]
   pub unsafe fn steal() -> Self {
-    DEVICE_PERIPHERALS = true;
+    unsafe{DEVICE_PERIPHERALS = true;};
     Self {
 {%- for device_type in inner.device_types %}
   {%- for device in device_type.devices %}
