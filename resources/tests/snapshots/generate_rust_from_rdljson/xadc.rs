@@ -46,13 +46,13 @@ impl Xadc {
     pub fn new(instance: u32) -> Self {
     let addr = instance as u32;
       Self {
-        config0 : config0::Config0::new(addr + 0x40 ),
-        config1 : config1::Config1::new(addr + 0x41 ),
-        config2 : config2::Config2::new(addr + 0x42 ),
-        test_reg0 : test_reg0::TestReg0::new(addr + 0x43 ),
-        test_reg1 : test_reg1::TestReg1::new(addr + 0x44 ),
-        test_reg2 : test_reg2::TestReg2::new(addr + 0x45 ),
-        test_reg3 : test_reg3::TestReg3::new(addr + 0x46 ),
+        config0 : config::Config::new(addr + 0x40 ),
+        config1 : config::Config::new(addr + 0x41 ),
+        config2 : config::Config::new(addr + 0x42 ),
+        test_reg0 : test_reg::TestReg::new(addr + 0x43 ),
+        test_reg1 : test_reg::TestReg::new(addr + 0x44 ),
+        test_reg2 : test_reg::TestReg::new(addr + 0x45 ),
+        test_reg3 : test_reg::TestReg::new(addr + 0x46 ),
       }
   }
 }
