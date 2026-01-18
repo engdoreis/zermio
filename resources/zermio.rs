@@ -33,20 +33,28 @@ pub trait UnsignedInteger:
     + BitXor<Self>
     + BitXorAssign<Self>
     + PartialEq
+    + PartialOrd
     + Copy
 {
     fn from(x: usize) -> Self;
+    fn max() -> Self;
 }
 
 impl UnsignedInteger for u32 {
     fn from(x: usize) -> Self {
         x as u32
     }
+    fn max() -> Self {
+        u32::MAX
+    }
 }
 
 impl UnsignedInteger for u64 {
     fn from(x: usize) -> Self {
         x as u64
+    }
+    fn max() -> Self {
+        u64::MAX
     }
 }
 
@@ -61,6 +69,15 @@ impl<'a, const OFFSET: usize, const BITS: usize, T, ACCESS> BitField<'a, OFFSET,
 where
     T: UnsignedInteger,
 {
+    const _CHECK: () = assert!(
+        BITS <= core::mem::size_of::<T>() * 8,
+        "Bitfield width exceeds type size"
+    );
+    const _CHECK2: () = assert!(
+        (BITS + OFFSET) > core::mem::size_of::<T>() * 8,
+        "Offset exceeds type size"
+    );
+
     pub fn new(reg: &'a mut Register<T>) -> Self {
         Self {
             reg,
@@ -68,15 +85,22 @@ where
         }
     }
 
-    pub fn mask() -> T {
+    pub fn mask(&self) -> T {
         if BITS == size_of::<T>() * 8usize {
-            return T::from(size_of::<T>() * 8usize);
+            return T::max();
         }
         T::from(((0x01 << BITS) - 1) << OFFSET)
     }
 
-    pub fn max() -> T {
+    pub fn max(&self) -> T {
+        if BITS == size_of::<T>() * 8usize {
+            return T::max();
+        }
         T::from((1 << BITS) - 1)
+    }
+
+    pub fn in_range(&self, val: T) -> bool {
+        self.max() <= val
     }
 }
 
@@ -88,18 +112,18 @@ where
 {
     pub fn write(&mut self, value: T) -> &mut Self {
         self.clear();
-        self.reg.cache |= (value << T::from(OFFSET)) & Self::mask();
+        self.reg.cache |= (value << T::from(OFFSET)) & self.mask();
         self
     }
 
     pub fn clear(&mut self) -> &mut Self {
-        self.reg.cache &= !Self::mask();
+        self.reg.cache &= !self.mask();
         self
     }
 
     pub fn write_mask(&mut self, val: T) -> &mut Self {
-        self.reg.cache &= !(val << T::from(OFFSET) & Self::mask());
-        self.reg.cache |= (val << T::from(OFFSET)) & Self::mask();
+        self.reg.cache &= !(val << T::from(OFFSET) & self.mask());
+        self.reg.cache |= (val << T::from(OFFSET)) & self.mask();
         self
     }
 
@@ -143,7 +167,7 @@ where
     T: UnsignedInteger,
 {
     pub fn get(&self) -> T {
-        (self.reg.cache & Self::mask()) >> T::from(OFFSET)
+        (self.reg.cache & self.mask()) >> T::from(OFFSET)
     }
 
     pub fn fetch(&mut self) -> &mut Self {
@@ -159,7 +183,7 @@ where
     T: UnsignedInteger,
 {
     pub fn is_set(&self) -> bool {
-        (self.reg.cache & Self::mask()) == Self::mask()
+        (self.reg.cache & self.mask()) == self.mask()
     }
 }
 
@@ -192,6 +216,78 @@ where
 #[cfg(all(test, target_arch = "x86_64"))]
 mod unittest {
     use super::*;
+    #[test]
+    fn test_max() {
+        let mem = 0u32;
+        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
+
+        assert_eq!(
+            BitField::<10, 1, u32, access::ReadWrite>::new(&mut reg).max(),
+            1
+        );
+        assert_eq!(
+            BitField::<10, 2, u32, access::ReadWrite>::new(&mut reg).max(),
+            (1 << 2) - 1
+        );
+        assert_eq!(
+            BitField::<0, 10, u32, access::ReadWrite>::new(&mut reg).max(),
+            (1 << 10) - 1
+        );
+        assert_eq!(
+            BitField::<1, 10, u32, access::ReadWrite>::new(&mut reg).max(),
+            (1 << 10) - 1
+        );
+        assert_eq!(
+            BitField::<0, 32, u32, access::ReadWrite>::new(&mut reg).max(),
+            u32::MAX
+        );
+
+        let mem = 0u64;
+        let mut reg = Register::<u64>::new((&mem as *const u64) as usize);
+        assert_eq!(
+            BitField::<0, 64, u64, access::ReadWrite>::new(&mut reg).max(),
+            u64::MAX
+        );
+        assert_eq!(
+            BitField::<1, 64, u64, access::ReadWrite>::new(&mut reg).max(),
+            u64::MAX
+        );
+    }
+
+    #[test]
+    fn test_mask() {
+        let mem = 0u32;
+        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
+
+        assert_eq!(
+            BitField::<10, 1, u32, access::ReadWrite>::new(&mut reg).mask(),
+            1 << 10
+        );
+        assert_eq!(
+            BitField::<10, 2, u32, access::ReadWrite>::new(&mut reg).mask(),
+            3 << 10
+        );
+        assert_eq!(
+            BitField::<0, 10, u32, access::ReadWrite>::new(&mut reg).mask(),
+            (1 << 10) - 1
+        );
+        assert_eq!(
+            BitField::<1, 10, u32, access::ReadWrite>::new(&mut reg).mask(),
+            ((1 << 10) - 1) << 1
+        );
+        assert_eq!(
+            BitField::<0, 32, u32, access::ReadWrite>::new(&mut reg).mask(),
+            u32::MAX
+        );
+
+        let mem = 0u64;
+        let mut reg = Register::<u64>::new((&mem as *const u64) as usize);
+        assert_eq!(
+            BitField::<0, 64, u64, access::ReadWrite>::new(&mut reg).mask(),
+            u64::MAX
+        );
+    }
+
     #[test]
     fn test_set_reset() {
         let mem = 0u32;
