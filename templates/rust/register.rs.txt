@@ -50,6 +50,7 @@ mod {{type_|lower}} {
   {%- endif %}
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn {{bitfield.name|lower}}(&mut self) -> {{bitfield.name|pascal_case}}Field {
         {{bitfield.name|pascal_case}}Field::new(&mut self.reg)

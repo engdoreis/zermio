@@ -34,6 +34,7 @@ pub trait UnsignedInteger:
     + BitXor<Self>
     + BitXorAssign<Self>
     + PartialEq
+    + PartialOrd
     + Copy
 {
     fn from(x: usize) -> Self;
@@ -100,6 +101,10 @@ where
             return T::max();
         }
         T::from((1 << BITS) - 1)
+    }
+
+    pub fn in_range(&self, val: T) -> bool {
+        self.max() >= val
     }
 }
 

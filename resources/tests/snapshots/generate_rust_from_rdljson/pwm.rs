@@ -70,6 +70,7 @@ mod width {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)
@@ -138,6 +139,7 @@ mod counter {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)

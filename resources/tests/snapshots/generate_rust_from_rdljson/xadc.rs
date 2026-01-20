@@ -95,6 +95,7 @@ mod config {
   /// | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn cfg(&mut self) -> CfgField {
         CfgField::new(&mut self.reg)
@@ -168,6 +169,7 @@ mod test_reg {
   /// | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn tr(&mut self) -> TrField {
         TrField::new(&mut self.reg)

@@ -63,6 +63,7 @@
 //! | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   | `bool`| W |
 //! | **`mask()`**          | Returns the bitmask for this field.             | `u32` | - |
 //! | **`max()`**           | Returns the maximum value this field can hold.  | `u32` | - |
+//! | **`in_range(val)`**   | Returns true if val fits in the field.          | `u32` | - |
 //!
 //! ## Example
 //! The following example is for the Opentitan Uart.
