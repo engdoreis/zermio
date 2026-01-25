@@ -109,7 +109,7 @@ where
 }
 
 // Impl block for Write access permission.
-impl<'a, const OFFSET: usize, const BITS: usize, T, ACCESS> BitField<'a, OFFSET, BITS, T, ACCESS>
+impl<const OFFSET: usize, const BITS: usize, T, ACCESS> BitField<'_, OFFSET, BITS, T, ACCESS>
 where
     ACCESS: access::Writable,
     T: UnsignedInteger,
@@ -137,7 +137,7 @@ where
 }
 
 // Impl block for single bit fields and Write access permission.
-impl<'a, const OFFSET: usize, T, ACCESS> BitField<'a, OFFSET, 1, T, ACCESS>
+impl<const OFFSET: usize, T, ACCESS> BitField<'_, OFFSET, 1, T, ACCESS>
 where
     ACCESS: access::Writable,
     T: UnsignedInteger,
@@ -165,7 +165,7 @@ where
 }
 
 // Impl block for Read access permission.
-impl<'a, const OFFSET: usize, const BITS: usize, T, ACCESS> BitField<'a, OFFSET, BITS, T, ACCESS>
+impl<const OFFSET: usize, const BITS: usize, T, ACCESS> BitField<'_, OFFSET, BITS, T, ACCESS>
 where
     ACCESS: access::Readable,
     T: UnsignedInteger,
@@ -181,7 +181,7 @@ where
 }
 
 // Impl block for single bit fields and Read access permission.
-impl<'a, const OFFSET: usize, T, ACCESS> BitField<'a, OFFSET, 1, T, ACCESS>
+impl<const OFFSET: usize, T, ACCESS> BitField<'_, OFFSET, 1, T, ACCESS>
 where
     ACCESS: access::Readable,
     T: UnsignedInteger,
