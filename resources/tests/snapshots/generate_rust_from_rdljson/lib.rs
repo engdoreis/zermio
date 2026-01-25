@@ -6,7 +6,7 @@
 /* The best way to read and explor this documentation is by rendering it with:*/
 /*`cargo doc --open`*/
 
-#![no_std]
+#![cfg_attr(not(test), no_std)]
 
 //! # sonata Zermio
 //!
