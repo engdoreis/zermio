@@ -8,6 +8,7 @@ pub mod interrupt;
 pub mod permissions;
 pub mod platform;
 pub mod register;
+pub mod windows;
 
 pub use bitfield::Bitfield;
 pub use device::Device;
@@ -15,5 +16,6 @@ pub use interrupt::Interrupt;
 pub use permissions::Permissions;
 pub use platform::Platform;
 pub use register::Register;
+pub use windows::Windows;
 
 static WIDTH: u32 = 32;
