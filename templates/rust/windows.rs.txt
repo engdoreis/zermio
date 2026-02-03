@@ -1,0 +1,30 @@
+{%- set newline = "" %}
+{%- set type_ = inner.type_name %}
+
+
+/// {{ inner.desc }}.  
+pub use self::{{type_|lower}}::*;
+mod {{type_|lower}} {
+
+  use super::*;
+
+  pub struct {{type_|pascal_case}} {
+    window: zermio::Memory<u32>,
+  }
+
+  impl {{type_|pascal_case}} {
+    pub fn new(addr: u32) -> Self {
+      Self {
+        window: zermio::Memory::<u32>::new(addr as usize, {{ inner.entries * inner.width / 8 }}),
+      }
+    }
+
+    pub fn read(&mut self, dst: &mut [u8]) {
+        self.window.read(dst)
+    }
+
+    pub fn write_fifo(&mut self, src: &[u8]) {
+        self.window.write_fifo(src)
+    }
+  }
+}

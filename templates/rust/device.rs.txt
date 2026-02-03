@@ -28,6 +28,9 @@ pub struct {{type_|pascal_case}} {
     pub {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }},
   {%- endfor %}
 {%- endfor %}
+{%- for win in inner.windows %}
+    pub {{ win.name|lower }} : {{ win.type_name|lower }}::{{ win.type_name|pascal_case }},
+{%- endfor %}
 }
 
 impl {{type_|pascal_case}} {
@@ -37,12 +40,15 @@ impl {{type_|pascal_case}} {
 {%- else %}
     let addr = instance as u32;
 {%- endif %}
-      Self {
+    Self {
 {%- for reg in inner.registers %}
   {%- for info in reg.info %}
-        {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr + {{info.offset|hex}} ),
+      {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr + {{info.offset|hex}} ),
   {%- endfor %}
 {%- endfor %}
-      }
+{%- for win in inner.windows %}
+      {{ win.name|lower }} : {{ win.type_name|lower }}::{{ win.type_name|pascal_case }}::new(addr + {{win.offset|hex}} ),
+{%- endfor %}
+    }
   }
 }

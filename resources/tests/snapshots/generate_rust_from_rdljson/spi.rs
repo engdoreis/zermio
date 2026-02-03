@@ -52,24 +52,28 @@ pub struct Spi {
     pub info : info::Info,
     /// Specifies which peripherals are selected for transmit/receive operations.   An operation may select multiple peripherals simultaneously but this functionality   shall be used only for transmit operations.   This register shall be changed only when the SPI controller is idle, not whilst   a transmit/receive operation may be in progress.  
     pub cs : cs::Cs,
+    pub rxdata : rxdata::Rxdata,
+    pub txdata : txdata::Txdata,
 }
 
 impl Spi {
     pub fn new(instance: u32) -> Self {
     let addr = instance as u32;
-      Self {
-        intr_state : intr_state::IntrState::new(addr + 0x0 ),
-        intr_enable : intr_enable::IntrEnable::new(addr + 0x4 ),
-        intr_test : intr_test::IntrTest::new(addr + 0x8 ),
-        cfg : cfg::Cfg::new(addr + 0xc ),
-        control : control::Control::new(addr + 0x10 ),
-        status : status::Status::new(addr + 0x14 ),
-        start : start::Start::new(addr + 0x18 ),
-        rx_fifo : rx_fifo::RxFifo::new(addr + 0x1c ),
-        tx_fifo : tx_fifo::TxFifo::new(addr + 0x20 ),
-        info : info::Info::new(addr + 0x24 ),
-        cs : cs::Cs::new(addr + 0x28 ),
-      }
+    Self {
+      intr_state : intr_state::IntrState::new(addr + 0x0 ),
+      intr_enable : intr_enable::IntrEnable::new(addr + 0x4 ),
+      intr_test : intr_test::IntrTest::new(addr + 0x8 ),
+      cfg : cfg::Cfg::new(addr + 0xc ),
+      control : control::Control::new(addr + 0x10 ),
+      status : status::Status::new(addr + 0x14 ),
+      start : start::Start::new(addr + 0x18 ),
+      rx_fifo : rx_fifo::RxFifo::new(addr + 0x1c ),
+      tx_fifo : tx_fifo::TxFifo::new(addr + 0x20 ),
+      info : info::Info::new(addr + 0x24 ),
+      cs : cs::Cs::new(addr + 0x28 ),
+      rxdata : rxdata::Rxdata::new(addr + 0x24 ),
+      txdata : txdata::Txdata::new(addr + 0x28 ),
+    }
   }
 }
 
@@ -1392,4 +1396,57 @@ mod cs {
   type Cs1Field<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type Cs2Field<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
   type Cs3Field<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::ReadWrite>;
+}
+/// RXDATA.  
+pub use self::rxdata::*;
+mod rxdata {
+
+  use super::*;
+
+  pub struct Rxdata {
+    window: zermio::Memory<u32>,
+  }
+
+  impl Rxdata {
+    pub fn new(addr: u32) -> Self {
+      Self {
+        window: zermio::Memory::<u32>::new(addr as usize, 4),
+      }
+    }
+    pub fn read(&mut self, dst: &mut [u8]) {
+        self.window.read(dst)
+    }
+
+    pub fn write_fifo(&mut self, src: &[u8]) {
+        self.window.write_fifo(src)
+    }
+  }
+}
+
+
+
+/// TXDATA.  
+pub use self::txdata::*;
+mod txdata {
+
+  use super::*;
+
+  pub struct Txdata {
+    window: zermio::Memory<u32>,
+  }
+
+  impl Txdata {
+    pub fn new(addr: u32) -> Self {
+      Self {
+        window: zermio::Memory::<u32>::new(addr as usize, 4),
+      }
+    }
+    pub fn read(&mut self, dst: &mut [u8]) {
+        self.window.read(dst)
+    }
+
+    pub fn write_fifo(&mut self, src: &[u8]) {
+        self.window.write_fifo(src)
+    }
+  }
 }

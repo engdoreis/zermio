@@ -36,12 +36,12 @@ pub struct Timer {
 impl Timer {
     pub fn new(instance: u32) -> Self {
     let addr = instance as u32;
-      Self {
-        mtimel : mtimel::Mtimel::new(addr + 0x0 ),
-        mtimeh : mtimeh::Mtimeh::new(addr + 0x4 ),
-        mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8 ),
-        mtimecmph : mtimecmph::Mtimecmph::new(addr + 0xc ),
-      }
+    Self {
+      mtimel : mtimel::Mtimel::new(addr + 0x0 ),
+      mtimeh : mtimeh::Mtimeh::new(addr + 0x4 ),
+      mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8 ),
+      mtimecmph : mtimecmph::Mtimecmph::new(addr + 0xc ),
+    }
   }
 }
 

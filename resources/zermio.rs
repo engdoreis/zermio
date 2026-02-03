@@ -217,9 +217,175 @@ where
     }
 }
 
+pub struct Memory<T> {
+    ptr: *mut T,
+    size: usize,
+}
+
+impl<T> Memory<T>
+where
+    T: UnsignedInteger,
+{
+    pub fn new(addr: usize, size: usize) -> Self {
+        Self {
+            ptr: addr as *mut T,
+            size,
+        }
+    }
+
+    /// Writes data to a FIFO memory window at a fixed destination address.
+    ///
+    /// Unlike a standard buffer write, this function performs multiple writes to the
+    /// **same physical address**. Each write transaction pushes data into the hardware FIFO.
+    ///
+    /// # Important
+    /// - **Alignment**: It automatically handles unaligned source pointers by performing
+    ///   byte-level writes until `T`-alignment is reached.
+    /// - **Transaction Size**: Uses the native type `T` for the bulk of the transfer to
+    ///   ensure the hardware receives correctly sized bus transactions.
+    /// - **Usage**: Do NOT use this for standard RAM buffers; it does not increment
+    ///   the destination address.
+    pub fn write_fifo(&mut self, src: &[u8]) {
+        let t_size = core::mem::size_of::<T>();
+        // 1. Peel: Byte-wise volatile writes for alignment
+        let align_offset = src.as_ptr().align_offset(t_size);
+        if align_offset > 0 && align_offset <= src.len() {
+            for byte in src.iter().take(align_offset) {
+                unsafe {
+                    core::ptr::write_volatile(self.ptr as *mut u8, *byte);
+                }
+            }
+        }
+
+        // 2. Loop: Native T volatile writes
+        let chunk_size = t_size;
+        let mut iter = src[align_offset..].chunks_exact(chunk_size);
+
+        for chunk in &mut iter {
+            unsafe {
+                // We cast to the native type T to trigger the correct bus width (e.g., 32-bit)
+                let value = *(chunk.as_ptr() as *const T);
+                core::ptr::write_volatile(self.ptr, value);
+            }
+        }
+
+        // 3. Remainder: Trailing bytes
+        let remainder = iter.remainder();
+        for &byte in remainder {
+            unsafe {
+                core::ptr::write_volatile(self.ptr as *mut u8, byte);
+            }
+        }
+    }
+
+    /// Writes data to a memory buffer.
+    ///
+    /// # Important
+    /// - **Alignment**: The src slice must by aligned by size_of<T>.
+    pub fn write_buffer(&mut self, src: &[u8]) -> usize {
+        let t_size = core::mem::size_of::<T>();
+        let align_offset = src.as_ptr().align_offset(t_size);
+
+        let chunk_size = if align_offset == 0 {
+            t_size
+        } else {
+            // If it's not aligned, skip the next for loop and copy all as bytes in the reminder
+            // loop.
+            src.len() + 1
+        };
+        let mut iter = src.chunks_exact(chunk_size);
+
+        let mut dst = self.ptr;
+        let upper_bound = unsafe { dst.add(self.size) };
+        for chunk in &mut iter {
+            unsafe {
+                let value = *(chunk.as_ptr() as *const T);
+                core::ptr::write_volatile(dst, value);
+                dst = dst.add(1);
+            }
+            if dst >= upper_bound {
+                return self.size * t_size;
+            }
+        }
+
+        let remainder = iter.remainder();
+        let mut dst = dst as *mut u8;
+        let upper_bound = upper_bound as *mut u8;
+        for &byte in remainder {
+            unsafe {
+                core::ptr::write_volatile(dst, byte);
+                dst = dst.add(1);
+            }
+            if dst >= upper_bound {
+                return self.size * t_size;
+            }
+        }
+        src.len()
+    }
+
+    pub fn read(&mut self, dst: &mut [u8]) {
+        unsafe { core::ptr::copy_nonoverlapping(self.ptr as *mut u8, dst.as_mut_ptr(), dst.len()) };
+    }
+}
+
 #[cfg(all(test, target_arch = "x86_64"))]
 mod unittest {
     use super::*;
+
+    #[test]
+    fn test_memory_window() {
+        let mut arr = [0u32; 8];
+        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let test_data = [0xbe, 0xba, 0xca, 0xfe];
+        window.write_buffer(&test_data);
+        assert_eq!(arr[0], u32::from_ne_bytes(test_data));
+
+        let mut read_back = [0xff; 4];
+        window.read(&mut read_back);
+        assert_eq!(read_back, test_data);
+
+        arr[0] = 0x00;
+        let test_data = [0xbe, 0xba];
+        window.write_buffer(&test_data);
+        assert_eq!(arr[0], u32::from_ne_bytes([0xbe, 0xba, 0x00, 00]));
+
+        arr[0] = 0x00;
+        let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4, 0x55];
+        window.write_buffer(&test_data);
+        assert_eq!(arr[0], u32::from_ne_bytes([0x55, 0x44, 0x83, 0xa3]));
+        assert_eq!(arr[1], u32::from_ne_bytes([0xb4, 0x55, 00, 00]));
+    }
+
+    #[test]
+    fn test_memory_window_unaligned() {
+        let arr = [0u32; 8];
+        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let test_data = [0xbe, 0xba, 0xca, 0xfe];
+        window.write_buffer(&test_data[1..]);
+        assert_eq!(arr[0], u32::from_ne_bytes([0xba, 0xca, 0xfe, 0x00]));
+    }
+
+    #[test]
+    fn test_memory_fifo_alignment() {
+        let arr = [0u32; 1];
+        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4];
+        window.write_fifo(&test_data[1..]);
+        assert_eq!(arr[0], u32::from_ne_bytes([0x44, 0x83, 0xa3, 0xb4]));
+    }
+
+    #[test]
+    fn test_memory_fifo_alignment_multiword() {
+        let arr = [0u32; 3];
+        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4, 0x55, 0x23, 0x34];
+        window.write_fifo(&test_data[1..]);
+        for w in arr {
+            print!("{:x}, ", w);
+        }
+        assert_eq!(arr[0], u32::from_ne_bytes([0xb4, 0x55, 0x23, 0x34]));
+    }
+
     #[test]
     fn test_max() {
         let mem = 0u32;
