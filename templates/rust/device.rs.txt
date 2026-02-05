@@ -36,14 +36,19 @@ pub struct {{type_|pascal_case}} {
 impl {{type_|pascal_case}} {
     pub fn new(instance: u32) -> Self {
 {%- if inner.registers.is_empty() %}
-    let _addr = instance as u32;
+    let _addr = instance;
 {%- else %}
-    let addr = instance as u32;
+    let addr = instance;
 {%- endif %}
     Self {
 {%- for reg in inner.registers %}
   {%- for info in reg.info %}
-      {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr + {{info.offset|hex}} ),
+      {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr
+    {%- if info.offset > 0 %}
+      {{- " + " ~ info.offset|hex}} ),
+    {%- else %}
+      {{- ")," }}
+    {%- endif %}
   {%- endfor %}
 {%- endfor %}
 {%- for win in inner.windows %}

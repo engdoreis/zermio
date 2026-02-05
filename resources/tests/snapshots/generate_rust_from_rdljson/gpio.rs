@@ -35,9 +35,9 @@ pub struct Gpio {
 
 impl Gpio {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
+    let addr = instance;
     Self {
-      out : out::Out::new(addr + 0x0 ),
+      out : out::Out::new(addr),
       in : in::In::new(addr + 0x4 ),
       in_dbnc : in_dbnc::InDbnc::new(addr + 0x8 ),
       output_enable : output_enable::OutputEnable::new(addr + 0xc ),

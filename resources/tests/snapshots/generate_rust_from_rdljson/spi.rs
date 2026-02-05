@@ -58,9 +58,9 @@ pub struct Spi {
 
 impl Spi {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
+    let addr = instance;
     Self {
-      intr_state : intr_state::IntrState::new(addr + 0x0 ),
+      intr_state : intr_state::IntrState::new(addr),
       intr_enable : intr_enable::IntrEnable::new(addr + 0x4 ),
       intr_test : intr_test::IntrTest::new(addr + 0x8 ),
       cfg : cfg::Cfg::new(addr + 0xc ),
@@ -1397,6 +1397,9 @@ mod cs {
   type Cs2Field<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
   type Cs3Field<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::ReadWrite>;
 }
+
+
+
 /// RXDATA.  
 pub use self::rxdata::*;
 mod rxdata {
@@ -1413,6 +1416,7 @@ mod rxdata {
         window: zermio::Memory::<u32>::new(addr as usize, 4),
       }
     }
+
     pub fn read(&mut self, dst: &mut [u8]) {
         self.window.read(dst)
     }
@@ -1441,6 +1445,7 @@ mod txdata {
         window: zermio::Memory::<u32>::new(addr as usize, 4),
       }
     }
+
     pub fn read(&mut self, dst: &mut [u8]) {
         self.window.read(dst)
     }

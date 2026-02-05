@@ -116,9 +116,9 @@ pub struct I2c {
 
 impl I2c {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
+    let addr = instance;
     Self {
-      intr_state : intr_state::IntrState::new(addr + 0x0 ),
+      intr_state : intr_state::IntrState::new(addr),
       intr_enable : intr_enable::IntrEnable::new(addr + 0x4 ),
       intr_test : intr_test::IntrTest::new(addr + 0x8 ),
       ctrl : ctrl::Ctrl::new(addr + 0x10 ),

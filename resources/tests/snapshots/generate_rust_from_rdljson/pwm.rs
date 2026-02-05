@@ -29,9 +29,9 @@ pub struct Pwm {
 
 impl Pwm {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
+    let addr = instance;
     Self {
-      width : width::Width::new(addr + 0x0 ),
+      width : width::Width::new(addr),
       counter : counter::Counter::new(addr + 0x4 ),
     }
   }

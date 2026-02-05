@@ -44,7 +44,7 @@ pub struct Xadc {
 
 impl Xadc {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
+    let addr = instance;
     Self {
       config0 : config::Config::new(addr + 0x40 ),
       config1 : config::Config::new(addr + 0x41 ),

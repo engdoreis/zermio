@@ -35,8 +35,8 @@
 //! lifecycle using closures:
 //!
 //! * **`write(|reg| ...)`**: Creates a new value and commits it to memory.
-//! * **`update(|reg| ...)`**: Fetches the current value, allows modification, and 
-//!     commits the result back to memory in a single logical block.
+//! * **`update(|reg| ...)`**: Fetches the current value, allows modification, and commits the 
+//!   result back to memory in a single logical block.
 //!
 //! ## Register Fields
 //!
