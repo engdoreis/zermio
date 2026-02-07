@@ -18,7 +18,7 @@
 //! | TEST_REG3 |  | 0x46 | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// xadc.config0.update(|config0| {
 ///     if config0.cfg().read() == 1 {
 ///        config0.cfg().write(0);

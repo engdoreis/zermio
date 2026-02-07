@@ -15,7 +15,7 @@
 //! | MTIMECMPH |  | 0xc | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// timer.mtimel.update(|mtimel| {
 ///     if mtimel.value().read() == 1 {
 ///        mtimel.value().write(0);

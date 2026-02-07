@@ -15,7 +15,7 @@
 //! | OUTPUT_ENABLE |  | 0xc | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// gpio.out.update(|out| {
 ///     if out.pins().read() == 1 {
 ///        out.pins().write(0);

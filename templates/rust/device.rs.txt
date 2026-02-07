@@ -13,7 +13,7 @@
 use super::zermio;
   {%- set reg = inner.registers[0].info[0].name.to_lowercase() %}
   {%- set field = inner.registers[0].bitfields[0].name.to_lowercase() %}
-/// ``` rust
+/// ```rust,ignore
 /// {{type_|lower}}.{{reg}}.update(|{{reg}}| {
 ///     if {{reg}}.{{field}}().read() == 1 {
 ///        {{reg}}.{{field}}().write(0);

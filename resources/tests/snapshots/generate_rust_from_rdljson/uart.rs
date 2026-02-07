@@ -23,7 +23,7 @@
 //! | TIMEOUT_CTRL | UART RX timeout control | 0x30 | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// uart.intr_state.update(|intr_state| {
 ///     if intr_state.tx_watermark().read() == 1 {
 ///        intr_state.tx_watermark().write(0);

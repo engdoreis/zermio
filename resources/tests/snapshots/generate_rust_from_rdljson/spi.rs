@@ -22,7 +22,7 @@
 //! | CS | Specifies which peripherals are selected for transmit/receive operations.   An operation may select multiple peripherals simultaneously but this functionality   shall be used only for transmit operations.   This register shall be changed only when the SPI controller is idle, not whilst   a transmit/receive operation may be in progress. | 0x28 | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// spi.intr_state.update(|intr_state| {
 ///     if intr_state.rx_full().read() == 1 {
 ///        intr_state.rx_full().write(0);

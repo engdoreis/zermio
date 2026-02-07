@@ -72,7 +72,7 @@
 //!
 //! ## Example
 //! The following example is for the Opentitan Uart.
-//! ``` rust
+//! ```rust,ignore
 //! let peri = zermio::sonata::Peripherals::take().unwrap();
 //! let mut uart = peri.uart;
 //! let nco = (BAUD << 20) / CPU_CLOCK_HZ as u64;

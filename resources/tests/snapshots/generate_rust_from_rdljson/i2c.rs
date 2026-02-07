@@ -42,7 +42,7 @@
 //! | TARGET_EVENTS | Latched events that can cause the target module to stretch the clock at the beginning of a read transfer.These events cause TX FIFO-related stretching even when the TX FIFO has data available.Any bits that are set must be written (with a 1) to clear the tx_stretch interrupt.This CSR serves as a gate to prevent the Target module from responding to a read command with unrelated, leftover data. | 0x7c | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// i2c.intr_state.update(|intr_state| {
 ///     if intr_state.fmt_threshold().read() == 1 {
 ///        intr_state.fmt_threshold().write(0);

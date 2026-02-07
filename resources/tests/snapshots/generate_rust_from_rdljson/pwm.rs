@@ -13,7 +13,7 @@
 //! | COUNTER |  | 0x4 | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// pwm.width.update(|width| {
 ///     if width.value().read() == 1 {
 ///        width.value().write(0);
