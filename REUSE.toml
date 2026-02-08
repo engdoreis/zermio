@@ -1,0 +1,6 @@
+version = 1
+
+[[annotations]]
+path = ["*", "resources/**", "templates/**"]
+SPDX-FileCopyrightText = "Copyright (c) 2025 Douglas Reis."
+SPDX-License-Identifier = "Apache-2.0"

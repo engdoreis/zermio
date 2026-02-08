@@ -8,8 +8,6 @@
     1 x I2C
     </description>
   <licenseText>
-    Licensed under the Apache License, Version 2.0, see LICENSE for details.\n
-    SPDX-License-Identifier: Apache-2.0\n
   </licenseText>
   <cpu>
     <name>reis-riscv</name>
