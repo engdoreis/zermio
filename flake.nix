@@ -1,3 +1,7 @@
+# Copyright (c) 2025 Douglas Reis.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
 {
   description = "C/C++ environment";
 
@@ -36,6 +40,7 @@
             pkg-config
             openssl
             gdb
+            reuse
           ];
           shellHook = ''
             echo "Rust dev environment ready!"

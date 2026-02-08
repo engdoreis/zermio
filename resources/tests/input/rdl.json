@@ -13357,7 +13357,36 @@
               }
             }
           ],
-          "windows": [],
+          "windows": [
+            {
+              "name": "RXDATA",
+              "type": "mem",
+              "entries": 1,
+              "sw_writable": false,
+              "sw_readable": true,
+              "width": 32,
+              "offset": 36,
+              "size": 4,
+              "integrity_bypass": false,
+              "memwidth": 32,
+              "mementries": 1,
+              "sw": "r"
+            },
+            {
+              "name": "TXDATA",
+              "type": "mem",
+              "entries": 1,
+              "sw_writable": true,
+              "sw_readable": false,
+              "width": 32,
+              "offset": 40,
+              "size": 4,
+              "integrity_bypass": false,
+              "memwidth": 32,
+              "mementries": 1,
+              "sw": "w"
+            }
+          ],
           "addr_width": 6,
           "num_regs": 11,
           "num_windows": 0,

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pub use crate::mmio::Register;
+pub use crate::mmio::Windows;
 pub use crate::rdljson;
 
 #[derive(Debug)]
@@ -10,6 +11,7 @@ pub struct Device {
     pub name: String,
     pub type_: String,
     pub registers: Vec<Register>,
+    pub windows: Vec<Windows>,
 }
 
 impl Device {
@@ -18,6 +20,7 @@ impl Device {
             name: name.into(),
             type_: type_name.into(),
             registers: vec![],
+            windows: vec![],
         }
     }
 
@@ -82,6 +85,14 @@ impl From<&rdljson::Peripheral> for Device {
                 .iter()
                 .flat_map(|inter| inter.regs.iter())
                 .map(|reg| reg.into())
+                .collect::<Vec<_>>(),
+        );
+        device.windows.extend(
+            periph
+                .interfaces
+                .iter()
+                .flat_map(|inter| inter.windows.iter())
+                .map(|win| win.into())
                 .collect::<Vec<_>>(),
         );
 

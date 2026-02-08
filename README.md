@@ -16,7 +16,7 @@ cargo run import-svd --header-file=/tmp/header.md --svd /tmp/ibex.svd export-rus
 ### Examples
 
 This is a simple example of how to write an UART driver using the register interface generate by the previous section.
-```rust
+```rust,ignore
 #![no_main]
 #![no_std]
 extern crate panic_halt as _;

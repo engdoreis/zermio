@@ -56,6 +56,7 @@ impl From<&Interface> for Peripheral {
 pub struct Interface {
     pub name: Option<String>,
     pub regs: Vec<Register>,
+    pub windows: Vec<Windows>,
 }
 
 impl PartialEq for Interface {
@@ -90,6 +91,17 @@ impl PartialEq for Register {
 }
 
 impl Eq for Register {}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Windows {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub type_name: String,
+    pub desc: Option<String>,
+    pub offset: u32,
+    pub entries: u32,
+    pub width: u32,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RegisterField {

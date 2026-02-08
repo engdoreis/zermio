@@ -15,7 +15,7 @@
 //! | OUTPUT_ENABLE |  | 0xc | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// gpio.out.update(|out| {
 ///     if out.pins().read() == 1 {
 ///        out.pins().write(0);
@@ -35,13 +35,13 @@ pub struct Gpio {
 
 impl Gpio {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
-      Self {
-        out : out::Out::new(addr + 0x0 ),
-        in : in::In::new(addr + 0x4 ),
-        in_dbnc : in_dbnc::InDbnc::new(addr + 0x8 ),
-        output_enable : output_enable::OutputEnable::new(addr + 0xc ),
-      }
+    let addr = instance;
+    Self {
+      out : out::Out::new(addr),
+      in : in::In::new(addr + 0x4 ),
+      in_dbnc : in_dbnc::InDbnc::new(addr + 0x8 ),
+      output_enable : output_enable::OutputEnable::new(addr + 0xc ),
+    }
   }
 }
 
@@ -77,6 +77,7 @@ mod out {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn pins(&mut self) -> PinsField {
         PinsField::new(&mut self.reg)
@@ -128,6 +129,7 @@ mod in {
   /// | **`get()`**           | Returns the current value of the field.         |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn pins(&mut self) -> PinsField {
         PinsField::new(&mut self.reg)
@@ -172,6 +174,7 @@ mod in_dbnc {
   /// | **`get()`**           | Returns the current value of the field.         |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn pins(&mut self) -> PinsField {
         PinsField::new(&mut self.reg)
@@ -219,6 +222,7 @@ mod output_enable {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn pins(&mut self) -> PinsField {
         PinsField::new(&mut self.reg)

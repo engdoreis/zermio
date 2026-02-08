@@ -15,7 +15,7 @@
 //! | MTIMECMPH |  | 0xc | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// timer.mtimel.update(|mtimel| {
 ///     if mtimel.value().read() == 1 {
 ///        mtimel.value().write(0);
@@ -35,13 +35,13 @@ pub struct Timer {
 
 impl Timer {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
-      Self {
-        mtimel : mtimel::Mtimel::new(addr + 0x0 ),
-        mtimeh : mtimeh::Mtimeh::new(addr + 0x4 ),
-        mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8 ),
-        mtimecmph : mtimecmph::Mtimecmph::new(addr + 0xc ),
-      }
+    let addr = instance;
+    Self {
+      mtimel : mtimel::Mtimel::new(addr),
+      mtimeh : mtimeh::Mtimeh::new(addr + 0x4 ),
+      mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8 ),
+      mtimecmph : mtimecmph::Mtimecmph::new(addr + 0xc ),
+    }
   }
 }
 
@@ -78,6 +78,7 @@ mod mtimel {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)
@@ -146,6 +147,7 @@ mod mtimeh {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)
@@ -214,6 +216,7 @@ mod mtimecmpl {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)
@@ -282,6 +285,7 @@ mod mtimecmph {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)

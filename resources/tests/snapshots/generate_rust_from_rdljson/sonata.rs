@@ -55,7 +55,7 @@ pub enum SpiOffset{
 pub enum Interrupt{
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 static mut DEVICE_PERIPHERALS: bool = false;
 
 pub struct Peripherals {
@@ -87,9 +87,14 @@ impl Peripherals {
     }
     Some(unsafe { Peripherals::steal() })
   }
+  /// Steals the singleton instance.
+  /// # Safety
+  ///
+  /// The caller must ensure that this function is only called once and taht no other references to
+  /// the underlying resource exist.
   #[inline]
   pub unsafe fn steal() -> Self {
-    DEVICE_PERIPHERALS = true;
+    unsafe{DEVICE_PERIPHERALS = true;};
     Self {
         gpio: gpio::Gpio::new(GpioOffset::Gpio as u32),
         gpio_rpi: gpio::Gpio::new(GpioOffset::GpioRpi as u32),

@@ -13,7 +13,7 @@
 use super::zermio;
   {%- set reg = inner.registers[0].info[0].name.to_lowercase() %}
   {%- set field = inner.registers[0].bitfields[0].name.to_lowercase() %}
-/// ``` rust
+/// ```rust,ignore
 /// {{type_|lower}}.{{reg}}.update(|{{reg}}| {
 ///     if {{reg}}.{{field}}().read() == 1 {
 ///        {{reg}}.{{field}}().write(0);
@@ -28,21 +28,32 @@ pub struct {{type_|pascal_case}} {
     pub {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }},
   {%- endfor %}
 {%- endfor %}
+{%- for win in inner.windows %}
+    pub {{ win.name|lower }} : {{ win.type_name|lower }}::{{ win.type_name|pascal_case }},
+{%- endfor %}
 }
 
 impl {{type_|pascal_case}} {
     pub fn new(instance: u32) -> Self {
 {%- if inner.registers.is_empty() %}
-    let _addr = instance as u32;
+    let _addr = instance;
 {%- else %}
-    let addr = instance as u32;
+    let addr = instance;
 {%- endif %}
-      Self {
+    Self {
 {%- for reg in inner.registers %}
   {%- for info in reg.info %}
-        {{ info.name|lower }} : {{ info.name|lower }}::{{ info.name|pascal_case }}::new(addr + {{info.offset|hex}} ),
+      {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr
+    {%- if info.offset > 0 %}
+      {{- " + " ~ info.offset|hex}} ),
+    {%- else %}
+      {{- ")," }}
+    {%- endif %}
   {%- endfor %}
 {%- endfor %}
-      }
+{%- for win in inner.windows %}
+      {{ win.name|lower }} : {{ win.type_name|lower }}::{{ win.type_name|pascal_case }}::new(addr + {{win.offset|hex}} ),
+{%- endfor %}
+    }
   }
 }

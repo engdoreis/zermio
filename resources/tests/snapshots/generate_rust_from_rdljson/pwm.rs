@@ -13,7 +13,7 @@
 //! | COUNTER |  | 0x4 | true |true |
 
 use super::zermio;
-/// ``` rust
+/// ```rust,ignore
 /// pwm.width.update(|width| {
 ///     if width.value().read() == 1 {
 ///        width.value().write(0);
@@ -29,11 +29,11 @@ pub struct Pwm {
 
 impl Pwm {
     pub fn new(instance: u32) -> Self {
-    let addr = instance as u32;
-      Self {
-        width : width::Width::new(addr + 0x0 ),
-        counter : counter::Counter::new(addr + 0x4 ),
-      }
+    let addr = instance;
+    Self {
+      width : width::Width::new(addr),
+      counter : counter::Counter::new(addr + 0x4 ),
+    }
   }
 }
 
@@ -70,6 +70,7 @@ mod width {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)
@@ -138,6 +139,7 @@ mod counter {
   /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
   /// | **`mask()`**          | Returns the bitmask for this field.             |
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
+  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
     pub fn value(&mut self) -> ValueField {
         ValueField::new(&mut self.reg)

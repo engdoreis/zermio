@@ -1,7 +1,7 @@
 /* The best way to read and explor this documentation is by rendering it with:*/
 /*`cargo doc --open`*/
 
-#![no_std]
+#![cfg_attr(not(test), no_std)]
 
 //! # {{inner.name}} Zermio
 //!
@@ -35,8 +35,8 @@
 //! lifecycle using closures:
 //!
 //! * **`write(|reg| ...)`**: Creates a new value and commits it to memory.
-//! * **`update(|reg| ...)`**: Fetches the current value, allows modification, and 
-//!     commits the result back to memory in a single logical block.
+//! * **`update(|reg| ...)`**: Fetches the current value, allows modification, and commits the 
+//!   result back to memory in a single logical block.
 //!
 //! ## Register Fields
 //!
@@ -63,10 +63,11 @@
 //! | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   | `bool`| W |
 //! | **`mask()`**          | Returns the bitmask for this field.             | `u32` | - |
 //! | **`max()`**           | Returns the maximum value this field can hold.  | `u32` | - |
+//! | **`in_range(val)`**   | Returns true if val fits in the field.          | `u32` | - |
 //!
 //! ## Example
 //! The following example is for the Opentitan Uart.
-//! ``` rust
+//! ```rust,ignore
 //! let peri = zermio::{{inner.name|lower}}::Peripherals::take().unwrap();
 //! let mut uart = peri.uart;
 //! let nco = (BAUD << 20) / CPU_CLOCK_HZ as u64;

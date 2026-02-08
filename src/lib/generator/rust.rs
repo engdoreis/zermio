@@ -1,3 +1,7 @@
+// Copyright (c) 2025 Douglas Reis.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
 use crate::filters;
 use askama::Template;
 
@@ -31,6 +35,12 @@ pub struct Register<'a> {
     pub inner: &'a mmio::Register,
 }
 
+#[derive(Template)]
+#[template(path = "rust/windows.rs.txt")]
+pub struct Windows<'a> {
+    pub inner: &'a mmio::Windows,
+}
+
 pub fn generate(soc: &mmio::Platform, out_dir: PathBuf, file_header: &str) -> anyhow::Result<()> {
     let get_path = |path: &PathBuf, name: &str| -> anyhow::Result<(PathBuf, File)> {
         let mut filename = path.clone();
@@ -54,6 +64,15 @@ pub fn generate(soc: &mmio::Platform, out_dir: PathBuf, file_header: &str) -> an
 
         for reg in &device.registers {
             let template = Register { inner: reg };
+            writeln!(
+                f_handle,
+                "{}",
+                template.render().unwrap().replace(",\n\n", ",\n")
+            )?;
+        }
+
+        for win in &device.windows {
+            let template = Windows { inner: win };
             writeln!(
                 f_handle,
                 "{}",
