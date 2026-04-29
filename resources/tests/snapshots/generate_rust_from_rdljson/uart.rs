@@ -31,29 +31,30 @@ use super::zermio;
 /// });
 /// ```
 pub struct Uart {
-    /// Interrupt State Register  
+    addr: u32,
+    /// Interrupt State Register
     pub intr_state : intr_state::IntrState,
-    /// Interrupt Enable Register  
+    /// Interrupt Enable Register
     pub intr_enable : intr_enable::IntrEnable,
-    /// Interrupt Test Register  
+    /// Interrupt Test Register
     pub intr_test : intr_test::IntrTest,
-    /// UART control register  
+    /// UART control register
     pub ctrl : ctrl::Ctrl,
-    /// UART live status register  
+    /// UART live status register
     pub status : status::Status,
-    /// UART read data  
+    /// UART read data
     pub rdata : rdata::Rdata,
-    /// UART write data  
+    /// UART write data
     pub wdata : wdata::Wdata,
-    /// UART FIFO control register  
+    /// UART FIFO control register
     pub fifo_ctrl : fifo_ctrl::FifoCtrl,
-    /// UART FIFO status register  
+    /// UART FIFO status register
     pub fifo_status : fifo_status::FifoStatus,
-    /// TX pin override control. Gives direct SW control over TX pin state  
+    /// TX pin override control. Gives direct SW control over TX pin state
     pub ovrd : ovrd::Ovrd,
-    /// UART oversampled values  
+    /// UART oversampled values
     pub val : val::Val,
-    /// UART RX timeout control  
+    /// UART RX timeout control
     pub timeout_ctrl : timeout_ctrl::TimeoutCtrl,
 }
 
@@ -61,19 +62,24 @@ impl Uart {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
+      addr,
       intr_state : intr_state::IntrState::new(addr),
-      intr_enable : intr_enable::IntrEnable::new(addr + 0x4 ),
-      intr_test : intr_test::IntrTest::new(addr + 0x8 ),
-      ctrl : ctrl::Ctrl::new(addr + 0x10 ),
-      status : status::Status::new(addr + 0x14 ),
-      rdata : rdata::Rdata::new(addr + 0x18 ),
-      wdata : wdata::Wdata::new(addr + 0x1c ),
-      fifo_ctrl : fifo_ctrl::FifoCtrl::new(addr + 0x20 ),
-      fifo_status : fifo_status::FifoStatus::new(addr + 0x24 ),
-      ovrd : ovrd::Ovrd::new(addr + 0x28 ),
-      val : val::Val::new(addr + 0x2c ),
-      timeout_ctrl : timeout_ctrl::TimeoutCtrl::new(addr + 0x30 ),
+      intr_enable : intr_enable::IntrEnable::new(addr + 0x4),
+      intr_test : intr_test::IntrTest::new(addr + 0x8),
+      ctrl : ctrl::Ctrl::new(addr + 0x10),
+      status : status::Status::new(addr + 0x14),
+      rdata : rdata::Rdata::new(addr + 0x18),
+      wdata : wdata::Wdata::new(addr + 0x1c),
+      fifo_ctrl : fifo_ctrl::FifoCtrl::new(addr + 0x20),
+      fifo_status : fifo_status::FifoStatus::new(addr + 0x24),
+      ovrd : ovrd::Ovrd::new(addr + 0x28),
+      val : val::Val::new(addr + 0x2c),
+      timeout_ctrl : timeout_ctrl::TimeoutCtrl::new(addr + 0x30),
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
 

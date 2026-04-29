@@ -23,13 +23,14 @@ use super::zermio;
 /// });
 /// ```
 pub struct Gpio {
-    ///   
+    addr: u32,
+    /// 
     pub out : out::Out,
-    ///   
+    /// 
     pub in : in::In,
-    ///   
+    /// 
     pub in_dbnc : in_dbnc::InDbnc,
-    ///   
+    /// 
     pub output_enable : output_enable::OutputEnable,
 }
 
@@ -37,11 +38,16 @@ impl Gpio {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
+      addr,
       out : out::Out::new(addr),
-      in : in::In::new(addr + 0x4 ),
-      in_dbnc : in_dbnc::InDbnc::new(addr + 0x8 ),
-      output_enable : output_enable::OutputEnable::new(addr + 0xc ),
+      in : in::In::new(addr + 0x4),
+      in_dbnc : in_dbnc::InDbnc::new(addr + 0x8),
+      output_enable : output_enable::OutputEnable::new(addr + 0xc),
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
 

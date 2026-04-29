@@ -5,9 +5,12 @@
 //! | Register name      | Description  | Offset | Write | Read| 
 //! | :---               | :---         | :---   | :--   | :-- |
 {%- for reg in inner.registers %}
-  {%- for info in reg.info %}
-//! | {{info.name}} | {{info.desc}} | {{info.offset|hex}} | {{reg.is_writable()}} |{{reg.is_readable()}} |
-  {%- endfor %}
+  {%- set info_len = reg.info.len() %}
+  {%- if info_len > 1 %}
+//! | {{reg.info[0].name.trim_end_matches('0')}}[0..{{info_len}}] | {{reg.info[0].desc}} | {{reg.info[0].offset|hex}} | {{reg.is_writable()}} |{{reg.is_readable()}} |
+  {%- else %}
+//! | {{reg.info[0].name}} | {{reg.info[0].desc}} | {{reg.info[0].offset|hex}} | {{reg.is_writable()}} |{{reg.is_readable()}} |
+  {%- endif %}
 {%- endfor %}
 
 use super::zermio;
@@ -22,11 +25,15 @@ use super::zermio;
 /// ```
 {%- endif %}
 pub struct {{type_|pascal_case}} {
+    addr: u32, 
 {%- for reg in inner.registers %}
-  {%- for info in reg.info %}
-    /// {{info.desc}}  
-    pub {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }},
-  {%- endfor %}
+    /// {{ reg.info[0].desc }}
+  {%- set info_len = reg.info.len() %}
+  {%- if info_len > 1 %}
+    pub {{ reg.info[0].name.trim_end_matches('0')|lower }}: [{{ reg.info[0].type_|lower }}::{{ reg.info[0].type_|pascal_case }}; {{info_len}}],
+  {%- else %}
+    pub {{ reg.info[0].name|lower }} : {{ reg.info[0].type_|lower }}::{{ reg.info[0].type_|pascal_case }},
+  {%- endif %}
 {%- endfor %}
 {%- for win in inner.windows %}
     pub {{ win.name|lower }} : {{ win.type_name|lower }}::{{ win.type_name|pascal_case }},
@@ -35,25 +42,38 @@ pub struct {{type_|pascal_case}} {
 
 impl {{type_|pascal_case}} {
     pub fn new(instance: u32) -> Self {
-{%- if inner.registers.is_empty() %}
-    let _addr = instance;
-{%- else %}
     let addr = instance;
-{%- endif %}
     Self {
+      addr,
 {%- for reg in inner.registers %}
-  {%- for info in reg.info %}
-      {{ info.name|lower }} : {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr
-    {%- if info.offset > 0 %}
-      {{- " + " ~ info.offset|hex}} ),
+  {%- set info_len = reg.info.len() %}
+  {%- if info_len > 1 %}
+      {{ reg.info[0].name.trim_end_matches('0')|lower }} : [
+      {%- for info in reg.info %}
+      {{ info.type_|lower }}::{{ info.type_|pascal_case }}::new(addr 
+      {%- if info.offset > 0 %}
+        {{- " + " ~ info.offset|hex}}),
+      {%- else %}
+        {{- ")," }}
+      {%- endif %}
+      {%- endfor %}
+      ],
+  {%- else %}
+      {{ reg.info[0].name|lower }} : {{ reg.info[0].type_|lower }}::{{ reg.info[0].type_|pascal_case }}::new(addr 
+    {%- if *reg.info[0].offset > 0 %}
+      {{- " + " ~ reg.info[0].offset|hex}}),
     {%- else %}
       {{- ")," }}
     {%- endif %}
-  {%- endfor %}
+  {%- endif %}
 {%- endfor %}
 {%- for win in inner.windows %}
       {{ win.name|lower }} : {{ win.type_name|lower }}::{{ win.type_name|pascal_case }}::new(addr + {{win.offset|hex}} ),
 {%- endfor %}
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
