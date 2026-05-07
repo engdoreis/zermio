@@ -252,17 +252,19 @@ where
         let t_size = core::mem::size_of::<T>();
         // 1. Peel: Byte-wise volatile writes for alignment
         let align_offset = src.as_ptr().align_offset(t_size);
-        if align_offset > 0 && align_offset <= src.len() {
-            for byte in src.iter().take(align_offset) {
+        let len = core::cmp::min(src.len(), align_offset);
+        if len > 0 {
+            for byte in src.iter().take(len) {
                 unsafe {
                     core::ptr::write_volatile(self.ptr as *mut u8, *byte);
                 }
             }
         }
 
+
         // 2. Loop: Native T volatile writes
         let chunk_size = t_size;
-        let mut iter = src[align_offset..].chunks_exact(chunk_size);
+        let mut iter = src[len..].chunks_exact(chunk_size);
 
         for chunk in &mut iter {
             unsafe {
@@ -360,6 +362,16 @@ mod unittest {
     }
 
     #[test]
+    fn test_memory_window_single_byte_unaligned() {
+        let arr = [0u32; 8];
+        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let test_data = [0xbe, 0xba, 0xca, 0xfe];
+        window.write_buffer(&test_data[2..3]);
+        assert_eq!(arr[0], u32::from_ne_bytes([0xca, 0x00, 0x00, 0x00]));
+    }
+
+
+    #[test]
     fn test_memory_window_unaligned() {
         let arr = [0u32; 8];
         let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
@@ -375,6 +387,15 @@ mod unittest {
         let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4];
         window.write_fifo(&test_data[1..]);
         assert_eq!(arr[0], u32::from_ne_bytes([0x44, 0x83, 0xa3, 0xb4]));
+    }
+
+    #[test]
+    fn test_memory_fifo_single_byte_aligned() {
+        let arr = [0u32; 1];
+        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4];
+        window.write_fifo(&test_data[2..3]);
+        assert_eq!(arr[0], u32::from_ne_bytes([0x83, 0x00, 0x00, 0x00]));
     }
 
     #[test]
