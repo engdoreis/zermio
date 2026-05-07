@@ -21,9 +21,10 @@ use super::zermio;
 /// });
 /// ```
 pub struct Pwm {
-    ///   
+    addr: u32,
+    /// 
     pub width : width::Width,
-    ///   
+    /// 
     pub counter : counter::Counter,
 }
 
@@ -31,9 +32,14 @@ impl Pwm {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
+      addr,
       width : width::Width::new(addr),
-      counter : counter::Counter::new(addr + 0x4 ),
+      counter : counter::Counter::new(addr + 0x4),
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
 

@@ -9,13 +9,8 @@
 //! These are the registers present in the xadc 
 //! | Register name      | Description  | Offset | Write | Read| 
 //! | :---               | :---         | :---   | :--   | :-- |
-//! | CONFIG0 |  | 0x40 | true |true |
-//! | CONFIG1 |  | 0x41 | true |true |
-//! | CONFIG2 |  | 0x42 | true |true |
-//! | TEST_REG0 |  | 0x43 | true |true |
-//! | TEST_REG1 |  | 0x44 | true |true |
-//! | TEST_REG2 |  | 0x45 | true |true |
-//! | TEST_REG3 |  | 0x46 | true |true |
+//! | CONFIG[0..3] |  | 0x40 | true |true |
+//! | TEST_REG[0..4] |  | 0x43 | true |true |
 
 use super::zermio;
 /// ```rust,ignore
@@ -26,34 +21,34 @@ use super::zermio;
 /// });
 /// ```
 pub struct Xadc {
-    ///   
-    pub config0 : config::Config,
-    ///   
-    pub config1 : config::Config,
-    ///   
-    pub config2 : config::Config,
-    ///   
-    pub test_reg0 : test_reg::TestReg,
-    ///   
-    pub test_reg1 : test_reg::TestReg,
-    ///   
-    pub test_reg2 : test_reg::TestReg,
-    ///   
-    pub test_reg3 : test_reg::TestReg,
+    addr: u32,
+    /// 
+    pub config: [config::Config; 3],
+    /// 
+    pub test_reg: [test_reg::TestReg; 4],
 }
 
 impl Xadc {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      config0 : config::Config::new(addr + 0x40 ),
-      config1 : config::Config::new(addr + 0x41 ),
-      config2 : config::Config::new(addr + 0x42 ),
-      test_reg0 : test_reg::TestReg::new(addr + 0x43 ),
-      test_reg1 : test_reg::TestReg::new(addr + 0x44 ),
-      test_reg2 : test_reg::TestReg::new(addr + 0x45 ),
-      test_reg3 : test_reg::TestReg::new(addr + 0x46 ),
+      addr,
+      config : [
+      config::Config::new(addr + 0x40),
+      config::Config::new(addr + 0x41),
+      config::Config::new(addr + 0x42),
+      ],
+      test_reg : [
+      test_reg::TestReg::new(addr + 0x43),
+      test_reg::TestReg::new(addr + 0x44),
+      test_reg::TestReg::new(addr + 0x45),
+      test_reg::TestReg::new(addr + 0x46),
+      ],
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
 

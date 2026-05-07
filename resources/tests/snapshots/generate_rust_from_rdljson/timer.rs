@@ -23,13 +23,14 @@ use super::zermio;
 /// });
 /// ```
 pub struct Timer {
-    ///   
+    addr: u32,
+    /// 
     pub mtimel : mtimel::Mtimel,
-    ///   
+    /// 
     pub mtimeh : mtimeh::Mtimeh,
-    ///   
+    /// 
     pub mtimecmpl : mtimecmpl::Mtimecmpl,
-    ///   
+    /// 
     pub mtimecmph : mtimecmph::Mtimecmph,
 }
 
@@ -37,11 +38,16 @@ impl Timer {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
+      addr,
       mtimel : mtimel::Mtimel::new(addr),
-      mtimeh : mtimeh::Mtimeh::new(addr + 0x4 ),
-      mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8 ),
-      mtimecmph : mtimecmph::Mtimecmph::new(addr + 0xc ),
+      mtimeh : mtimeh::Mtimeh::new(addr + 0x4),
+      mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8),
+      mtimecmph : mtimecmph::Mtimecmph::new(addr + 0xc),
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
 

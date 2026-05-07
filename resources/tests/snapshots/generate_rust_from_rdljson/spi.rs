@@ -30,27 +30,28 @@ use super::zermio;
 /// });
 /// ```
 pub struct Spi {
-    /// Interrupt State Register  
+    addr: u32,
+    /// Interrupt State Register
     pub intr_state : intr_state::IntrState,
-    /// Interrupt Enable Register  
+    /// Interrupt Enable Register
     pub intr_enable : intr_enable::IntrEnable,
-    /// Interrupt Test Register  
+    /// Interrupt Test Register
     pub intr_test : intr_test::IntrTest,
-    /// Configuration register. Controls how the SPI block transmits   and receives data. This register can only be modified   whilst the SPI block is idle.  
+    /// Configuration register. Controls how the SPI block transmits   and receives data. This register can only be modified   whilst the SPI block is idle.
     pub cfg : cfg::Cfg,
-    /// Controls the operation of the SPI block. This register can   only be modified whilst the SPI block is idle.  
+    /// Controls the operation of the SPI block. This register can   only be modified whilst the SPI block is idle.
     pub control : control::Control,
-    /// Status information about the SPI block  
+    /// Status information about the SPI block
     pub status : status::Status,
-    /// When written begins an SPI operation. Writes are ignored when the   SPI block is active.  
+    /// When written begins an SPI operation. Writes are ignored when the   SPI block is active.
     pub start : start::Start,
-    /// Data from the receive FIFO. When read the data is popped from the   FIFO. If the FIFO is empty data read is undefined.  
+    /// Data from the receive FIFO. When read the data is popped from the   FIFO. If the FIFO is empty data read is undefined.
     pub rx_fifo : rx_fifo::RxFifo,
-    /// Bytes written here are pushed to the transmit FIFO. If the FIFO   is full writes are ignored.  
+    /// Bytes written here are pushed to the transmit FIFO. If the FIFO   is full writes are ignored.
     pub tx_fifo : tx_fifo::TxFifo,
-    /// Returns information on the SPI controller.  
+    /// Returns information on the SPI controller.
     pub info : info::Info,
-    /// Specifies which peripherals are selected for transmit/receive operations.   An operation may select multiple peripherals simultaneously but this functionality   shall be used only for transmit operations.   This register shall be changed only when the SPI controller is idle, not whilst   a transmit/receive operation may be in progress.  
+    /// Specifies which peripherals are selected for transmit/receive operations.   An operation may select multiple peripherals simultaneously but this functionality   shall be used only for transmit operations.   This register shall be changed only when the SPI controller is idle, not whilst   a transmit/receive operation may be in progress.
     pub cs : cs::Cs,
     pub rxdata : rxdata::Rxdata,
     pub txdata : txdata::Txdata,
@@ -60,20 +61,25 @@ impl Spi {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
+      addr,
       intr_state : intr_state::IntrState::new(addr),
-      intr_enable : intr_enable::IntrEnable::new(addr + 0x4 ),
-      intr_test : intr_test::IntrTest::new(addr + 0x8 ),
-      cfg : cfg::Cfg::new(addr + 0xc ),
-      control : control::Control::new(addr + 0x10 ),
-      status : status::Status::new(addr + 0x14 ),
-      start : start::Start::new(addr + 0x18 ),
-      rx_fifo : rx_fifo::RxFifo::new(addr + 0x1c ),
-      tx_fifo : tx_fifo::TxFifo::new(addr + 0x20 ),
-      info : info::Info::new(addr + 0x24 ),
-      cs : cs::Cs::new(addr + 0x28 ),
+      intr_enable : intr_enable::IntrEnable::new(addr + 0x4),
+      intr_test : intr_test::IntrTest::new(addr + 0x8),
+      cfg : cfg::Cfg::new(addr + 0xc),
+      control : control::Control::new(addr + 0x10),
+      status : status::Status::new(addr + 0x14),
+      start : start::Start::new(addr + 0x18),
+      rx_fifo : rx_fifo::RxFifo::new(addr + 0x1c),
+      tx_fifo : tx_fifo::TxFifo::new(addr + 0x20),
+      info : info::Info::new(addr + 0x24),
+      cs : cs::Cs::new(addr + 0x28),
       rxdata : rxdata::Rxdata::new(addr + 0x24 ),
       txdata : txdata::Txdata::new(addr + 0x28 ),
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
 

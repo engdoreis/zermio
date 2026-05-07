@@ -50,67 +50,68 @@ use super::zermio;
 /// });
 /// ```
 pub struct I2c {
-    /// Interrupt State Register  
+    addr: u32,
+    /// Interrupt State Register
     pub intr_state : intr_state::IntrState,
-    /// Interrupt Enable Register  
+    /// Interrupt Enable Register
     pub intr_enable : intr_enable::IntrEnable,
-    /// Interrupt Test Register  
+    /// Interrupt Test Register
     pub intr_test : intr_test::IntrTest,
-    /// I2C Control Register  
+    /// I2C Control Register
     pub ctrl : ctrl::Ctrl,
-    /// I2C Live Status Register for Host and Target modes  
+    /// I2C Live Status Register for Host and Target modes
     pub status : status::Status,
-    /// I2C Read Data  
+    /// I2C Read Data
     pub rdata : rdata::Rdata,
-    /// I2C Host Format DataWrites to this register are used to define and drive Controller-Mode transactions.  
+    /// I2C Host Format DataWrites to this register are used to define and drive Controller-Mode transactions.
     pub fdata : fdata::Fdata,
-    /// I2C FIFO control register  
+    /// I2C FIFO control register
     pub fifo_ctrl : fifo_ctrl::FifoCtrl,
-    /// Host mode FIFO configuration  
+    /// Host mode FIFO configuration
     pub host_fifo_config : host_fifo_config::HostFifoConfig,
-    /// Target mode FIFO configuration  
+    /// Target mode FIFO configuration
     pub target_fifo_config : target_fifo_config::TargetFifoConfig,
-    /// Host mode FIFO status register  
+    /// Host mode FIFO status register
     pub host_fifo_status : host_fifo_status::HostFifoStatus,
-    /// Target mode FIFO status register  
+    /// Target mode FIFO status register
     pub target_fifo_status : target_fifo_status::TargetFifoStatus,
-    /// I2C Override Control Register  
+    /// I2C Override Control Register
     pub ovrd : ovrd::Ovrd,
-    /// Oversampled RX values  
+    /// Oversampled RX values
     pub val : val::Val,
-    /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly.  
+    /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly.
     pub timing0 : timing0::Timing0,
-    /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.  
+    /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.
     pub timing1 : timing1::Timing1,
-    /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.  
+    /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.
     pub timing2 : timing2::Timing2,
-    /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period.  
+    /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period.
     pub timing3 : timing3::Timing3,
-    /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period.  
+    /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period.
     pub timing4 : timing4::Timing4,
-    /// I2C clock stretching and bus timeout control.This timeout must be enabled by setting !!TIMEOUT_CTRL.EN to 1, and the behavior of this feature depends on the value of !!TIMEOUT_CTRL.MODE.If the mode is "STRETCH_TIMEOUT", this is used in I2C controller mode to detect whether a connected target is stretching a single low time beyond the timeout value.Configured as such, this timeout is more informative and doesn't do more than assert the "stretch_timeout" interrupt.If the mode is "BUS_TIMEOUT", it is used to detect whether the clock has been held low for too long instead, inclusive of the controller's clock low time.This is useful for an SMBus context, where the VAL programmed should be tTIMEOUT:MIN.  
+    /// I2C clock stretching and bus timeout control.This timeout must be enabled by setting !!TIMEOUT_CTRL.EN to 1, and the behavior of this feature depends on the value of !!TIMEOUT_CTRL.MODE.If the mode is "STRETCH_TIMEOUT", this is used in I2C controller mode to detect whether a connected target is stretching a single low time beyond the timeout value.Configured as such, this timeout is more informative and doesn't do more than assert the "stretch_timeout" interrupt.If the mode is "BUS_TIMEOUT", it is used to detect whether the clock has been held low for too long instead, inclusive of the controller's clock low time.This is useful for an SMBus context, where the VAL programmed should be tTIMEOUT:MIN.
     pub timeout_ctrl : timeout_ctrl::TimeoutCtrl,
-    /// I2C target address and mask pairs  
+    /// I2C target address and mask pairs
     pub target_id : target_id::TargetId,
-    /// I2C target acquired data  
+    /// I2C target acquired data
     pub acqdata : acqdata::Acqdata,
-    /// I2C target transmit data  
+    /// I2C target transmit data
     pub txdata : txdata::Txdata,
-    /// I2C host clock generation timeout value (in units of input clock frequency).In an active transaction in Target-Mode, if the Controller ceases to send SCL pulsesfor this number of cycles then the "host_timeout" interrupt will be asserted.In multi-controller monitoring mode, !!HOST_TIMEOUT_CTRL is required to be nonzero to transition out of the initial busy state.Set this CSR to 0 to disable this behaviour.  
+    /// I2C host clock generation timeout value (in units of input clock frequency).In an active transaction in Target-Mode, if the Controller ceases to send SCL pulsesfor this number of cycles then the "host_timeout" interrupt will be asserted.In multi-controller monitoring mode, !!HOST_TIMEOUT_CTRL is required to be nonzero to transition out of the initial busy state.Set this CSR to 0 to disable this behaviour.
     pub host_timeout_ctrl : host_timeout_ctrl::HostTimeoutCtrl,
-    /// I2C target internal stretching timeout control.When the target has stretched beyond this time it will send a NACK for incoming data bytes or release SDA for outgoing data bytes.The behavior for the address byte is configurable via !!CTRL.ACK_ADDR_AFTER_TIMEOUT.Note that the count accumulates stretching time over the course of a transaction.In other words, this is equivalent to the SMBus cumulative target clock extension time.  
+    /// I2C target internal stretching timeout control.When the target has stretched beyond this time it will send a NACK for incoming data bytes or release SDA for outgoing data bytes.The behavior for the address byte is configurable via !!CTRL.ACK_ADDR_AFTER_TIMEOUT.Note that the count accumulates stretching time over the course of a transaction.In other words, this is equivalent to the SMBus cumulative target clock extension time.
     pub target_timeout_ctrl : target_timeout_ctrl::TargetTimeoutCtrl,
-    /// Number of times the I2C target has NACK'ed a new transaction since the last read of this register.Reading this register clears it.This is useful because when the ACQ FIFO is full the software know that a NACK has occurred, but without this register would not know how many transactions it missed.When it reaches its maximum value it will stay at that value.  
+    /// Number of times the I2C target has NACK'ed a new transaction since the last read of this register.Reading this register clears it.This is useful because when the ACQ FIFO is full the software know that a NACK has occurred, but without this register would not know how many transactions it missed.When it reaches its maximum value it will stay at that value.
     pub target_nack_count : target_nack_count::TargetNackCount,
-    /// Controls for mid-transfer (N)ACK phase handling  
+    /// Controls for mid-transfer (N)ACK phase handling
     pub target_ack_ctrl : target_ack_ctrl::TargetAckCtrl,
-    /// The data byte pending to be written to the ACQ FIFO.This CSR is only valid while the Target module is stretching in the (N)ACK phase, indicated by !!STATUS.ACK_CTRL_STRETCH .It is intended to be used with ACK Control Mode, so software may check the current byte.  
+    /// The data byte pending to be written to the ACQ FIFO.This CSR is only valid while the Target module is stretching in the (N)ACK phase, indicated by !!STATUS.ACK_CTRL_STRETCH .It is intended to be used with ACK Control Mode, so software may check the current byte.
     pub acq_fifo_next_data : acq_fifo_next_data::AcqFifoNextData,
-    /// Timeout in Host-Mode for an unhandled NACK before hardware automatically ends the transaction.(in units of input clock frequency)If an active Controller-Transmitter transfer receives a NACK from the Target, the !!CONTROLLER_EVENTS.NACK bit is set.In turn, this causes the Controller FSM to halt awaiting software intervention, and the 'controller_halt' interrupt may assert.Software must clear the !!CONTROLLER_EVENTS.NACK bit to allow the state machine to continue, typically after clearing out the FMTFIFO to start a new transfer.While halted, the active transaction is not ended (no STOP (P) condition is created), and the block asserts SCL and leaves SDA released.This timeout can be used to automatically produce a STOP condition, whether as a backstop for slow software responses (longer timeout) or as a convenience (short timeout).If the timeout expires, the Controller FSM will issue a STOP (P) condition on the bus to end the active transaction.Additionally, the !!CONTROLLER_EVENTS.UNHANDLED_NACK_TIMEOUT bit is set to alert software, and the FSM will return to the idle state and halt until the bit is cleared.The enable bit must be set for this feature to operate.  
+    /// Timeout in Host-Mode for an unhandled NACK before hardware automatically ends the transaction.(in units of input clock frequency)If an active Controller-Transmitter transfer receives a NACK from the Target, the !!CONTROLLER_EVENTS.NACK bit is set.In turn, this causes the Controller FSM to halt awaiting software intervention, and the 'controller_halt' interrupt may assert.Software must clear the !!CONTROLLER_EVENTS.NACK bit to allow the state machine to continue, typically after clearing out the FMTFIFO to start a new transfer.While halted, the active transaction is not ended (no STOP (P) condition is created), and the block asserts SCL and leaves SDA released.This timeout can be used to automatically produce a STOP condition, whether as a backstop for slow software responses (longer timeout) or as a convenience (short timeout).If the timeout expires, the Controller FSM will issue a STOP (P) condition on the bus to end the active transaction.Additionally, the !!CONTROLLER_EVENTS.UNHANDLED_NACK_TIMEOUT bit is set to alert software, and the FSM will return to the idle state and halt until the bit is cleared.The enable bit must be set for this feature to operate.
     pub host_nack_handler_timeout : host_nack_handler_timeout::HostNackHandlerTimeout,
-    /// Latched events that explain why the controller halted.Any bits that are set must be written (with a 1) to clear the CONTROLLER_HALT interrupt.  
+    /// Latched events that explain why the controller halted.Any bits that are set must be written (with a 1) to clear the CONTROLLER_HALT interrupt.
     pub controller_events : controller_events::ControllerEvents,
-    /// Latched events that can cause the target module to stretch the clock at the beginning of a read transfer.These events cause TX FIFO-related stretching even when the TX FIFO has data available.Any bits that are set must be written (with a 1) to clear the tx_stretch interrupt.This CSR serves as a gate to prevent the Target module from responding to a read command with unrelated, leftover data.  
+    /// Latched events that can cause the target module to stretch the clock at the beginning of a read transfer.These events cause TX FIFO-related stretching even when the TX FIFO has data available.Any bits that are set must be written (with a 1) to clear the tx_stretch interrupt.This CSR serves as a gate to prevent the Target module from responding to a read command with unrelated, leftover data.
     pub target_events : target_events::TargetEvents,
 }
 
@@ -118,38 +119,43 @@ impl I2c {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
+      addr,
       intr_state : intr_state::IntrState::new(addr),
-      intr_enable : intr_enable::IntrEnable::new(addr + 0x4 ),
-      intr_test : intr_test::IntrTest::new(addr + 0x8 ),
-      ctrl : ctrl::Ctrl::new(addr + 0x10 ),
-      status : status::Status::new(addr + 0x14 ),
-      rdata : rdata::Rdata::new(addr + 0x18 ),
-      fdata : fdata::Fdata::new(addr + 0x1c ),
-      fifo_ctrl : fifo_ctrl::FifoCtrl::new(addr + 0x20 ),
-      host_fifo_config : host_fifo_config::HostFifoConfig::new(addr + 0x24 ),
-      target_fifo_config : target_fifo_config::TargetFifoConfig::new(addr + 0x28 ),
-      host_fifo_status : host_fifo_status::HostFifoStatus::new(addr + 0x2c ),
-      target_fifo_status : target_fifo_status::TargetFifoStatus::new(addr + 0x30 ),
-      ovrd : ovrd::Ovrd::new(addr + 0x34 ),
-      val : val::Val::new(addr + 0x38 ),
-      timing0 : timing0::Timing0::new(addr + 0x3c ),
-      timing1 : timing1::Timing1::new(addr + 0x40 ),
-      timing2 : timing2::Timing2::new(addr + 0x44 ),
-      timing3 : timing3::Timing3::new(addr + 0x48 ),
-      timing4 : timing4::Timing4::new(addr + 0x4c ),
-      timeout_ctrl : timeout_ctrl::TimeoutCtrl::new(addr + 0x50 ),
-      target_id : target_id::TargetId::new(addr + 0x54 ),
-      acqdata : acqdata::Acqdata::new(addr + 0x58 ),
-      txdata : txdata::Txdata::new(addr + 0x5c ),
-      host_timeout_ctrl : host_timeout_ctrl::HostTimeoutCtrl::new(addr + 0x60 ),
-      target_timeout_ctrl : target_timeout_ctrl::TargetTimeoutCtrl::new(addr + 0x64 ),
-      target_nack_count : target_nack_count::TargetNackCount::new(addr + 0x68 ),
-      target_ack_ctrl : target_ack_ctrl::TargetAckCtrl::new(addr + 0x6c ),
-      acq_fifo_next_data : acq_fifo_next_data::AcqFifoNextData::new(addr + 0x70 ),
-      host_nack_handler_timeout : host_nack_handler_timeout::HostNackHandlerTimeout::new(addr + 0x74 ),
-      controller_events : controller_events::ControllerEvents::new(addr + 0x78 ),
-      target_events : target_events::TargetEvents::new(addr + 0x7c ),
+      intr_enable : intr_enable::IntrEnable::new(addr + 0x4),
+      intr_test : intr_test::IntrTest::new(addr + 0x8),
+      ctrl : ctrl::Ctrl::new(addr + 0x10),
+      status : status::Status::new(addr + 0x14),
+      rdata : rdata::Rdata::new(addr + 0x18),
+      fdata : fdata::Fdata::new(addr + 0x1c),
+      fifo_ctrl : fifo_ctrl::FifoCtrl::new(addr + 0x20),
+      host_fifo_config : host_fifo_config::HostFifoConfig::new(addr + 0x24),
+      target_fifo_config : target_fifo_config::TargetFifoConfig::new(addr + 0x28),
+      host_fifo_status : host_fifo_status::HostFifoStatus::new(addr + 0x2c),
+      target_fifo_status : target_fifo_status::TargetFifoStatus::new(addr + 0x30),
+      ovrd : ovrd::Ovrd::new(addr + 0x34),
+      val : val::Val::new(addr + 0x38),
+      timing0 : timing0::Timing0::new(addr + 0x3c),
+      timing1 : timing1::Timing1::new(addr + 0x40),
+      timing2 : timing2::Timing2::new(addr + 0x44),
+      timing3 : timing3::Timing3::new(addr + 0x48),
+      timing4 : timing4::Timing4::new(addr + 0x4c),
+      timeout_ctrl : timeout_ctrl::TimeoutCtrl::new(addr + 0x50),
+      target_id : target_id::TargetId::new(addr + 0x54),
+      acqdata : acqdata::Acqdata::new(addr + 0x58),
+      txdata : txdata::Txdata::new(addr + 0x5c),
+      host_timeout_ctrl : host_timeout_ctrl::HostTimeoutCtrl::new(addr + 0x60),
+      target_timeout_ctrl : target_timeout_ctrl::TargetTimeoutCtrl::new(addr + 0x64),
+      target_nack_count : target_nack_count::TargetNackCount::new(addr + 0x68),
+      target_ack_ctrl : target_ack_ctrl::TargetAckCtrl::new(addr + 0x6c),
+      acq_fifo_next_data : acq_fifo_next_data::AcqFifoNextData::new(addr + 0x70),
+      host_nack_handler_timeout : host_nack_handler_timeout::HostNackHandlerTimeout::new(addr + 0x74),
+      controller_events : controller_events::ControllerEvents::new(addr + 0x78),
+      target_events : target_events::TargetEvents::new(addr + 0x7c),
     }
+  }
+
+  pub fn destroy(self) -> u32 {
+    self.addr
   }
 }
 
