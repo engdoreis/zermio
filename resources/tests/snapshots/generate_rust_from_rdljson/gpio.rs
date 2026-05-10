@@ -85,7 +85,7 @@ mod out {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
+    pub fn pins(&mut self) -> PinsField<'_> {
         PinsField::new(&mut self.reg)
     }
 
@@ -137,7 +137,7 @@ mod in {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
+    pub fn pins(&mut self) -> PinsField<'_> {
         PinsField::new(&mut self.reg)
     }
 
@@ -182,7 +182,7 @@ mod in_dbnc {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
+    pub fn pins(&mut self) -> PinsField<'_> {
         PinsField::new(&mut self.reg)
     }
 
@@ -230,7 +230,7 @@ mod output_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
+    pub fn pins(&mut self) -> PinsField<'_> {
         PinsField::new(&mut self.reg)
     }
 

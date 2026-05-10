@@ -86,7 +86,7 @@ mod mtimel {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
+    pub fn value(&mut self) -> ValueField<'_> {
         ValueField::new(&mut self.reg)
     }
 
@@ -155,7 +155,7 @@ mod mtimeh {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
+    pub fn value(&mut self) -> ValueField<'_> {
         ValueField::new(&mut self.reg)
     }
 
@@ -224,7 +224,7 @@ mod mtimecmpl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
+    pub fn value(&mut self) -> ValueField<'_> {
         ValueField::new(&mut self.reg)
     }
 
@@ -293,7 +293,7 @@ mod mtimecmph {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
+    pub fn value(&mut self) -> ValueField<'_> {
         ValueField::new(&mut self.reg)
     }
 

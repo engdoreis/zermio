@@ -206,7 +206,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_threshold(&mut self) -> FmtThresholdField {
+    pub fn fmt_threshold(&mut self) -> FmtThresholdField<'_> {
         FmtThresholdField::new(&mut self.reg)
     }
 
@@ -221,7 +221,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_threshold(&mut self) -> RxThresholdField {
+    pub fn rx_threshold(&mut self) -> RxThresholdField<'_> {
         RxThresholdField::new(&mut self.reg)
     }
 
@@ -236,7 +236,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_threshold(&mut self) -> AcqThresholdField {
+    pub fn acq_threshold(&mut self) -> AcqThresholdField<'_> {
         AcqThresholdField::new(&mut self.reg)
     }
 
@@ -258,7 +258,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
+    pub fn rx_overflow(&mut self) -> RxOverflowField<'_> {
         RxOverflowField::new(&mut self.reg)
     }
 
@@ -273,7 +273,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn controller_halt(&mut self) -> ControllerHaltField {
+    pub fn controller_halt(&mut self) -> ControllerHaltField<'_> {
         ControllerHaltField::new(&mut self.reg)
     }
 
@@ -295,7 +295,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_interference(&mut self) -> SclInterferenceField {
+    pub fn scl_interference(&mut self) -> SclInterferenceField<'_> {
         SclInterferenceField::new(&mut self.reg)
     }
 
@@ -317,7 +317,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_interference(&mut self) -> SdaInterferenceField {
+    pub fn sda_interference(&mut self) -> SdaInterferenceField<'_> {
         SdaInterferenceField::new(&mut self.reg)
     }
 
@@ -339,7 +339,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stretch_timeout(&mut self) -> StretchTimeoutField {
+    pub fn stretch_timeout(&mut self) -> StretchTimeoutField<'_> {
         StretchTimeoutField::new(&mut self.reg)
     }
 
@@ -361,7 +361,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_unstable(&mut self) -> SdaUnstableField {
+    pub fn sda_unstable(&mut self) -> SdaUnstableField<'_> {
         SdaUnstableField::new(&mut self.reg)
     }
 
@@ -383,7 +383,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cmd_complete(&mut self) -> CmdCompleteField {
+    pub fn cmd_complete(&mut self) -> CmdCompleteField<'_> {
         CmdCompleteField::new(&mut self.reg)
     }
 
@@ -398,7 +398,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch(&mut self) -> TxStretchField {
+    pub fn tx_stretch(&mut self) -> TxStretchField<'_> {
         TxStretchField::new(&mut self.reg)
     }
 
@@ -413,7 +413,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_threshold(&mut self) -> TxThresholdField {
+    pub fn tx_threshold(&mut self) -> TxThresholdField<'_> {
         TxThresholdField::new(&mut self.reg)
     }
 
@@ -428,7 +428,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_stretch(&mut self) -> AcqStretchField {
+    pub fn acq_stretch(&mut self) -> AcqStretchField<'_> {
         AcqStretchField::new(&mut self.reg)
     }
 
@@ -450,7 +450,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unexp_stop(&mut self) -> UnexpStopField {
+    pub fn unexp_stop(&mut self) -> UnexpStopField<'_> {
         UnexpStopField::new(&mut self.reg)
     }
 
@@ -472,7 +472,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout(&mut self) -> HostTimeoutField {
+    pub fn host_timeout(&mut self) -> HostTimeoutField<'_> {
         HostTimeoutField::new(&mut self.reg)
     }
 
@@ -574,7 +574,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_threshold(&mut self) -> FmtThresholdField {
+    pub fn fmt_threshold(&mut self) -> FmtThresholdField<'_> {
         FmtThresholdField::new(&mut self.reg)
     }
 
@@ -596,7 +596,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_threshold(&mut self) -> RxThresholdField {
+    pub fn rx_threshold(&mut self) -> RxThresholdField<'_> {
         RxThresholdField::new(&mut self.reg)
     }
 
@@ -618,7 +618,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_threshold(&mut self) -> AcqThresholdField {
+    pub fn acq_threshold(&mut self) -> AcqThresholdField<'_> {
         AcqThresholdField::new(&mut self.reg)
     }
 
@@ -640,7 +640,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
+    pub fn rx_overflow(&mut self) -> RxOverflowField<'_> {
         RxOverflowField::new(&mut self.reg)
     }
 
@@ -662,7 +662,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn controller_halt(&mut self) -> ControllerHaltField {
+    pub fn controller_halt(&mut self) -> ControllerHaltField<'_> {
         ControllerHaltField::new(&mut self.reg)
     }
 
@@ -684,7 +684,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_interference(&mut self) -> SclInterferenceField {
+    pub fn scl_interference(&mut self) -> SclInterferenceField<'_> {
         SclInterferenceField::new(&mut self.reg)
     }
 
@@ -706,7 +706,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_interference(&mut self) -> SdaInterferenceField {
+    pub fn sda_interference(&mut self) -> SdaInterferenceField<'_> {
         SdaInterferenceField::new(&mut self.reg)
     }
 
@@ -728,7 +728,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stretch_timeout(&mut self) -> StretchTimeoutField {
+    pub fn stretch_timeout(&mut self) -> StretchTimeoutField<'_> {
         StretchTimeoutField::new(&mut self.reg)
     }
 
@@ -750,7 +750,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_unstable(&mut self) -> SdaUnstableField {
+    pub fn sda_unstable(&mut self) -> SdaUnstableField<'_> {
         SdaUnstableField::new(&mut self.reg)
     }
 
@@ -772,7 +772,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cmd_complete(&mut self) -> CmdCompleteField {
+    pub fn cmd_complete(&mut self) -> CmdCompleteField<'_> {
         CmdCompleteField::new(&mut self.reg)
     }
 
@@ -794,7 +794,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch(&mut self) -> TxStretchField {
+    pub fn tx_stretch(&mut self) -> TxStretchField<'_> {
         TxStretchField::new(&mut self.reg)
     }
 
@@ -816,7 +816,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_threshold(&mut self) -> TxThresholdField {
+    pub fn tx_threshold(&mut self) -> TxThresholdField<'_> {
         TxThresholdField::new(&mut self.reg)
     }
 
@@ -838,7 +838,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_stretch(&mut self) -> AcqStretchField {
+    pub fn acq_stretch(&mut self) -> AcqStretchField<'_> {
         AcqStretchField::new(&mut self.reg)
     }
 
@@ -860,7 +860,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unexp_stop(&mut self) -> UnexpStopField {
+    pub fn unexp_stop(&mut self) -> UnexpStopField<'_> {
         UnexpStopField::new(&mut self.reg)
     }
 
@@ -882,7 +882,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout(&mut self) -> HostTimeoutField {
+    pub fn host_timeout(&mut self) -> HostTimeoutField<'_> {
         HostTimeoutField::new(&mut self.reg)
     }
 
@@ -982,7 +982,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_threshold(&mut self) -> FmtThresholdField {
+    pub fn fmt_threshold(&mut self) -> FmtThresholdField<'_> {
         FmtThresholdField::new(&mut self.reg)
     }
 
@@ -1002,7 +1002,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_threshold(&mut self) -> RxThresholdField {
+    pub fn rx_threshold(&mut self) -> RxThresholdField<'_> {
         RxThresholdField::new(&mut self.reg)
     }
 
@@ -1022,7 +1022,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_threshold(&mut self) -> AcqThresholdField {
+    pub fn acq_threshold(&mut self) -> AcqThresholdField<'_> {
         AcqThresholdField::new(&mut self.reg)
     }
 
@@ -1042,7 +1042,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
+    pub fn rx_overflow(&mut self) -> RxOverflowField<'_> {
         RxOverflowField::new(&mut self.reg)
     }
 
@@ -1062,7 +1062,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn controller_halt(&mut self) -> ControllerHaltField {
+    pub fn controller_halt(&mut self) -> ControllerHaltField<'_> {
         ControllerHaltField::new(&mut self.reg)
     }
 
@@ -1082,7 +1082,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_interference(&mut self) -> SclInterferenceField {
+    pub fn scl_interference(&mut self) -> SclInterferenceField<'_> {
         SclInterferenceField::new(&mut self.reg)
     }
 
@@ -1102,7 +1102,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_interference(&mut self) -> SdaInterferenceField {
+    pub fn sda_interference(&mut self) -> SdaInterferenceField<'_> {
         SdaInterferenceField::new(&mut self.reg)
     }
 
@@ -1122,7 +1122,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stretch_timeout(&mut self) -> StretchTimeoutField {
+    pub fn stretch_timeout(&mut self) -> StretchTimeoutField<'_> {
         StretchTimeoutField::new(&mut self.reg)
     }
 
@@ -1142,7 +1142,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_unstable(&mut self) -> SdaUnstableField {
+    pub fn sda_unstable(&mut self) -> SdaUnstableField<'_> {
         SdaUnstableField::new(&mut self.reg)
     }
 
@@ -1162,7 +1162,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cmd_complete(&mut self) -> CmdCompleteField {
+    pub fn cmd_complete(&mut self) -> CmdCompleteField<'_> {
         CmdCompleteField::new(&mut self.reg)
     }
 
@@ -1182,7 +1182,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch(&mut self) -> TxStretchField {
+    pub fn tx_stretch(&mut self) -> TxStretchField<'_> {
         TxStretchField::new(&mut self.reg)
     }
 
@@ -1202,7 +1202,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_threshold(&mut self) -> TxThresholdField {
+    pub fn tx_threshold(&mut self) -> TxThresholdField<'_> {
         TxThresholdField::new(&mut self.reg)
     }
 
@@ -1222,7 +1222,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_stretch(&mut self) -> AcqStretchField {
+    pub fn acq_stretch(&mut self) -> AcqStretchField<'_> {
         AcqStretchField::new(&mut self.reg)
     }
 
@@ -1242,7 +1242,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unexp_stop(&mut self) -> UnexpStopField {
+    pub fn unexp_stop(&mut self) -> UnexpStopField<'_> {
         UnexpStopField::new(&mut self.reg)
     }
 
@@ -1262,7 +1262,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout(&mut self) -> HostTimeoutField {
+    pub fn host_timeout(&mut self) -> HostTimeoutField<'_> {
         HostTimeoutField::new(&mut self.reg)
     }
 
@@ -1342,7 +1342,7 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn enablehost(&mut self) -> EnablehostField {
+    pub fn enablehost(&mut self) -> EnablehostField<'_> {
         EnablehostField::new(&mut self.reg)
     }
 
@@ -1364,7 +1364,7 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn enabletarget(&mut self) -> EnabletargetField {
+    pub fn enabletarget(&mut self) -> EnabletargetField<'_> {
         EnabletargetField::new(&mut self.reg)
     }
 
@@ -1386,7 +1386,7 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn llpbk(&mut self) -> LlpbkField {
+    pub fn llpbk(&mut self) -> LlpbkField<'_> {
         LlpbkField::new(&mut self.reg)
     }
 
@@ -1408,7 +1408,7 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nack_addr_after_timeout(&mut self) -> NackAddrAfterTimeoutField {
+    pub fn nack_addr_after_timeout(&mut self) -> NackAddrAfterTimeoutField<'_> {
         NackAddrAfterTimeoutField::new(&mut self.reg)
     }
 
@@ -1430,7 +1430,7 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn ack_ctrl_en(&mut self) -> AckCtrlEnField {
+    pub fn ack_ctrl_en(&mut self) -> AckCtrlEnField<'_> {
         AckCtrlEnField::new(&mut self.reg)
     }
 
@@ -1452,7 +1452,7 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn multi_controller_monitor_en(&mut self) -> MultiControllerMonitorEnField {
+    pub fn multi_controller_monitor_en(&mut self) -> MultiControllerMonitorEnField<'_> {
         MultiControllerMonitorEnField::new(&mut self.reg)
     }
 
@@ -1474,7 +1474,7 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch_ctrl_en(&mut self) -> TxStretchCtrlEnField {
+    pub fn tx_stretch_ctrl_en(&mut self) -> TxStretchCtrlEnField<'_> {
         TxStretchCtrlEnField::new(&mut self.reg)
     }
 
@@ -1557,7 +1557,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtfull(&mut self) -> FmtfullField {
+    pub fn fmtfull(&mut self) -> FmtfullField<'_> {
         FmtfullField::new(&mut self.reg)
     }
 
@@ -1572,7 +1572,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxfull(&mut self) -> RxfullField {
+    pub fn rxfull(&mut self) -> RxfullField<'_> {
         RxfullField::new(&mut self.reg)
     }
 
@@ -1587,7 +1587,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtempty(&mut self) -> FmtemptyField {
+    pub fn fmtempty(&mut self) -> FmtemptyField<'_> {
         FmtemptyField::new(&mut self.reg)
     }
 
@@ -1602,7 +1602,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn hostidle(&mut self) -> HostidleField {
+    pub fn hostidle(&mut self) -> HostidleField<'_> {
         HostidleField::new(&mut self.reg)
     }
 
@@ -1617,7 +1617,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn targetidle(&mut self) -> TargetidleField {
+    pub fn targetidle(&mut self) -> TargetidleField<'_> {
         TargetidleField::new(&mut self.reg)
     }
 
@@ -1632,7 +1632,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxempty(&mut self) -> RxemptyField {
+    pub fn rxempty(&mut self) -> RxemptyField<'_> {
         RxemptyField::new(&mut self.reg)
     }
 
@@ -1647,7 +1647,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txfull(&mut self) -> TxfullField {
+    pub fn txfull(&mut self) -> TxfullField<'_> {
         TxfullField::new(&mut self.reg)
     }
 
@@ -1662,7 +1662,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqfull(&mut self) -> AcqfullField {
+    pub fn acqfull(&mut self) -> AcqfullField<'_> {
         AcqfullField::new(&mut self.reg)
     }
 
@@ -1677,7 +1677,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txempty(&mut self) -> TxemptyField {
+    pub fn txempty(&mut self) -> TxemptyField<'_> {
         TxemptyField::new(&mut self.reg)
     }
 
@@ -1692,7 +1692,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqempty(&mut self) -> AcqemptyField {
+    pub fn acqempty(&mut self) -> AcqemptyField<'_> {
         AcqemptyField::new(&mut self.reg)
     }
 
@@ -1707,7 +1707,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn ack_ctrl_stretch(&mut self) -> AckCtrlStretchField {
+    pub fn ack_ctrl_stretch(&mut self) -> AckCtrlStretchField<'_> {
         AckCtrlStretchField::new(&mut self.reg)
     }
 
@@ -1762,7 +1762,7 @@ mod rdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rdata(&mut self) -> RdataField {
+    pub fn rdata(&mut self) -> RdataField<'_> {
         RdataField::new(&mut self.reg)
     }
 
@@ -1814,7 +1814,7 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fbyte(&mut self) -> FbyteField {
+    pub fn fbyte(&mut self) -> FbyteField<'_> {
         FbyteField::new(&mut self.reg)
     }
 
@@ -1834,7 +1834,7 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn start(&mut self) -> StartField {
+    pub fn start(&mut self) -> StartField<'_> {
         StartField::new(&mut self.reg)
     }
 
@@ -1854,7 +1854,7 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stop(&mut self) -> StopField {
+    pub fn stop(&mut self) -> StopField<'_> {
         StopField::new(&mut self.reg)
     }
 
@@ -1874,7 +1874,7 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn readb(&mut self) -> ReadbField {
+    pub fn readb(&mut self) -> ReadbField<'_> {
         ReadbField::new(&mut self.reg)
     }
 
@@ -1894,7 +1894,7 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rcont(&mut self) -> RcontField {
+    pub fn rcont(&mut self) -> RcontField<'_> {
         RcontField::new(&mut self.reg)
     }
 
@@ -1914,7 +1914,7 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nakok(&mut self) -> NakokField {
+    pub fn nakok(&mut self) -> NakokField<'_> {
         NakokField::new(&mut self.reg)
     }
 
@@ -1980,7 +1980,7 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxrst(&mut self) -> RxrstField {
+    pub fn rxrst(&mut self) -> RxrstField<'_> {
         RxrstField::new(&mut self.reg)
     }
 
@@ -2000,7 +2000,7 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtrst(&mut self) -> FmtrstField {
+    pub fn fmtrst(&mut self) -> FmtrstField<'_> {
         FmtrstField::new(&mut self.reg)
     }
 
@@ -2020,7 +2020,7 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqrst(&mut self) -> AcqrstField {
+    pub fn acqrst(&mut self) -> AcqrstField<'_> {
         AcqrstField::new(&mut self.reg)
     }
 
@@ -2040,7 +2040,7 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txrst(&mut self) -> TxrstField {
+    pub fn txrst(&mut self) -> TxrstField<'_> {
         TxrstField::new(&mut self.reg)
     }
 
@@ -2099,7 +2099,7 @@ mod host_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_thresh(&mut self) -> RxThreshField {
+    pub fn rx_thresh(&mut self) -> RxThreshField<'_> {
         RxThreshField::new(&mut self.reg)
     }
 
@@ -2116,7 +2116,7 @@ mod host_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_thresh(&mut self) -> FmtThreshField {
+    pub fn fmt_thresh(&mut self) -> FmtThreshField<'_> {
         FmtThreshField::new(&mut self.reg)
     }
 
@@ -2187,7 +2187,7 @@ mod target_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_thresh(&mut self) -> TxThreshField {
+    pub fn tx_thresh(&mut self) -> TxThreshField<'_> {
         TxThreshField::new(&mut self.reg)
     }
 
@@ -2204,7 +2204,7 @@ mod target_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_thresh(&mut self) -> AcqThreshField {
+    pub fn acq_thresh(&mut self) -> AcqThreshField<'_> {
         AcqThreshField::new(&mut self.reg)
     }
 
@@ -2272,7 +2272,7 @@ mod host_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtlvl(&mut self) -> FmtlvlField {
+    pub fn fmtlvl(&mut self) -> FmtlvlField<'_> {
         FmtlvlField::new(&mut self.reg)
     }
 
@@ -2286,7 +2286,7 @@ mod host_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxlvl(&mut self) -> RxlvlField {
+    pub fn rxlvl(&mut self) -> RxlvlField<'_> {
         RxlvlField::new(&mut self.reg)
     }
 
@@ -2333,7 +2333,7 @@ mod target_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txlvl(&mut self) -> TxlvlField {
+    pub fn txlvl(&mut self) -> TxlvlField<'_> {
         TxlvlField::new(&mut self.reg)
     }
 
@@ -2347,7 +2347,7 @@ mod target_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqlvl(&mut self) -> AcqlvlField {
+    pub fn acqlvl(&mut self) -> AcqlvlField<'_> {
         AcqlvlField::new(&mut self.reg)
     }
 
@@ -2403,7 +2403,7 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txovrden(&mut self) -> TxovrdenField {
+    pub fn txovrden(&mut self) -> TxovrdenField<'_> {
         TxovrdenField::new(&mut self.reg)
     }
 
@@ -2425,7 +2425,7 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sclval(&mut self) -> SclvalField {
+    pub fn sclval(&mut self) -> SclvalField<'_> {
         SclvalField::new(&mut self.reg)
     }
 
@@ -2447,7 +2447,7 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sdaval(&mut self) -> SdavalField {
+    pub fn sdaval(&mut self) -> SdavalField<'_> {
         SdavalField::new(&mut self.reg)
     }
 
@@ -2516,7 +2516,7 @@ mod val {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_rx(&mut self) -> SclRxField {
+    pub fn scl_rx(&mut self) -> SclRxField<'_> {
         SclRxField::new(&mut self.reg)
     }
 
@@ -2530,7 +2530,7 @@ mod val {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_rx(&mut self) -> SdaRxField {
+    pub fn sda_rx(&mut self) -> SdaRxField<'_> {
         SdaRxField::new(&mut self.reg)
     }
 
@@ -2580,7 +2580,7 @@ mod timing0 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn thigh(&mut self) -> ThighField {
+    pub fn thigh(&mut self) -> ThighField<'_> {
         ThighField::new(&mut self.reg)
     }
 
@@ -2597,7 +2597,7 @@ mod timing0 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tlow(&mut self) -> TlowField {
+    pub fn tlow(&mut self) -> TlowField<'_> {
         TlowField::new(&mut self.reg)
     }
 
@@ -2668,7 +2668,7 @@ mod timing1 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn t_r(&mut self) -> TRField {
+    pub fn t_r(&mut self) -> TRField<'_> {
         TRField::new(&mut self.reg)
     }
 
@@ -2685,7 +2685,7 @@ mod timing1 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn t_f(&mut self) -> TFField {
+    pub fn t_f(&mut self) -> TFField<'_> {
         TFField::new(&mut self.reg)
     }
 
@@ -2756,7 +2756,7 @@ mod timing2 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tsu_sta(&mut self) -> TsuStaField {
+    pub fn tsu_sta(&mut self) -> TsuStaField<'_> {
         TsuStaField::new(&mut self.reg)
     }
 
@@ -2773,7 +2773,7 @@ mod timing2 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn thd_sta(&mut self) -> ThdStaField {
+    pub fn thd_sta(&mut self) -> ThdStaField<'_> {
         ThdStaField::new(&mut self.reg)
     }
 
@@ -2844,7 +2844,7 @@ mod timing3 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tsu_dat(&mut self) -> TsuDatField {
+    pub fn tsu_dat(&mut self) -> TsuDatField<'_> {
         TsuDatField::new(&mut self.reg)
     }
 
@@ -2861,7 +2861,7 @@ mod timing3 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn thd_dat(&mut self) -> ThdDatField {
+    pub fn thd_dat(&mut self) -> ThdDatField<'_> {
         ThdDatField::new(&mut self.reg)
     }
 
@@ -2932,7 +2932,7 @@ mod timing4 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tsu_sto(&mut self) -> TsuStoField {
+    pub fn tsu_sto(&mut self) -> TsuStoField<'_> {
         TsuStoField::new(&mut self.reg)
     }
 
@@ -2949,7 +2949,7 @@ mod timing4 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn t_buf(&mut self) -> TBufField {
+    pub fn t_buf(&mut self) -> TBufField<'_> {
         TBufField::new(&mut self.reg)
     }
 
@@ -3021,7 +3021,7 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField {
+    pub fn val(&mut self) -> ValField<'_> {
         ValField::new(&mut self.reg)
     }
 
@@ -3043,7 +3043,7 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn mode(&mut self) -> ModeField {
+    pub fn mode(&mut self) -> ModeField<'_> {
         ModeField::new(&mut self.reg)
     }
 
@@ -3065,7 +3065,7 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField {
+    pub fn en(&mut self) -> EnField<'_> {
         EnField::new(&mut self.reg)
     }
 
@@ -3139,7 +3139,7 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn address0(&mut self) -> Address0Field {
+    pub fn address0(&mut self) -> Address0Field<'_> {
         Address0Field::new(&mut self.reg)
     }
 
@@ -3156,7 +3156,7 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn mask0(&mut self) -> Mask0Field {
+    pub fn mask0(&mut self) -> Mask0Field<'_> {
         Mask0Field::new(&mut self.reg)
     }
 
@@ -3173,7 +3173,7 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn address1(&mut self) -> Address1Field {
+    pub fn address1(&mut self) -> Address1Field<'_> {
         Address1Field::new(&mut self.reg)
     }
 
@@ -3190,7 +3190,7 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn mask1(&mut self) -> Mask1Field {
+    pub fn mask1(&mut self) -> Mask1Field<'_> {
         Mask1Field::new(&mut self.reg)
     }
 
@@ -3260,7 +3260,7 @@ mod acqdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn abyte(&mut self) -> AbyteField {
+    pub fn abyte(&mut self) -> AbyteField<'_> {
         AbyteField::new(&mut self.reg)
     }
 
@@ -3274,7 +3274,7 @@ mod acqdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn signal(&mut self) -> SignalField {
+    pub fn signal(&mut self) -> SignalField<'_> {
         SignalField::new(&mut self.reg)
     }
 
@@ -3322,7 +3322,7 @@ mod txdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txdata(&mut self) -> TxdataField {
+    pub fn txdata(&mut self) -> TxdataField<'_> {
         TxdataField::new(&mut self.reg)
     }
 
@@ -3377,7 +3377,7 @@ mod host_timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout_ctrl(&mut self) -> HostTimeoutCtrlField {
+    pub fn host_timeout_ctrl(&mut self) -> HostTimeoutCtrlField<'_> {
         HostTimeoutCtrlField::new(&mut self.reg)
     }
 
@@ -3447,7 +3447,7 @@ mod target_timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField {
+    pub fn val(&mut self) -> ValField<'_> {
         ValField::new(&mut self.reg)
     }
 
@@ -3469,7 +3469,7 @@ mod target_timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField {
+    pub fn en(&mut self) -> EnField<'_> {
         EnField::new(&mut self.reg)
     }
 
@@ -3539,7 +3539,7 @@ mod target_nack_count {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn target_nack_count(&mut self) -> TargetNackCountField {
+    pub fn target_nack_count(&mut self) -> TargetNackCountField<'_> {
         TargetNackCountField::new(&mut self.reg)
     }
 
@@ -3609,7 +3609,7 @@ mod target_ack_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nbytes(&mut self) -> NbytesField {
+    pub fn nbytes(&mut self) -> NbytesField<'_> {
         NbytesField::new(&mut self.reg)
     }
 
@@ -3629,7 +3629,7 @@ mod target_ack_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nack(&mut self) -> NackField {
+    pub fn nack(&mut self) -> NackField<'_> {
         NackField::new(&mut self.reg)
     }
 
@@ -3696,7 +3696,7 @@ mod acq_fifo_next_data {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_fifo_next_data(&mut self) -> AcqFifoNextDataField {
+    pub fn acq_fifo_next_data(&mut self) -> AcqFifoNextDataField<'_> {
         AcqFifoNextDataField::new(&mut self.reg)
     }
 
@@ -3745,7 +3745,7 @@ mod host_nack_handler_timeout {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField {
+    pub fn val(&mut self) -> ValField<'_> {
         ValField::new(&mut self.reg)
     }
 
@@ -3767,7 +3767,7 @@ mod host_nack_handler_timeout {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField {
+    pub fn en(&mut self) -> EnField<'_> {
         EnField::new(&mut self.reg)
     }
 
@@ -3845,7 +3845,7 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nack(&mut self) -> NackField {
+    pub fn nack(&mut self) -> NackField<'_> {
         NackField::new(&mut self.reg)
     }
 
@@ -3867,7 +3867,7 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unhandled_nack_timeout(&mut self) -> UnhandledNackTimeoutField {
+    pub fn unhandled_nack_timeout(&mut self) -> UnhandledNackTimeoutField<'_> {
         UnhandledNackTimeoutField::new(&mut self.reg)
     }
 
@@ -3889,7 +3889,7 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn bus_timeout(&mut self) -> BusTimeoutField {
+    pub fn bus_timeout(&mut self) -> BusTimeoutField<'_> {
         BusTimeoutField::new(&mut self.reg)
     }
 
@@ -3911,7 +3911,7 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn arbitration_lost(&mut self) -> ArbitrationLostField {
+    pub fn arbitration_lost(&mut self) -> ArbitrationLostField<'_> {
         ArbitrationLostField::new(&mut self.reg)
     }
 
@@ -3990,7 +3990,7 @@ mod target_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_pending(&mut self) -> TxPendingField {
+    pub fn tx_pending(&mut self) -> TxPendingField<'_> {
         TxPendingField::new(&mut self.reg)
     }
 
@@ -4012,7 +4012,7 @@ mod target_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn bus_timeout(&mut self) -> BusTimeoutField {
+    pub fn bus_timeout(&mut self) -> BusTimeoutField<'_> {
         BusTimeoutField::new(&mut self.reg)
     }
 
@@ -4034,7 +4034,7 @@ mod target_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn arbitration_lost(&mut self) -> ArbitrationLostField {
+    pub fn arbitration_lost(&mut self) -> ArbitrationLostField<'_> {
         ArbitrationLostField::new(&mut self.reg)
     }
 

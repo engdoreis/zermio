@@ -78,7 +78,7 @@ mod width {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
+    pub fn value(&mut self) -> ValueField<'_> {
         ValueField::new(&mut self.reg)
     }
 
@@ -147,7 +147,7 @@ mod counter {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
+    pub fn value(&mut self) -> ValueField<'_> {
         ValueField::new(&mut self.reg)
     }
 

@@ -120,7 +120,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_full(&mut self) -> RxFullField {
+    pub fn rx_full(&mut self) -> RxFullField<'_> {
         RxFullField::new(&mut self.reg)
     }
 
@@ -135,7 +135,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField {
+    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
         RxWatermarkField::new(&mut self.reg)
     }
 
@@ -150,7 +150,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField {
+    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
         TxEmptyField::new(&mut self.reg)
     }
 
@@ -165,7 +165,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField {
+    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
         TxWatermarkField::new(&mut self.reg)
     }
 
@@ -187,7 +187,7 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn complete(&mut self) -> CompleteField {
+    pub fn complete(&mut self) -> CompleteField<'_> {
         CompleteField::new(&mut self.reg)
     }
 
@@ -269,7 +269,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_full(&mut self) -> RxFullField {
+    pub fn rx_full(&mut self) -> RxFullField<'_> {
         RxFullField::new(&mut self.reg)
     }
 
@@ -291,7 +291,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField {
+    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
         RxWatermarkField::new(&mut self.reg)
     }
 
@@ -313,7 +313,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField {
+    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
         TxEmptyField::new(&mut self.reg)
     }
 
@@ -335,7 +335,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField {
+    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
         TxWatermarkField::new(&mut self.reg)
     }
 
@@ -357,7 +357,7 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn complete(&mut self) -> CompleteField {
+    pub fn complete(&mut self) -> CompleteField<'_> {
         CompleteField::new(&mut self.reg)
     }
 
@@ -437,7 +437,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_full(&mut self) -> RxFullField {
+    pub fn rx_full(&mut self) -> RxFullField<'_> {
         RxFullField::new(&mut self.reg)
     }
 
@@ -457,7 +457,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField {
+    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
         RxWatermarkField::new(&mut self.reg)
     }
 
@@ -477,7 +477,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField {
+    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
         TxEmptyField::new(&mut self.reg)
     }
 
@@ -497,7 +497,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField {
+    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
         TxWatermarkField::new(&mut self.reg)
     }
 
@@ -517,7 +517,7 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn complete(&mut self) -> CompleteField {
+    pub fn complete(&mut self) -> CompleteField<'_> {
         CompleteField::new(&mut self.reg)
     }
 
@@ -580,7 +580,7 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn half_clk_period(&mut self) -> HalfClkPeriodField {
+    pub fn half_clk_period(&mut self) -> HalfClkPeriodField<'_> {
         HalfClkPeriodField::new(&mut self.reg)
     }
 
@@ -602,7 +602,7 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn copi_idle(&mut self) -> CopiIdleField {
+    pub fn copi_idle(&mut self) -> CopiIdleField<'_> {
         CopiIdleField::new(&mut self.reg)
     }
 
@@ -624,7 +624,7 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn msb_first(&mut self) -> MsbFirstField {
+    pub fn msb_first(&mut self) -> MsbFirstField<'_> {
         MsbFirstField::new(&mut self.reg)
     }
 
@@ -646,7 +646,7 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cpha(&mut self) -> CphaField {
+    pub fn cpha(&mut self) -> CphaField<'_> {
         CphaField::new(&mut self.reg)
     }
 
@@ -668,7 +668,7 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cpol(&mut self) -> CpolField {
+    pub fn cpol(&mut self) -> CpolField<'_> {
         CpolField::new(&mut self.reg)
     }
 
@@ -751,7 +751,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_clear(&mut self) -> TxClearField {
+    pub fn tx_clear(&mut self) -> TxClearField<'_> {
         TxClearField::new(&mut self.reg)
     }
 
@@ -771,7 +771,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_clear(&mut self) -> RxClearField {
+    pub fn rx_clear(&mut self) -> RxClearField<'_> {
         RxClearField::new(&mut self.reg)
     }
 
@@ -793,7 +793,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_enable(&mut self) -> TxEnableField {
+    pub fn tx_enable(&mut self) -> TxEnableField<'_> {
         TxEnableField::new(&mut self.reg)
     }
 
@@ -815,7 +815,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_enable(&mut self) -> RxEnableField {
+    pub fn rx_enable(&mut self) -> RxEnableField<'_> {
         RxEnableField::new(&mut self.reg)
     }
 
@@ -832,7 +832,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField {
+    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
         TxWatermarkField::new(&mut self.reg)
     }
 
@@ -849,7 +849,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField {
+    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
         RxWatermarkField::new(&mut self.reg)
     }
 
@@ -871,7 +871,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn int_loopback(&mut self) -> IntLoopbackField {
+    pub fn int_loopback(&mut self) -> IntLoopbackField<'_> {
         IntLoopbackField::new(&mut self.reg)
     }
 
@@ -891,7 +891,7 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sw_reset(&mut self) -> SwResetField {
+    pub fn sw_reset(&mut self) -> SwResetField<'_> {
         SwResetField::new(&mut self.reg)
     }
 
@@ -968,7 +968,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_fifo_level(&mut self) -> TxFifoLevelField {
+    pub fn tx_fifo_level(&mut self) -> TxFifoLevelField<'_> {
         TxFifoLevelField::new(&mut self.reg)
     }
 
@@ -982,7 +982,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_fifo_level(&mut self) -> RxFifoLevelField {
+    pub fn rx_fifo_level(&mut self) -> RxFifoLevelField<'_> {
         RxFifoLevelField::new(&mut self.reg)
     }
 
@@ -997,7 +997,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_fifo_full(&mut self) -> TxFifoFullField {
+    pub fn tx_fifo_full(&mut self) -> TxFifoFullField<'_> {
         TxFifoFullField::new(&mut self.reg)
     }
 
@@ -1012,7 +1012,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_fifo_empty(&mut self) -> RxFifoEmptyField {
+    pub fn rx_fifo_empty(&mut self) -> RxFifoEmptyField<'_> {
         RxFifoEmptyField::new(&mut self.reg)
     }
 
@@ -1027,7 +1027,7 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn idle(&mut self) -> IdleField {
+    pub fn idle(&mut self) -> IdleField<'_> {
         IdleField::new(&mut self.reg)
     }
 
@@ -1078,7 +1078,7 @@ mod start {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn byte_count(&mut self) -> ByteCountField {
+    pub fn byte_count(&mut self) -> ByteCountField<'_> {
         ByteCountField::new(&mut self.reg)
     }
 
@@ -1130,7 +1130,7 @@ mod rx_fifo {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn data(&mut self) -> DataField {
+    pub fn data(&mut self) -> DataField<'_> {
         DataField::new(&mut self.reg)
     }
 
@@ -1177,7 +1177,7 @@ mod tx_fifo {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn data(&mut self) -> DataField {
+    pub fn data(&mut self) -> DataField<'_> {
         DataField::new(&mut self.reg)
     }
 
@@ -1230,7 +1230,7 @@ mod info {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_fifo_depth(&mut self) -> TxFifoDepthField {
+    pub fn tx_fifo_depth(&mut self) -> TxFifoDepthField<'_> {
         TxFifoDepthField::new(&mut self.reg)
     }
 
@@ -1244,7 +1244,7 @@ mod info {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_fifo_depth(&mut self) -> RxFifoDepthField {
+    pub fn rx_fifo_depth(&mut self) -> RxFifoDepthField<'_> {
         RxFifoDepthField::new(&mut self.reg)
     }
 
@@ -1301,7 +1301,7 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_0(&mut self) -> Cs0Field {
+    pub fn cs_0(&mut self) -> Cs0Field<'_> {
         Cs0Field::new(&mut self.reg)
     }
 
@@ -1323,7 +1323,7 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_1(&mut self) -> Cs1Field {
+    pub fn cs_1(&mut self) -> Cs1Field<'_> {
         Cs1Field::new(&mut self.reg)
     }
 
@@ -1345,7 +1345,7 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_2(&mut self) -> Cs2Field {
+    pub fn cs_2(&mut self) -> Cs2Field<'_> {
         Cs2Field::new(&mut self.reg)
     }
 
@@ -1367,7 +1367,7 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_3(&mut self) -> Cs3Field {
+    pub fn cs_3(&mut self) -> Cs3Field<'_> {
         Cs3Field::new(&mut self.reg)
     }
 

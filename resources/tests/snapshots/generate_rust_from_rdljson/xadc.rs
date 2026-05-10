@@ -92,7 +92,7 @@ mod config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cfg(&mut self) -> CfgField {
+    pub fn cfg(&mut self) -> CfgField<'_> {
         CfgField::new(&mut self.reg)
     }
 
@@ -166,7 +166,7 @@ mod test_reg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tr(&mut self) -> TrField {
+    pub fn tr(&mut self) -> TrField<'_> {
         TrField::new(&mut self.reg)
     }
 
