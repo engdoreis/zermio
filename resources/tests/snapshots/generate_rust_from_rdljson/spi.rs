@@ -120,8 +120,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_full(&mut self) -> RxFullField<'_> {
-        RxFullField::new(&mut self.reg)
+    pub fn rx_full(&self) -> RxFullField<'_> {
+        RxFullField::new(&self.reg)
     }
 
   /// Hardware description: Receive FIFO level is at or above watermark
@@ -135,8 +135,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Transmit FIFO is empty
@@ -150,8 +150,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
   /// Hardware description: Transmit FIFO level is at or below watermark
@@ -165,8 +165,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: On-going SPI operation has completed and the block is now idle
@@ -187,12 +187,12 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn complete(&mut self) -> CompleteField<'_> {
-        CompleteField::new(&mut self.reg)
+    pub fn complete(&self) -> CompleteField<'_> {
+        CompleteField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -269,8 +269,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_full(&mut self) -> RxFullField<'_> {
-        RxFullField::new(&mut self.reg)
+    pub fn rx_full(&self) -> RxFullField<'_> {
+        RxFullField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_watermark is set.
@@ -291,8 +291,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_empty is set.
@@ -313,8 +313,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_watermark is set.
@@ -335,8 +335,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.complete is set.
@@ -357,12 +357,12 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn complete(&mut self) -> CompleteField<'_> {
-        CompleteField::new(&mut self.reg)
+    pub fn complete(&self) -> CompleteField<'_> {
+        CompleteField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -437,8 +437,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_full(&mut self) -> RxFullField<'_> {
-        RxFullField::new(&mut self.reg)
+    pub fn rx_full(&self) -> RxFullField<'_> {
+        RxFullField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_watermark to 1.
@@ -457,8 +457,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_empty to 1.
@@ -477,8 +477,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_watermark to 1.
@@ -497,8 +497,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.complete to 1.
@@ -517,8 +517,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn complete(&mut self) -> CompleteField<'_> {
-        CompleteField::new(&mut self.reg)
+    pub fn complete(&self) -> CompleteField<'_> {
+        CompleteField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -580,8 +580,8 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn half_clk_period(&mut self) -> HalfClkPeriodField<'_> {
-        HalfClkPeriodField::new(&mut self.reg)
+    pub fn half_clk_period(&self) -> HalfClkPeriodField<'_> {
+        HalfClkPeriodField::new(&self.reg)
     }
 
   /// Hardware description: State of the controller output line (COPI) when not transmitting.
@@ -602,8 +602,8 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn copi_idle(&mut self) -> CopiIdleField<'_> {
-        CopiIdleField::new(&mut self.reg)
+    pub fn copi_idle(&self) -> CopiIdleField<'_> {
+        CopiIdleField::new(&self.reg)
     }
 
   /// Hardware description: When set the most significant bit (MSB) is the first bit   sent and received with each byte
@@ -624,8 +624,8 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn msb_first(&mut self) -> MsbFirstField<'_> {
-        MsbFirstField::new(&mut self.reg)
+    pub fn msb_first(&self) -> MsbFirstField<'_> {
+        MsbFirstField::new(&self.reg)
     }
 
   /// Hardware description: The phase of the spi_clk signal. When CPHA is 0 data is   sampled on the leading edge and changes on the trailing   edge. The first data bit is immediately available before   the first leading edge of the clock when transmission   begins. When CPHA is 1 data is sampled on the trailing edge   and change on the leading edge.
@@ -646,8 +646,8 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cpha(&mut self) -> CphaField<'_> {
-        CphaField::new(&mut self.reg)
+    pub fn cpha(&self) -> CphaField<'_> {
+        CphaField::new(&self.reg)
     }
 
   /// Hardware description: The polarity of the spi_clk signal. When CPOL is 0 clock is   low when idle and the leading edge is positive. When CPOL   is 1 clock is high when idle and the leading edge is   negative
@@ -668,12 +668,12 @@ mod cfg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cpol(&mut self) -> CpolField<'_> {
-        CpolField::new(&mut self.reg)
+    pub fn cpol(&self) -> CpolField<'_> {
+        CpolField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -751,8 +751,8 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_clear(&mut self) -> TxClearField<'_> {
-        TxClearField::new(&mut self.reg)
+    pub fn tx_clear(&self) -> TxClearField<'_> {
+        TxClearField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to clear the receive FIFO
@@ -771,8 +771,8 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_clear(&mut self) -> RxClearField<'_> {
-        RxClearField::new(&mut self.reg)
+    pub fn rx_clear(&self) -> RxClearField<'_> {
+        RxClearField::new(&self.reg)
     }
 
   /// Hardware description: When set bytes from the transmit FIFO are sent. When clear   the state of the outgoing spi_copi is undefined whilst the   SPI clock is running.
@@ -793,8 +793,8 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_enable(&mut self) -> TxEnableField<'_> {
-        TxEnableField::new(&mut self.reg)
+    pub fn tx_enable(&self) -> TxEnableField<'_> {
+        TxEnableField::new(&self.reg)
     }
 
   /// Hardware description: When set incoming bits are written to the receive FIFO.   When clear incoming bits are ignored.
@@ -815,8 +815,8 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_enable(&mut self) -> RxEnableField<'_> {
-        RxEnableField::new(&mut self.reg)
+    pub fn rx_enable(&self) -> RxEnableField<'_> {
+        RxEnableField::new(&self.reg)
     }
 
   /// Hardware description: The watermark level for the transmit FIFO, depending on the   value the interrupt will trigger at different points:    * 0 - 1 or fewer items in the FIFO    * 1 - 2 or fewer items in the FIFO    * 2 - 4 or fewer items in the FIFO    * 3 - 8 or fewer items in the FIFO    * 4 - 16 or fewer items in the FIFO
@@ -832,8 +832,8 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: The watermark level for the receive FIFO, depending on the   value the interrupt will trigger at different points:    * 0 - 1 or more items in the FIFO    * 1 - 2 or more items in the FIFO    * 2 - 4 or more items in the FIFO    * 3 - 8 or more items in the FIFO    * 4 - 16 or more items in the FIFO    * 5 - 32 or more items in the FIFO    * 6 - 56 or more items in the FIFO
@@ -849,8 +849,8 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: When set the CIPO line is internally connected to the COPI line,   providing loopback functionality which may be useful in testing.   Note that the COPI line is unaffected and still carries data so   test software should normally leave the CS lines deasserted.   This bit shall be changed only when the SPI core is idle.
@@ -871,8 +871,8 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn int_loopback(&mut self) -> IntLoopbackField<'_> {
-        IntLoopbackField::new(&mut self.reg)
+    pub fn int_loopback(&self) -> IntLoopbackField<'_> {
+        IntLoopbackField::new(&self.reg)
     }
 
   /// Hardware description: When a 1 is written to this field a reset of the controller logic   is performed.   This shall be used only to recover from error conditions.   The TX FIFO shall be cleared before resetting the controller logic;   then clear the RX FIFO after the controller reset.   The bit self-clears and always reads as zero.
@@ -891,12 +891,12 @@ mod control {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sw_reset(&mut self) -> SwResetField<'_> {
-        SwResetField::new(&mut self.reg)
+    pub fn sw_reset(&self) -> SwResetField<'_> {
+        SwResetField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -968,8 +968,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_fifo_level(&mut self) -> TxFifoLevelField<'_> {
-        TxFifoLevelField::new(&mut self.reg)
+    pub fn tx_fifo_level(&self) -> TxFifoLevelField<'_> {
+        TxFifoLevelField::new(&self.reg)
     }
 
   /// Hardware description: Number of items in the receive FIFO
@@ -982,8 +982,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_fifo_level(&mut self) -> RxFifoLevelField<'_> {
-        RxFifoLevelField::new(&mut self.reg)
+    pub fn rx_fifo_level(&self) -> RxFifoLevelField<'_> {
+        RxFifoLevelField::new(&self.reg)
     }
 
   /// Hardware description: When set the transmit FIFO is full and any data written to it   will be ignored.
@@ -997,8 +997,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_fifo_full(&mut self) -> TxFifoFullField<'_> {
-        TxFifoFullField::new(&mut self.reg)
+    pub fn tx_fifo_full(&self) -> TxFifoFullField<'_> {
+        TxFifoFullField::new(&self.reg)
     }
 
   /// Hardware description: When set the receive FIFO is empty and any data read from it   will be undefined.
@@ -1012,8 +1012,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_fifo_empty(&mut self) -> RxFifoEmptyField<'_> {
-        RxFifoEmptyField::new(&mut self.reg)
+    pub fn rx_fifo_empty(&self) -> RxFifoEmptyField<'_> {
+        RxFifoEmptyField::new(&self.reg)
     }
 
   /// Hardware description: When set the SPI block is idle and can accept a new start   command.
@@ -1027,12 +1027,12 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn idle(&mut self) -> IdleField<'_> {
-        IdleField::new(&mut self.reg)
+    pub fn idle(&self) -> IdleField<'_> {
+        IdleField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1078,8 +1078,8 @@ mod start {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn byte_count(&mut self) -> ByteCountField<'_> {
-        ByteCountField::new(&mut self.reg)
+    pub fn byte_count(&self) -> ByteCountField<'_> {
+        ByteCountField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -1130,12 +1130,12 @@ mod rx_fifo {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn data(&mut self) -> DataField<'_> {
-        DataField::new(&mut self.reg)
+    pub fn data(&self) -> DataField<'_> {
+        DataField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1177,8 +1177,8 @@ mod tx_fifo {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn data(&mut self) -> DataField<'_> {
-        DataField::new(&mut self.reg)
+    pub fn data(&self) -> DataField<'_> {
+        DataField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -1230,8 +1230,8 @@ mod info {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_fifo_depth(&mut self) -> TxFifoDepthField<'_> {
-        TxFifoDepthField::new(&mut self.reg)
+    pub fn tx_fifo_depth(&self) -> TxFifoDepthField<'_> {
+        TxFifoDepthField::new(&self.reg)
     }
 
   /// Hardware description: Maximum number of items in the receive FIFO.
@@ -1244,12 +1244,12 @@ mod info {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_fifo_depth(&mut self) -> RxFifoDepthField<'_> {
-        RxFifoDepthField::new(&mut self.reg)
+    pub fn rx_fifo_depth(&self) -> RxFifoDepthField<'_> {
+        RxFifoDepthField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1301,8 +1301,8 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_0(&mut self) -> Cs0Field<'_> {
-        Cs0Field::new(&mut self.reg)
+    pub fn cs_0(&self) -> Cs0Field<'_> {
+        Cs0Field::new(&self.reg)
     }
 
   /// Hardware description: If this bit is clear the peripheral is selected for transmit/receive operations.
@@ -1323,8 +1323,8 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_1(&mut self) -> Cs1Field<'_> {
-        Cs1Field::new(&mut self.reg)
+    pub fn cs_1(&self) -> Cs1Field<'_> {
+        Cs1Field::new(&self.reg)
     }
 
   /// Hardware description: If this bit is clear the peripheral is selected for transmit/receive operations.
@@ -1345,8 +1345,8 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_2(&mut self) -> Cs2Field<'_> {
-        Cs2Field::new(&mut self.reg)
+    pub fn cs_2(&self) -> Cs2Field<'_> {
+        Cs2Field::new(&self.reg)
     }
 
   /// Hardware description: If this bit is clear the peripheral is selected for transmit/receive operations.
@@ -1367,12 +1367,12 @@ mod cs {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cs_3(&mut self) -> Cs3Field<'_> {
-        Cs3Field::new(&mut self.reg)
+    pub fn cs_3(&self) -> Cs3Field<'_> {
+        Cs3Field::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }

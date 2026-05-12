@@ -124,8 +124,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: raised if the receive FIFO is past the high-water mark.
@@ -139,8 +139,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: raised if the transmit FIFO has emptied and no transmit is ongoing.
@@ -161,8 +161,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_done(&mut self) -> TxDoneField<'_> {
-        TxDoneField::new(&mut self.reg)
+    pub fn tx_done(&self) -> TxDoneField<'_> {
+        TxDoneField::new(&self.reg)
     }
 
   /// Hardware description: raised if the receive FIFO has overflowed.
@@ -183,8 +183,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField<'_> {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: raised if a framing error has been detected on receive.
@@ -205,8 +205,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_frame_err(&mut self) -> RxFrameErrField<'_> {
-        RxFrameErrField::new(&mut self.reg)
+    pub fn rx_frame_err(&self) -> RxFrameErrField<'_> {
+        RxFrameErrField::new(&self.reg)
     }
 
   /// Hardware description: raised if break condition has been detected on receive.
@@ -227,8 +227,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_break_err(&mut self) -> RxBreakErrField<'_> {
-        RxBreakErrField::new(&mut self.reg)
+    pub fn rx_break_err(&self) -> RxBreakErrField<'_> {
+        RxBreakErrField::new(&self.reg)
     }
 
   /// Hardware description: raised if RX FIFO has characters remaining in the FIFO without beingretrieved for the programmed time period.
@@ -249,8 +249,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_timeout(&mut self) -> RxTimeoutField<'_> {
-        RxTimeoutField::new(&mut self.reg)
+    pub fn rx_timeout(&self) -> RxTimeoutField<'_> {
+        RxTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: raised if the receiver has detected a parity error.
@@ -271,8 +271,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_parity_err(&mut self) -> RxParityErrField<'_> {
-        RxParityErrField::new(&mut self.reg)
+    pub fn rx_parity_err(&self) -> RxParityErrField<'_> {
+        RxParityErrField::new(&self.reg)
     }
 
   /// Hardware description: raised if the transmit FIFO is empty.
@@ -286,12 +286,12 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -376,8 +376,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_watermark is set.
@@ -398,8 +398,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_done is set.
@@ -420,8 +420,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_done(&mut self) -> TxDoneField<'_> {
-        TxDoneField::new(&mut self.reg)
+    pub fn tx_done(&self) -> TxDoneField<'_> {
+        TxDoneField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_overflow is set.
@@ -442,8 +442,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField<'_> {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_frame_err is set.
@@ -464,8 +464,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_frame_err(&mut self) -> RxFrameErrField<'_> {
-        RxFrameErrField::new(&mut self.reg)
+    pub fn rx_frame_err(&self) -> RxFrameErrField<'_> {
+        RxFrameErrField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_break_err is set.
@@ -486,8 +486,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_break_err(&mut self) -> RxBreakErrField<'_> {
-        RxBreakErrField::new(&mut self.reg)
+    pub fn rx_break_err(&self) -> RxBreakErrField<'_> {
+        RxBreakErrField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_timeout is set.
@@ -508,8 +508,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_timeout(&mut self) -> RxTimeoutField<'_> {
-        RxTimeoutField::new(&mut self.reg)
+    pub fn rx_timeout(&self) -> RxTimeoutField<'_> {
+        RxTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_parity_err is set.
@@ -530,8 +530,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_parity_err(&mut self) -> RxParityErrField<'_> {
-        RxParityErrField::new(&mut self.reg)
+    pub fn rx_parity_err(&self) -> RxParityErrField<'_> {
+        RxParityErrField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_empty is set.
@@ -552,12 +552,12 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -640,8 +640,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField<'_> {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_watermark to 1.
@@ -660,8 +660,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField<'_> {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_done to 1.
@@ -680,8 +680,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_done(&mut self) -> TxDoneField<'_> {
-        TxDoneField::new(&mut self.reg)
+    pub fn tx_done(&self) -> TxDoneField<'_> {
+        TxDoneField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_overflow to 1.
@@ -700,8 +700,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField<'_> {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_frame_err to 1.
@@ -720,8 +720,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_frame_err(&mut self) -> RxFrameErrField<'_> {
-        RxFrameErrField::new(&mut self.reg)
+    pub fn rx_frame_err(&self) -> RxFrameErrField<'_> {
+        RxFrameErrField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_break_err to 1.
@@ -740,8 +740,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_break_err(&mut self) -> RxBreakErrField<'_> {
-        RxBreakErrField::new(&mut self.reg)
+    pub fn rx_break_err(&self) -> RxBreakErrField<'_> {
+        RxBreakErrField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_timeout to 1.
@@ -760,8 +760,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_timeout(&mut self) -> RxTimeoutField<'_> {
-        RxTimeoutField::new(&mut self.reg)
+    pub fn rx_timeout(&self) -> RxTimeoutField<'_> {
+        RxTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_parity_err to 1.
@@ -780,8 +780,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_parity_err(&mut self) -> RxParityErrField<'_> {
-        RxParityErrField::new(&mut self.reg)
+    pub fn rx_parity_err(&self) -> RxParityErrField<'_> {
+        RxParityErrField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_empty to 1.
@@ -800,8 +800,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField<'_> {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -876,8 +876,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx(&mut self) -> TxField<'_> {
-        TxField::new(&mut self.reg)
+    pub fn tx(&self) -> TxField<'_> {
+        TxField::new(&self.reg)
     }
 
   /// Hardware description: RX enable
@@ -898,8 +898,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx(&mut self) -> RxField<'_> {
-        RxField::new(&mut self.reg)
+    pub fn rx(&self) -> RxField<'_> {
+        RxField::new(&self.reg)
     }
 
   /// Hardware description: RX noise filter enable.If the noise filter is enabled, RX line goes through the 3-taprepetition code. It ignores single IP clock period noise.
@@ -920,8 +920,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nf(&mut self) -> NfField<'_> {
-        NfField::new(&mut self.reg)
+    pub fn nf(&self) -> NfField<'_> {
+        NfField::new(&self.reg)
     }
 
   /// Hardware description: System loopback enable.If this bit is turned on, any outgoing bits to TX are received through RX.See Block Diagram. Note that the TX line goes 1 if System loopback is enabled.
@@ -942,8 +942,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn slpbk(&mut self) -> SlpbkField<'_> {
-        SlpbkField::new(&mut self.reg)
+    pub fn slpbk(&self) -> SlpbkField<'_> {
+        SlpbkField::new(&self.reg)
     }
 
   /// Hardware description: Line loopback enable.If this bit is turned on, incoming bits are forwarded to TX for testing purpose.See Block Diagram. Note that the internal design sees RX value as 1 always if lineloopback is enabled.
@@ -964,8 +964,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn llpbk(&mut self) -> LlpbkField<'_> {
-        LlpbkField::new(&mut self.reg)
+    pub fn llpbk(&self) -> LlpbkField<'_> {
+        LlpbkField::new(&self.reg)
     }
 
   /// Hardware description: If true, parity is enabled in both RX and TX directions.
@@ -986,8 +986,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn parity_en(&mut self) -> ParityEnField<'_> {
-        ParityEnField::new(&mut self.reg)
+    pub fn parity_en(&self) -> ParityEnField<'_> {
+        ParityEnField::new(&self.reg)
     }
 
   /// Hardware description: If PARITY_EN is true, this determines the type, 1 for odd parity, 0 for even.
@@ -1008,8 +1008,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn parity_odd(&mut self) -> ParityOddField<'_> {
-        ParityOddField::new(&mut self.reg)
+    pub fn parity_odd(&self) -> ParityOddField<'_> {
+        ParityOddField::new(&self.reg)
     }
 
   /// Hardware description: Trigger level for RX break detection. Sets the number of charactertimes the line must be low to detect a break.
@@ -1025,8 +1025,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxblvl(&mut self) -> RxblvlField<'_> {
-        RxblvlField::new(&mut self.reg)
+    pub fn rxblvl(&self) -> RxblvlField<'_> {
+        RxblvlField::new(&self.reg)
     }
 
   /// Hardware description: BAUD clock rate control.
@@ -1042,12 +1042,12 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nco(&mut self) -> NcoField<'_> {
-        NcoField::new(&mut self.reg)
+    pub fn nco(&self) -> NcoField<'_> {
+        NcoField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1122,8 +1122,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txfull(&mut self) -> TxfullField<'_> {
-        TxfullField::new(&mut self.reg)
+    pub fn txfull(&self) -> TxfullField<'_> {
+        TxfullField::new(&self.reg)
     }
 
   /// Hardware description: RX buffer is full
@@ -1137,8 +1137,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxfull(&mut self) -> RxfullField<'_> {
-        RxfullField::new(&mut self.reg)
+    pub fn rxfull(&self) -> RxfullField<'_> {
+        RxfullField::new(&self.reg)
     }
 
   /// Hardware description: TX FIFO is empty
@@ -1152,8 +1152,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txempty(&mut self) -> TxemptyField<'_> {
-        TxemptyField::new(&mut self.reg)
+    pub fn txempty(&self) -> TxemptyField<'_> {
+        TxemptyField::new(&self.reg)
     }
 
   /// Hardware description: TX FIFO is empty and all bits have been transmitted
@@ -1167,8 +1167,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txidle(&mut self) -> TxidleField<'_> {
-        TxidleField::new(&mut self.reg)
+    pub fn txidle(&self) -> TxidleField<'_> {
+        TxidleField::new(&self.reg)
     }
 
   /// Hardware description: RX is idle
@@ -1182,8 +1182,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxidle(&mut self) -> RxidleField<'_> {
-        RxidleField::new(&mut self.reg)
+    pub fn rxidle(&self) -> RxidleField<'_> {
+        RxidleField::new(&self.reg)
     }
 
   /// Hardware description: RX FIFO is empty
@@ -1197,12 +1197,12 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxempty(&mut self) -> RxemptyField<'_> {
-        RxemptyField::new(&mut self.reg)
+    pub fn rxempty(&self) -> RxemptyField<'_> {
+        RxemptyField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1247,12 +1247,12 @@ mod rdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rdata(&mut self) -> RdataField<'_> {
-        RdataField::new(&mut self.reg)
+    pub fn rdata(&self) -> RdataField<'_> {
+        RdataField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1294,8 +1294,8 @@ mod wdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn wdata(&mut self) -> WdataField<'_> {
-        WdataField::new(&mut self.reg)
+    pub fn wdata(&self) -> WdataField<'_> {
+        WdataField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -1355,8 +1355,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxrst(&mut self) -> RxrstField<'_> {
-        RxrstField::new(&mut self.reg)
+    pub fn rxrst(&self) -> RxrstField<'_> {
+        RxrstField::new(&self.reg)
     }
 
   /// Hardware description: TX fifo reset. Write 1 to the register resets TX_FIFO. Read returns 0
@@ -1375,8 +1375,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txrst(&mut self) -> TxrstField<'_> {
-        TxrstField::new(&mut self.reg)
+    pub fn txrst(&self) -> TxrstField<'_> {
+        TxrstField::new(&self.reg)
     }
 
   /// Hardware description: Trigger level for RX interrupts. If the FIFO depth is greater than or equal tothe setting, it raises rx_watermark interrupt.
@@ -1392,8 +1392,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxilvl(&mut self) -> RxilvlField<'_> {
-        RxilvlField::new(&mut self.reg)
+    pub fn rxilvl(&self) -> RxilvlField<'_> {
+        RxilvlField::new(&self.reg)
     }
 
   /// Hardware description: Trigger level for TX interrupts. If the FIFO depth is less than the setting, itraises tx_watermark interrupt.
@@ -1409,12 +1409,12 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txilvl(&mut self) -> TxilvlField<'_> {
-        TxilvlField::new(&mut self.reg)
+    pub fn txilvl(&self) -> TxilvlField<'_> {
+        TxilvlField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1479,8 +1479,8 @@ mod fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txlvl(&mut self) -> TxlvlField<'_> {
-        TxlvlField::new(&mut self.reg)
+    pub fn txlvl(&self) -> TxlvlField<'_> {
+        TxlvlField::new(&self.reg)
     }
 
   /// Hardware description: Current fill level of RX fifo
@@ -1493,12 +1493,12 @@ mod fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxlvl(&mut self) -> RxlvlField<'_> {
-        RxlvlField::new(&mut self.reg)
+    pub fn rxlvl(&self) -> RxlvlField<'_> {
+        RxlvlField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1548,8 +1548,8 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txen(&mut self) -> TxenField<'_> {
-        TxenField::new(&mut self.reg)
+    pub fn txen(&self) -> TxenField<'_> {
+        TxenField::new(&self.reg)
     }
 
   /// Hardware description: Write to set the value of the TX pin
@@ -1570,12 +1570,12 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txval(&mut self) -> TxvalField<'_> {
-        TxvalField::new(&mut self.reg)
+    pub fn txval(&self) -> TxvalField<'_> {
+        TxvalField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1637,12 +1637,12 @@ mod val {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx(&mut self) -> RxField<'_> {
-        RxField::new(&mut self.reg)
+    pub fn rx(&self) -> RxField<'_> {
+        RxField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1686,8 +1686,8 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField<'_> {
-        ValField::new(&mut self.reg)
+    pub fn val(&self) -> ValField<'_> {
+        ValField::new(&self.reg)
     }
 
   /// Hardware description: Enable RX timeout feature
@@ -1708,12 +1708,12 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField<'_> {
-        EnField::new(&mut self.reg)
+    pub fn en(&self) -> EnField<'_> {
+        EnField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }

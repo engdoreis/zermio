@@ -52,15 +52,15 @@ mod {{type_|lower}} {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn {{bitfield.name|lower}}(&mut self) -> {{bitfield.name|pascal_case}}Field<'_> {
-        {{bitfield.name|pascal_case}}Field::new(&mut self.reg)
+    pub fn {{bitfield.name|lower}}(&self) -> {{bitfield.name|pascal_case}}Field<'_> {
+        {{bitfield.name|pascal_case}}Field::new(&self.reg)
     }
 {{newline}}
 {%- endfor %}
 
 {%- if inner.is_readable() %}
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }

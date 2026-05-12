@@ -86,12 +86,12 @@ mod mtimel {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField<'_> {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -155,12 +155,12 @@ mod mtimeh {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField<'_> {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -224,12 +224,12 @@ mod mtimecmpl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField<'_> {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -293,12 +293,12 @@ mod mtimecmph {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField<'_> {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }

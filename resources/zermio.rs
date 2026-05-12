@@ -34,7 +34,7 @@ pub trait UnsignedInteger:
     + BitOr<Output = Self>
     + BitOrAssign<Self>
     + BitAndAssign<Self>
-    + BitXor<Self>
+    + BitXor<Output = Self>
     + BitXorAssign<Self>
     + PartialEq
     + PartialOrd
@@ -64,7 +64,7 @@ impl UnsignedInteger for u64 {
 
 // Define the BitField type with ReadWrite access as default
 pub struct BitField<'a, const OFFSET: usize, const BITS: usize, T, ACCESS = access::ReadWrite> {
-    reg: &'a mut Register<T>,
+    reg: &'a Register<T>,
     _data: core::marker::PhantomData<ACCESS>,
 }
 
@@ -73,7 +73,7 @@ impl<'a, const OFFSET: usize, const BITS: usize, T, ACCESS> BitField<'a, OFFSET,
 where
     T: UnsignedInteger,
 {
-    pub fn new(reg: &'a mut Register<T>) -> Self {
+    pub fn new(reg: &'a Register<T>) -> Self {
         const {
             core::assert!(
                 BITS <= core::mem::size_of::<T>() * 8,
@@ -117,24 +117,27 @@ where
     ACCESS: access::Writable,
     T: UnsignedInteger,
 {
-    pub fn write(&mut self, value: T) -> &mut Self {
+    pub fn write(&self, value: T) -> &Self {
         self.clear();
-        self.reg.cache |= (value << T::from(OFFSET)) & self.mask();
+        self.reg
+            .cache
+            .set(self.reg.cache.get() | (value << T::from(OFFSET)) & self.mask());
         self
     }
 
-    pub fn clear(&mut self) -> &mut Self {
-        self.reg.cache &= !self.mask();
+    pub fn clear(&self) -> &Self {
+        self.reg.cache.set(self.reg.cache.get() & !self.mask());
         self
     }
 
-    pub fn write_mask(&mut self, val: T) -> &mut Self {
-        self.reg.cache &= !(val << T::from(OFFSET) & self.mask());
-        self.reg.cache |= (val << T::from(OFFSET)) & self.mask();
+    pub fn write_mask(&self, val: T) -> &Self {
+        let mut cache = self.reg.cache.get() & !(val << T::from(OFFSET) & self.mask());
+        cache |= (val << T::from(OFFSET)) & self.mask();
+        self.reg.cache.set(cache);
         self
     }
 
-    pub fn commit(&mut self) {
+    pub fn commit(&self) {
         self.reg.commit()
     }
 }
@@ -145,24 +148,28 @@ where
     ACCESS: access::Writable,
     T: UnsignedInteger,
 {
-    pub fn set(&mut self) -> &mut Self {
-        self.reg.cache |= T::from(0x01usize << OFFSET);
+    pub fn set(&self) -> &Self {
+        self.reg
+            .cache
+            .set(self.reg.cache.get() | T::from(0x01usize << OFFSET));
         self
     }
 
-    pub fn reset(&mut self) -> &mut Self {
+    pub fn reset(&self) -> &Self {
         self.clear();
         self
     }
 
-    pub fn toggle(&mut self) -> &mut Self {
-        self.reg.cache ^= T::from(0x01usize << OFFSET);
+    pub fn toggle(&self) -> &Self {
+        let cache = self.reg.cache.get() ^ T::from(0x01usize << OFFSET);
+        self.reg.cache.set(cache);
         self
     }
 
-    pub fn assign(&mut self, bit: bool) -> &mut Self {
-        self.reg.cache &= !T::from(0x01 << OFFSET);
-        self.reg.cache |= T::from((bit as usize) << OFFSET);
+    pub fn assign(&self, bit: bool) -> &Self {
+        let mut cache = self.reg.cache.get() & !T::from(0x01 << OFFSET);
+        cache |= T::from((bit as usize) << OFFSET);
+        self.reg.cache.set(cache);
         self
     }
 }
@@ -174,10 +181,10 @@ where
     T: UnsignedInteger,
 {
     pub fn get(&self) -> T {
-        (self.reg.cache & self.mask()) >> T::from(OFFSET)
+        (self.reg.cache.get() & self.mask()) >> T::from(OFFSET)
     }
 
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
         self.reg.fetch();
         self
     }
@@ -190,12 +197,12 @@ where
     T: UnsignedInteger,
 {
     pub fn is_set(&self) -> bool {
-        (self.reg.cache & self.mask()) == self.mask()
+        (self.reg.cache.get() & self.mask()) == self.mask()
     }
 }
 
 pub struct Register<T> {
-    pub cache: T,
+    pub cache: core::cell::Cell<T>,
     ptr: *mut T,
 }
 
@@ -206,16 +213,16 @@ where
     pub fn new(addr: usize) -> Self {
         Self {
             ptr: addr as *mut T,
-            cache: T::from(0usize),
+            cache: core::cell::Cell::new(T::from(0usize)),
         }
     }
 
-    pub fn commit(&mut self) {
-        unsafe { self.ptr.write_volatile(self.cache) };
+    pub fn commit(&self) {
+        unsafe { self.ptr.write_volatile(self.cache.get()) };
     }
 
-    pub fn fetch(&mut self) -> &mut Self {
-        unsafe { self.cache = self.ptr.read_volatile() };
+    pub fn fetch(&self) -> &Self {
+        unsafe { self.cache.set(self.ptr.read_volatile()) };
         self
     }
 }
@@ -248,7 +255,7 @@ where
     ///   ensure the hardware receives correctly sized bus transactions.
     /// - **Usage**: Do NOT use this for standard RAM buffers; it does not increment
     ///   the destination address.
-    pub fn write_fifo(&mut self, src: &[u8]) {
+    pub fn write_fifo(&self, src: &[u8]) {
         let t_size = core::mem::size_of::<T>();
         // 1. Peel: Byte-wise volatile writes for alignment
         let align_offset = src.as_ptr().align_offset(t_size);
@@ -260,7 +267,6 @@ where
                 }
             }
         }
-
 
         // 2. Loop: Native T volatile writes
         let chunk_size = t_size;
@@ -287,7 +293,7 @@ where
     ///
     /// # Important
     /// - **Alignment**: The src slice must by aligned by size_of<T>.
-    pub fn write_buffer(&mut self, src: &[u8]) -> usize {
+    pub fn write_buffer(&self, src: &[u8]) -> usize {
         let t_size = core::mem::size_of::<T>();
         let align_offset = src.as_ptr().align_offset(t_size);
 
@@ -328,7 +334,7 @@ where
         src.len()
     }
 
-    pub fn read(&mut self, dst: &mut [u8]) {
+    pub fn read(&self, dst: &mut [u8]) {
         unsafe { core::ptr::copy_nonoverlapping(self.ptr as *mut u8, dst.as_mut_ptr(), dst.len()) };
     }
 }
@@ -340,7 +346,7 @@ mod unittest {
     #[test]
     fn test_memory_window() {
         let mut arr = [0u32; 8];
-        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
         let test_data = [0xbe, 0xba, 0xca, 0xfe];
         window.write_buffer(&test_data);
         assert_eq!(arr[0], u32::from_ne_bytes(test_data));
@@ -363,51 +369,62 @@ mod unittest {
 
     #[test]
     fn test_memory_window_single_byte_unaligned() {
-        let arr = [0u32; 8];
-        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let arr = std::cell::UnsafeCell::new([0u32; 2]);
+        let window = Memory::<u32>::new(arr.get() as usize, 8);
         let test_data = [0xbe, 0xba, 0xca, 0xfe];
         window.write_buffer(&test_data[2..3]);
-        assert_eq!(arr[0], u32::from_ne_bytes([0xca, 0x00, 0x00, 0x00]));
+        assert_eq!(
+            unsafe { (*arr.get())[0] },
+            u32::from_ne_bytes([0xca, 0x00, 0x00, 0x00])
+        );
     }
-
 
     #[test]
     fn test_memory_window_unaligned() {
-        let arr = [0u32; 8];
-        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let arr = std::cell::UnsafeCell::new([0u32; 2]);
+        let window = Memory::<u32>::new(arr.get() as usize, 8);
         let test_data = [0xbe, 0xba, 0xca, 0xfe];
         window.write_buffer(&test_data[1..]);
-        assert_eq!(arr[0], u32::from_ne_bytes([0xba, 0xca, 0xfe, 0x00]));
+        assert_eq!(
+            unsafe { (*arr.get())[0] },
+            u32::from_ne_bytes([0xba, 0xca, 0xfe, 0x00])
+        );
     }
 
     #[test]
     fn test_memory_fifo_alignment() {
-        let arr = [0u32; 1];
-        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let arr = std::cell::UnsafeCell::new([0u32; 2]);
+        let window = Memory::<u32>::new(arr.get() as usize, 8);
         let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4];
         window.write_fifo(&test_data[1..]);
-        assert_eq!(arr[0], u32::from_ne_bytes([0x44, 0x83, 0xa3, 0xb4]));
+        assert_eq!(
+            unsafe { (*arr.get())[0] },
+            u32::from_ne_bytes([0x44, 0x83, 0xa3, 0xb4])
+        );
     }
 
     #[test]
     fn test_memory_fifo_single_byte_aligned() {
-        let arr = [0u32; 1];
-        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let arr = std::cell::UnsafeCell::new([0u32; 2]);
+        let window = Memory::<u32>::new(arr.get() as usize, 8);
         let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4];
         window.write_fifo(&test_data[2..3]);
-        assert_eq!(arr[0], u32::from_ne_bytes([0x83, 0x00, 0x00, 0x00]));
+        assert_eq!(
+            unsafe { (*arr.get())[0] },
+            u32::from_ne_bytes([0x83, 0x00, 0x00, 0x00])
+        );
     }
 
     #[test]
     fn test_memory_fifo_alignment_multiword() {
-        let arr = [0u32; 3];
-        let mut window = Memory::<u32>::new(arr.as_ptr() as usize, 8);
+        let arr = std::cell::UnsafeCell::new([0u32; 2]);
+        let window = Memory::<u32>::new(arr.get() as usize, 8);
         let test_data = [0x55, 0x44, 0x83, 0xa3, 0xb4, 0x55, 0x23, 0x34];
         window.write_fifo(&test_data[1..]);
-        for w in arr {
-            print!("{:x}, ", w);
-        }
-        assert_eq!(arr[0], u32::from_ne_bytes([0xb4, 0x55, 0x23, 0x34]));
+        assert_eq!(
+            unsafe { (*arr.get())[0] },
+            u32::from_ne_bytes([0xb4, 0x55, 0x23, 0x34])
+        );
     }
 
     #[test]
@@ -437,9 +454,9 @@ mod unittest {
         );
 
         let mem = 0u64;
-        let mut reg = Register::<u64>::new((&mem as *const u64) as usize);
+        let reg = Register::<u64>::new((&mem as *const u64) as usize);
         assert_eq!(
-            BitField::<0, 64, u64, access::ReadWrite>::new(&mut reg).max(),
+            BitField::<0, 64, u64, access::ReadWrite>::new(&reg).max(),
             u64::MAX
         );
     }
@@ -447,33 +464,33 @@ mod unittest {
     #[test]
     fn test_mask() {
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
 
         assert_eq!(
-            BitField::<10, 1, u32, access::ReadWrite>::new(&mut reg).mask(),
+            BitField::<10, 1, u32, access::ReadWrite>::new(&reg).mask(),
             1 << 10
         );
         assert_eq!(
-            BitField::<10, 2, u32, access::ReadWrite>::new(&mut reg).mask(),
+            BitField::<10, 2, u32, access::ReadWrite>::new(&reg).mask(),
             3 << 10
         );
         assert_eq!(
-            BitField::<0, 10, u32, access::ReadWrite>::new(&mut reg).mask(),
+            BitField::<0, 10, u32, access::ReadWrite>::new(&reg).mask(),
             (1 << 10) - 1
         );
         assert_eq!(
-            BitField::<1, 10, u32, access::ReadWrite>::new(&mut reg).mask(),
+            BitField::<1, 10, u32, access::ReadWrite>::new(&reg).mask(),
             ((1 << 10) - 1) << 1
         );
         assert_eq!(
-            BitField::<0, 32, u32, access::ReadWrite>::new(&mut reg).mask(),
+            BitField::<0, 32, u32, access::ReadWrite>::new(&reg).mask(),
             u32::MAX
         );
 
         let mem = 0u64;
-        let mut reg = Register::<u64>::new((&mem as *const u64) as usize);
+        let reg = Register::<u64>::new((&mem as *const u64) as usize);
         assert_eq!(
-            BitField::<0, 64, u64, access::ReadWrite>::new(&mut reg).mask(),
+            BitField::<0, 64, u64, access::ReadWrite>::new(&reg).mask(),
             u64::MAX
         );
     }
@@ -481,8 +498,8 @@ mod unittest {
     #[test]
     fn test_set_reset() {
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<10, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<10, 1, u32, access::ReadWrite>::new(&reg);
         field.set().commit();
         assert_eq!(mem, 1 << 10);
         field.reset().commit();
@@ -492,9 +509,9 @@ mod unittest {
     #[test]
     fn test_fetch_reset() {
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
         reg.fetch();
-        let mut field = BitField::<15, 1, u32, access::ReadWrite>::new(&mut reg);
+        let field = BitField::<15, 1, u32, access::ReadWrite>::new(&reg);
         field.reset().commit();
         assert_eq!(mem, !(1 << 15));
     }
@@ -502,8 +519,8 @@ mod unittest {
     #[test]
     fn test_toggle() {
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<30, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<30, 1, u32, access::ReadWrite>::new(&reg);
         field.toggle().commit();
         assert_eq!(mem, 1 << 30);
         field.toggle().commit();
@@ -511,7 +528,7 @@ mod unittest {
         field.toggle().commit();
         assert_eq!(mem, 1 << 30);
 
-        let mut field = BitField::<10, 1, u32, access::ReadWrite>::new(&mut reg);
+        let field = BitField::<10, 1, u32, access::ReadWrite>::new(&reg);
         field.toggle().commit();
         assert_eq!(mem, 1 << 30 | 1 << 10);
     }
@@ -519,60 +536,60 @@ mod unittest {
     #[test]
     fn test_is_set() {
         let mem = 1u32 << 0;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<0, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<0, 1, u32, access::ReadWrite>::new(&reg);
         assert_eq!(field.fetch().is_set(), true);
 
         let mem = 1u32 << 1;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<1, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<1, 1, u32, access::ReadWrite>::new(&reg);
         assert_eq!(field.fetch().is_set(), true);
 
         let mem = 1u32 << 15;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<15, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<15, 1, u32, access::ReadWrite>::new(&reg);
         assert_eq!(field.fetch().is_set(), true);
 
         let mem = 1u32 << 31;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<31, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<31, 1, u32, access::ReadWrite>::new(&reg);
         assert_eq!(field.fetch().is_set(), true);
 
         let mem = 1u32 << 30;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<30, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<30, 1, u32, access::ReadWrite>::new(&reg);
         assert_eq!(field.fetch().is_set(), true);
     }
 
     #[test]
     fn test_reset() {
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<31, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<31, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().reset().commit();
         assert_eq!(mem, !(1 << 31) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<30, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<30, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().reset().commit();
         assert_eq!(mem, !(1 << 30) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<15, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<15, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().reset().commit();
         assert_eq!(mem, !(1 << 15) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<1, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<1, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().reset().commit();
         assert_eq!(mem, !(1 << 1) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<0, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<0, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().reset().commit();
         assert_eq!(mem, !(1 << 0) & u32::MAX);
     }
@@ -580,32 +597,32 @@ mod unittest {
     #[test]
     fn test_set() {
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<31, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<31, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().set().commit();
         assert_eq!(mem, (1 << 31));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<30, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<30, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().set().commit();
         assert_eq!(mem, (1 << 30));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<15, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<15, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().set().commit();
         assert_eq!(mem, (1 << 15));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<1, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<1, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().set().commit();
         assert_eq!(mem, (1 << 1));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<0, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<0, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().set().commit();
         assert_eq!(mem, (1 << 0));
     }
@@ -613,32 +630,32 @@ mod unittest {
     #[test]
     fn test_assign_true() {
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<31, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<31, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(true).commit();
         assert_eq!(mem, (1 << 31));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<30, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<30, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(true).commit();
         assert_eq!(mem, (1 << 30));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<15, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<15, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(true).commit();
         assert_eq!(mem, (1 << 15));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<1, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<1, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(true).commit();
         assert_eq!(mem, (1 << 1));
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<0, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<0, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(true).commit();
         assert_eq!(mem, (1 << 0));
     }
@@ -646,32 +663,32 @@ mod unittest {
     #[test]
     fn test_assign_false() {
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<31, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<31, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(false).commit();
         assert_eq!(mem, !(1 << 31) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<30, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<30, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(false).commit();
         assert_eq!(mem, !(1 << 30) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<15, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<15, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(false).commit();
         assert_eq!(mem, !(1 << 15) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<1, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<1, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(false).commit();
         assert_eq!(mem, !(1 << 1) & u32::MAX);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<0, 1, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<0, 1, u32, access::ReadWrite>::new(&reg);
         field.fetch().assign(false).commit();
         assert_eq!(mem, !(1 << 0) & u32::MAX);
     }
@@ -679,9 +696,9 @@ mod unittest {
     #[test]
     fn test_clear() {
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
         reg.fetch();
-        let mut field = BitField::<5, 8, u32, access::ReadWrite>::new(&mut reg);
+        let field = BitField::<5, 8, u32, access::ReadWrite>::new(&reg);
         field.clear().commit();
         assert_eq!(mem, u32::MAX & !(0xff << 5));
     }
@@ -689,8 +706,8 @@ mod unittest {
     #[test]
     fn test_write() {
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<5, 8, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<5, 8, u32, access::ReadWrite>::new(&reg);
 
         field.write(0xfa).commit();
         assert_eq!(mem, 0xfa << 5);
@@ -699,8 +716,8 @@ mod unittest {
         assert_eq!(mem, 0x7a << 5);
 
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<5, 8, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<5, 8, u32, access::ReadWrite>::new(&reg);
         field.fetch().write(0x7a).commit();
         assert_eq!(mem, (u32::MAX & !(0xff << 5)) | (0x7a << 5));
     }
@@ -708,14 +725,14 @@ mod unittest {
     #[test]
     fn test_write_mask() {
         let mem = u32::MAX;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<5, 8, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<5, 8, u32, access::ReadWrite>::new(&reg);
         field.write_mask(0xfa).commit();
         assert_eq!(mem, 0xfa << 5);
 
         let mem = 0u32;
-        let mut reg = Register::<u32>::new((&mem as *const u32) as usize);
-        let mut field = BitField::<5, 8, u32, access::ReadWrite>::new(&mut reg);
+        let reg = Register::<u32>::new((&mem as *const u32) as usize);
+        let field = BitField::<5, 8, u32, access::ReadWrite>::new(&reg);
         field.fetch().write(0x80).commit();
         field.fetch().write_mask(0x1 << 2).commit();
         assert_eq!(mem, (0x80 | (0x01 << 2)) << 5);

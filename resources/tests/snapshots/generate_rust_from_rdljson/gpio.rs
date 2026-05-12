@@ -85,8 +85,8 @@ mod out {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField<'_> {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -137,12 +137,12 @@ mod in {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField<'_> {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -182,12 +182,12 @@ mod in_dbnc {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField<'_> {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -230,12 +230,12 @@ mod output_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField<'_> {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
