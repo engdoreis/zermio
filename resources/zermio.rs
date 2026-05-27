@@ -206,6 +206,9 @@ pub struct Register<T> {
     ptr: *mut T,
 }
 
+unsafe impl<T> Send for Register<T> {}
+unsafe impl<T> Sync for Register<T> {}
+
 impl<T> Register<T>
 where
     T: UnsignedInteger,
