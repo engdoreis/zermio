@@ -1,6 +1,6 @@
 {%-set newline = "" %}
 {%- for device_type in inner.device_types %}
-use super::{{device_type.type_name|lower}};
+use super::{{device_type.type_name|lower|kw}};
 {%- endfor %}
 {{newline}}
 
@@ -25,7 +25,7 @@ static mut DEVICE_PERIPHERALS: bool = false;
 pub struct Peripherals {
 {%- for device_type in inner.device_types %}
   {%- for device in device_type.devices %}
-  pub {{ device.name|lower}}: {{ device_type.type_name|lower }}::{{ device_type.type_name|pascal_case }},
+  pub {{ device.name|lower|kw}}: {{ device_type.type_name|lower|kw }}::{{ device_type.type_name|pascal_case }},
   {%- endfor -%}
 {%- endfor -%}
 }
@@ -51,7 +51,7 @@ impl Peripherals {
     Self {
 {%- for device_type in inner.device_types %}
   {%- for device in device_type.devices %}
-        {{ device.name|lower}}: {{ device_type.type_name|lower}}::{{ device_type.type_name|pascal_case }}::new({{ device_type.type_name|pascal_case}}Offset::{{ device.name|pascal_case}} as u32),
+        {{ device.name|lower|kw}}: {{ device_type.type_name|lower|kw}}::{{ device_type.type_name|pascal_case }}::new({{ device_type.type_name|pascal_case}}Offset::{{ device.name|pascal_case}} as u32),
   {%- endfor -%}
 {%- endfor -%}
     }

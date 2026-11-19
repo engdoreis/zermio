@@ -6,8 +6,8 @@
 //zermio
 
 
-//! These are the registers present in the pwm 
-//! | Register name      | Description  | Offset | Write | Read| 
+//! These are the registers present in the pwm
+//! | Register name      | Description  | Offset | Write | Read|
 //! | :---               | :---         | :---   | :--   | :-- |
 //! | WIDTH |  | 0x0 | true |true |
 //! | COUNTER |  | 0x4 | true |true |
@@ -21,10 +21,10 @@ use super::zermio;
 /// });
 /// ```
 pub struct Pwm {
-    addr: u32,
-    /// 
+    __addr: u32,
+    ///
     pub width : width::Width,
-    /// 
+    ///
     pub counter : counter::Counter,
 }
 
@@ -32,27 +32,26 @@ impl Pwm {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       width : width::Width::new(addr),
       counter : counter::Counter::new(addr + 0x4),
     }
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
 
 
-
-/// .  
+/// .
 pub use self::width::*;
 mod width {
 
   use super::*;
 
-  /// # WIDTH fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # WIDTH fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | value | Pwm width. | [31:0] | true |true |
   pub struct Width {
@@ -99,7 +98,7 @@ mod width {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where
@@ -113,15 +112,14 @@ mod width {
 }
 
 
-
-/// .  
+/// .
 pub use self::counter::*;
 mod counter {
 
   use super::*;
 
-  /// # COUNTER fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # COUNTER fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | value | Pwm counter. | [31:0] | true |true |
   pub struct Counter {
@@ -168,7 +166,7 @@ mod counter {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where

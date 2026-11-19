@@ -87,6 +87,7 @@ impl Peripherals {
     }
     Some(unsafe { Peripherals::steal() })
   }
+
   /// Steals the singleton instance.
   /// # Safety
   ///

@@ -3,8 +3,8 @@
 
 
 /// {{ inner.desc }}.  
-pub use self::{{type_|lower}}::*;
-mod {{type_|lower}} {
+pub use self::{{type_|lower|kw}}::*;
+mod {{type_|lower|kw}} {
 
   use super::*;
 

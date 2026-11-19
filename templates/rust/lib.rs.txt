@@ -90,6 +90,6 @@ pub mod zermio;
 pub mod {{inner.name}};
 {%-set newline = "" %}
 {%- for device_type in inner.device_types %}
-pub mod {{device_type.type_name|lower}};
+pub mod {{device_type.type_name|lower|kw}};
 {%- endfor %}
 

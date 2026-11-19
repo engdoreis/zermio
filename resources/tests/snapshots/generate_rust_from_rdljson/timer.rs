@@ -6,8 +6,8 @@
 //zermio
 
 
-//! These are the registers present in the timer 
-//! | Register name      | Description  | Offset | Write | Read| 
+//! These are the registers present in the timer
+//! | Register name      | Description  | Offset | Write | Read|
 //! | :---               | :---         | :---   | :--   | :-- |
 //! | MTIMEL |  | 0x0 | true |true |
 //! | MTIMEH |  | 0x4 | true |true |
@@ -23,14 +23,14 @@ use super::zermio;
 /// });
 /// ```
 pub struct Timer {
-    addr: u32,
-    /// 
+    __addr: u32,
+    ///
     pub mtimel : mtimel::Mtimel,
-    /// 
+    ///
     pub mtimeh : mtimeh::Mtimeh,
-    /// 
+    ///
     pub mtimecmpl : mtimecmpl::Mtimecmpl,
-    /// 
+    ///
     pub mtimecmph : mtimecmph::Mtimecmph,
 }
 
@@ -38,7 +38,7 @@ impl Timer {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       mtimel : mtimel::Mtimel::new(addr),
       mtimeh : mtimeh::Mtimeh::new(addr + 0x4),
       mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8),
@@ -47,20 +47,19 @@ impl Timer {
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
 
 
-
-/// .  
+/// .
 pub use self::mtimel::*;
 mod mtimel {
 
   use super::*;
 
-  /// # MTIMEL fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # MTIMEL fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | VALUE | mtime low | [31:0] | true |true |
   pub struct Mtimel {
@@ -107,7 +106,7 @@ mod mtimel {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where
@@ -121,15 +120,14 @@ mod mtimel {
 }
 
 
-
-/// .  
+/// .
 pub use self::mtimeh::*;
 mod mtimeh {
 
   use super::*;
 
-  /// # MTIMEH fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # MTIMEH fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | VALUE | mtime high | [31:0] | true |true |
   pub struct Mtimeh {
@@ -176,7 +174,7 @@ mod mtimeh {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where
@@ -190,15 +188,14 @@ mod mtimeh {
 }
 
 
-
-/// .  
+/// .
 pub use self::mtimecmpl::*;
 mod mtimecmpl {
 
   use super::*;
 
-  /// # MTIMECMPL fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # MTIMECMPL fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | value | mtime cmp low | [31:0] | true |true |
   pub struct Mtimecmpl {
@@ -245,7 +242,7 @@ mod mtimecmpl {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where
@@ -259,15 +256,14 @@ mod mtimecmpl {
 }
 
 
-
-/// .  
+/// .
 pub use self::mtimecmph::*;
 mod mtimecmph {
 
   use super::*;
 
-  /// # MTIMECMPH fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # MTIMECMPH fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | value | mtime cmp high | [31:0] | true |true |
   pub struct Mtimecmph {
@@ -314,7 +310,7 @@ mod mtimecmph {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where

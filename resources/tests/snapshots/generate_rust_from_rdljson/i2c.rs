@@ -160,7 +160,6 @@ impl I2c {
 }
 
 
-
 /// Interrupt State Register.  
 pub use self::intr_state::*;
 mod intr_state {
@@ -476,6 +475,10 @@ mod intr_state {
         HostTimeoutField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -518,8 +521,8 @@ mod intr_state {
   type AcqStretchField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::Read>;
   type UnexpStopField<'a> = zermio::BitField<'a, 13, 1, u32, zermio::access::ReadWrite>;
   type HostTimeoutField<'a> = zermio::BitField<'a, 14, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 15, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Interrupt Enable Register.  
@@ -886,6 +889,10 @@ mod intr_enable {
         HostTimeoutField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -928,8 +935,8 @@ mod intr_enable {
   type AcqStretchField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::ReadWrite>;
   type UnexpStopField<'a> = zermio::BitField<'a, 13, 1, u32, zermio::access::ReadWrite>;
   type HostTimeoutField<'a> = zermio::BitField<'a, 14, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 15, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Interrupt Test Register.  
@@ -1266,6 +1273,10 @@ mod intr_test {
         HostTimeoutField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -1294,8 +1305,8 @@ mod intr_test {
   type AcqStretchField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::Write>;
   type UnexpStopField<'a> = zermio::BitField<'a, 13, 1, u32, zermio::access::Write>;
   type HostTimeoutField<'a> = zermio::BitField<'a, 14, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 15, u32, zermio::access::Write>
 }
-
 
 
 /// I2C Control Register.  
@@ -1478,6 +1489,10 @@ mod ctrl {
         TxStretchCtrlEnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -1512,8 +1527,8 @@ mod ctrl {
   type AckCtrlEnField<'a> = zermio::BitField<'a, 4, 1, u32, zermio::access::ReadWrite>;
   type MultiControllerMonitorEnField<'a> = zermio::BitField<'a, 5, 1, u32, zermio::access::ReadWrite>;
   type TxStretchCtrlEnField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 7, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// I2C Live Status Register for Host and Target modes.  
@@ -1711,6 +1726,10 @@ mod status {
         AckCtrlStretchField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -1728,8 +1747,8 @@ mod status {
   type TxemptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Read>;
   type AcqemptyField<'a> = zermio::BitField<'a, 9, 1, u32, zermio::access::Read>;
   type AckCtrlStretchField<'a> = zermio::BitField<'a, 10, 1, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 11, u32, zermio::access::Read>
 }
-
 
 
 /// I2C Read Data.  
@@ -1774,7 +1793,6 @@ mod rdata {
   }
   type RdataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
 }
-
 
 
 /// I2C Host Format DataWrites to this register are used to define and drive Controller-Mode transactions..  
@@ -1918,6 +1936,10 @@ mod fdata {
         NakokField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -1937,8 +1959,8 @@ mod fdata {
   type ReadbField<'a> = zermio::BitField<'a, 10, 1, u32, zermio::access::Write>;
   type RcontField<'a> = zermio::BitField<'a, 11, 1, u32, zermio::access::Write>;
   type NakokField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::Write>
 }
-
 
 
 /// I2C FIFO control register.  
@@ -2044,6 +2066,10 @@ mod fifo_ctrl {
         TxrstField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -2061,8 +2087,8 @@ mod fifo_ctrl {
   type FmtrstField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::Write>;
   type AcqrstField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::Write>;
   type TxrstField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::Write>
 }
-
 
 
 /// Host mode FIFO configuration.  
@@ -2120,6 +2146,10 @@ mod host_fifo_config {
         FmtThreshField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2149,8 +2179,8 @@ mod host_fifo_config {
   }
   type RxThreshField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::ReadWrite>;
   type FmtThreshField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Target mode FIFO configuration.  
@@ -2208,6 +2238,10 @@ mod target_fifo_config {
         AcqThreshField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2237,8 +2271,8 @@ mod target_fifo_config {
   }
   type TxThreshField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::ReadWrite>;
   type AcqThreshField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Host mode FIFO status register.  
@@ -2290,6 +2324,10 @@ mod host_fifo_status {
         RxlvlField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2298,8 +2336,8 @@ mod host_fifo_status {
   }
   type FmtlvlField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::Read>;
   type RxlvlField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::Read>
 }
-
 
 
 /// Target mode FIFO status register.  
@@ -2351,6 +2389,10 @@ mod target_fifo_status {
         AcqlvlField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2359,8 +2401,8 @@ mod target_fifo_status {
   }
   type TxlvlField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::Read>;
   type AcqlvlField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::Read>
 }
-
 
 
 /// I2C Override Control Register.  
@@ -2451,6 +2493,10 @@ mod ovrd {
         SdavalField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2481,8 +2527,8 @@ mod ovrd {
   type TxovrdenField<'a> = zermio::BitField<'a, 0, 1, u32, zermio::access::ReadWrite>;
   type SclvalField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type SdavalField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 3, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Oversampled RX values.  
@@ -2534,6 +2580,10 @@ mod val {
         SdaRxField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2542,8 +2592,8 @@ mod val {
   }
   type SclRxField<'a> = zermio::BitField<'a, 0, 16, u32, zermio::access::Read>;
   type SdaRxField<'a> = zermio::BitField<'a, 16, 16, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::Read>
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly..  
@@ -2601,6 +2651,10 @@ mod timing0 {
         TlowField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2630,8 +2684,8 @@ mod timing0 {
   }
   type ThighField<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::ReadWrite>;
   type TlowField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2689,6 +2743,10 @@ mod timing1 {
         TFField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2718,8 +2776,8 @@ mod timing1 {
   }
   type TRField<'a> = zermio::BitField<'a, 0, 10, u32, zermio::access::ReadWrite>;
   type TFField<'a> = zermio::BitField<'a, 16, 9, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 25, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2777,6 +2835,10 @@ mod timing2 {
         ThdStaField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2806,8 +2868,8 @@ mod timing2 {
   }
   type TsuStaField<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::ReadWrite>;
   type ThdStaField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2865,6 +2927,10 @@ mod timing3 {
         ThdDatField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2894,8 +2960,8 @@ mod timing3 {
   }
   type TsuDatField<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
   type ThdDatField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2953,6 +3019,10 @@ mod timing4 {
         TBufField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -2982,8 +3052,8 @@ mod timing4 {
   }
   type TsuStoField<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::ReadWrite>;
   type TBufField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// I2C clock stretching and bus timeout control.This timeout must be enabled by setting !!TIMEOUT_CTRL.EN to 1, and the behavior of this feature depends on the value of !!TIMEOUT_CTRL.MODE.If the mode is "STRETCH_TIMEOUT", this is used in I2C controller mode to detect whether a connected target is stretching a single low time beyond the timeout value.Configured as such, this timeout is more informative and doesn't do more than assert the "stretch_timeout" interrupt.If the mode is "BUS_TIMEOUT", it is used to detect whether the clock has been held low for too long instead, inclusive of the controller's clock low time.This is useful for an SMBus context, where the VAL programmed should be tTIMEOUT:MIN..  
@@ -3069,6 +3139,10 @@ mod timeout_ctrl {
         EnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -3099,8 +3173,8 @@ mod timeout_ctrl {
   type ValField<'a> = zermio::BitField<'a, 0, 30, u32, zermio::access::ReadWrite>;
   type ModeField<'a> = zermio::BitField<'a, 30, 1, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// I2C target address and mask pairs.  
@@ -3194,6 +3268,10 @@ mod target_id {
         Mask1Field::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -3225,8 +3303,8 @@ mod target_id {
   type Mask0Field<'a> = zermio::BitField<'a, 7, 7, u32, zermio::access::ReadWrite>;
   type Address1Field<'a> = zermio::BitField<'a, 14, 7, u32, zermio::access::ReadWrite>;
   type Mask1Field<'a> = zermio::BitField<'a, 21, 7, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// I2C target acquired data.  
@@ -3278,6 +3356,10 @@ mod acqdata {
         SignalField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -3286,8 +3368,8 @@ mod acqdata {
   }
   type AbyteField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
   type SignalField<'a> = zermio::BitField<'a, 8, 3, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 11, u32, zermio::access::Read>
 }
-
 
 
 /// I2C target transmit data.  
@@ -3341,7 +3423,6 @@ mod txdata {
   }
   type TxdataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Write>;
 }
-
 
 
 /// I2C host clock generation timeout value (in units of input clock frequency).In an active transaction in Target-Mode, if the Controller ceases to send SCL pulsesfor this number of cycles then the "host_timeout" interrupt will be asserted.In multi-controller monitoring mode, !!HOST_TIMEOUT_CTRL is required to be nonzero to transition out of the initial busy state.Set this CSR to 0 to disable this behaviour..  
@@ -3412,7 +3493,6 @@ mod host_timeout_ctrl {
 }
 
 
-
 /// I2C target internal stretching timeout control.When the target has stretched beyond this time it will send a NACK for incoming data bytes or release SDA for outgoing data bytes.The behavior for the address byte is configurable via !!CTRL.ACK_ADDR_AFTER_TIMEOUT.Note that the count accumulates stretching time over the course of a transaction.In other words, this is equivalent to the SMBus cumulative target clock extension time..  
 pub use self::target_timeout_ctrl::*;
 mod target_timeout_ctrl {
@@ -3473,6 +3553,10 @@ mod target_timeout_ctrl {
         EnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -3502,8 +3586,8 @@ mod target_timeout_ctrl {
   }
   type ValField<'a> = zermio::BitField<'a, 0, 31, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Number of times the I2C target has NACK'ed a new transaction since the last read of this register.Reading this register clears it.This is useful because when the ACQ FIFO is full the software know that a NACK has occurred, but without this register would not know how many transactions it missed.When it reaches its maximum value it will stay at that value..  
@@ -3574,7 +3658,6 @@ mod target_nack_count {
 }
 
 
-
 /// Controls for mid-transfer (N)ACK phase handling.  
 pub use self::target_ack_ctrl::*;
 mod target_ack_ctrl {
@@ -3633,6 +3716,10 @@ mod target_ack_ctrl {
         NackField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -3662,8 +3749,8 @@ mod target_ack_ctrl {
   }
   type NbytesField<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
   type NackField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// The data byte pending to be written to the ACQ FIFO.This CSR is only valid while the Target module is stretching in the (N)ACK phase, indicated by !!STATUS.ACK_CTRL_STRETCH .It is intended to be used with ACK Control Mode, so software may check the current byte..  
@@ -3708,7 +3795,6 @@ mod acq_fifo_next_data {
   }
   type AcqFifoNextDataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
 }
-
 
 
 /// Timeout in Host-Mode for an unhandled NACK before hardware automatically ends the transaction.(in units of input clock frequency)If an active Controller-Transmitter transfer receives a NACK from the Target, the !!CONTROLLER_EVENTS.NACK bit is set.In turn, this causes the Controller FSM to halt awaiting software intervention, and the 'controller_halt' interrupt may assert.Software must clear the !!CONTROLLER_EVENTS.NACK bit to allow the state machine to continue, typically after clearing out the FMTFIFO to start a new transfer.While halted, the active transaction is not ended (no STOP (P) condition is created), and the block asserts SCL and leaves SDA released.This timeout can be used to automatically produce a STOP condition, whether as a backstop for slow software responses (longer timeout) or as a convenience (short timeout).If the timeout expires, the Controller FSM will issue a STOP (P) condition on the bus to end the active transaction.Additionally, the !!CONTROLLER_EVENTS.UNHANDLED_NACK_TIMEOUT bit is set to alert software, and the FSM will return to the idle state and halt until the bit is cleared.The enable bit must be set for this feature to operate..  
@@ -3771,6 +3857,10 @@ mod host_nack_handler_timeout {
         EnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -3800,8 +3890,8 @@ mod host_nack_handler_timeout {
   }
   type ValField<'a> = zermio::BitField<'a, 0, 31, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Latched events that explain why the controller halted.Any bits that are set must be written (with a 1) to clear the CONTROLLER_HALT interrupt..  
@@ -3915,6 +4005,10 @@ mod controller_events {
         ArbitrationLostField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -3946,8 +4040,8 @@ mod controller_events {
   type UnhandledNackTimeoutField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type BusTimeoutField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
   type ArbitrationLostField<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 4, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Latched events that can cause the target module to stretch the clock at the beginning of a read transfer.These events cause TX FIFO-related stretching even when the TX FIFO has data available.Any bits that are set must be written (with a 1) to clear the tx_stretch interrupt.This CSR serves as a gate to prevent the Target module from responding to a read command with unrelated, leftover data..  
@@ -4038,6 +4132,10 @@ mod target_events {
         ArbitrationLostField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -4068,4 +4166,5 @@ mod target_events {
   type TxPendingField<'a> = zermio::BitField<'a, 0, 1, u32, zermio::access::ReadWrite>;
   type BusTimeoutField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type ArbitrationLostField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 3, u32, zermio::access::ReadWrite>
 }

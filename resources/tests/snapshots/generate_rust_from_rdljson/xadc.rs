@@ -6,8 +6,8 @@
 //zermio
 
 
-//! These are the registers present in the xadc 
-//! | Register name      | Description  | Offset | Write | Read| 
+//! These are the registers present in the xadc
+//! | Register name      | Description  | Offset | Write | Read|
 //! | :---               | :---         | :---   | :--   | :-- |
 //! | CONFIG[0..3] |  | 0x40 | true |true |
 //! | TEST_REG[0..4] |  | 0x43 | true |true |
@@ -21,10 +21,10 @@ use super::zermio;
 /// });
 /// ```
 pub struct Xadc {
-    addr: u32,
-    /// 
+    __addr: u32,
+    ///
     pub config: [config::Config; 3],
-    /// 
+    ///
     pub test_reg: [test_reg::TestReg; 4],
 }
 
@@ -32,7 +32,7 @@ impl Xadc {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       config : [
       config::Config::new(addr + 0x40),
       config::Config::new(addr + 0x41),
@@ -48,20 +48,19 @@ impl Xadc {
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
 
 
-
-/// .  
+/// .
 pub use self::config::*;
 mod config {
 
   use super::*;
 
-  /// # CONFIG fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # CONFIG fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | cfg |  | [0:0] | true |true |
   pub struct Config {
@@ -74,7 +73,7 @@ mod config {
         reg: zermio::Register::<u32>::new(addr as usize),
       }
     }
-  /// Hardware description: 
+  /// Hardware description:
   ///
   /// Returns a BitField with ReadWrite permissions, providing the following functions:
   /// | Method                | Description                                     |
@@ -113,7 +112,7 @@ mod config {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where
@@ -127,15 +126,14 @@ mod config {
 }
 
 
-
-/// .  
+/// .
 pub use self::test_reg::*;
 mod test_reg {
 
   use super::*;
 
-  /// # TEST_REG fields.  
-  /// | Field name      | Description  | Offset | Write | Read| 
+  /// # TEST_REG fields.
+  /// | Field name      | Description  | Offset | Write | Read|
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | tr |  | [0:0] | true |true |
   pub struct TestReg {
@@ -148,7 +146,7 @@ mod test_reg {
         reg: zermio::Register::<u32>::new(addr as usize),
       }
     }
-  /// Hardware description: 
+  /// Hardware description:
   ///
   /// Returns a BitField with ReadWrite permissions, providing the following functions:
   /// | Method                | Description                                     |
@@ -187,7 +185,7 @@ mod test_reg {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where

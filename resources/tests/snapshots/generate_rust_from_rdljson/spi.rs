@@ -84,7 +84,6 @@ impl Spi {
 }
 
 
-
 /// Interrupt State Register.  
 pub use self::intr_state::*;
 mod intr_state {
@@ -191,6 +190,10 @@ mod intr_state {
         CompleteField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -223,8 +226,8 @@ mod intr_state {
   type TxEmptyField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::Read>;
   type TxWatermarkField<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::Read>;
   type CompleteField<'a> = zermio::BitField<'a, 4, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 5, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Interrupt Enable Register.  
@@ -361,6 +364,10 @@ mod intr_enable {
         CompleteField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -393,8 +400,8 @@ mod intr_enable {
   type TxEmptyField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
   type TxWatermarkField<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::ReadWrite>;
   type CompleteField<'a> = zermio::BitField<'a, 4, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 5, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Interrupt Test Register.  
@@ -521,6 +528,10 @@ mod intr_test {
         CompleteField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -539,8 +550,8 @@ mod intr_test {
   type TxEmptyField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::Write>;
   type TxWatermarkField<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::Write>;
   type CompleteField<'a> = zermio::BitField<'a, 4, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 5, u32, zermio::access::Write>
 }
-
 
 
 /// Configuration register. Controls how the SPI block transmits   and receives data. This register can only be modified   whilst the SPI block is idle..  
@@ -672,6 +683,10 @@ mod cfg {
         CpolField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -704,8 +719,8 @@ mod cfg {
   type MsbFirstField<'a> = zermio::BitField<'a, 29, 1, u32, zermio::access::ReadWrite>;
   type CphaField<'a> = zermio::BitField<'a, 30, 1, u32, zermio::access::ReadWrite>;
   type CpolField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Controls the operation of the SPI block. This register can   only be modified whilst the SPI block is idle..  
@@ -895,6 +910,10 @@ mod control {
         SwResetField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -930,8 +949,8 @@ mod control {
   type RxWatermarkField<'a> = zermio::BitField<'a, 8, 4, u32, zermio::access::ReadWrite>;
   type IntLoopbackField<'a> = zermio::BitField<'a, 30, 1, u32, zermio::access::ReadWrite>;
   type SwResetField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
 }
-
 
 
 /// Status information about the SPI block.  
@@ -1031,6 +1050,10 @@ mod status {
         IdleField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -1042,8 +1065,8 @@ mod status {
   type TxFifoFullField<'a> = zermio::BitField<'a, 16, 1, u32, zermio::access::Read>;
   type RxFifoEmptyField<'a> = zermio::BitField<'a, 17, 1, u32, zermio::access::Read>;
   type IdleField<'a> = zermio::BitField<'a, 18, 1, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 19, u32, zermio::access::Read>
 }
-
 
 
 /// When written begins an SPI operation. Writes are ignored when the   SPI block is active..  
@@ -1099,7 +1122,6 @@ mod start {
 }
 
 
-
 /// Data from the receive FIFO. When read the data is popped from the   FIFO. If the FIFO is empty data read is undefined..  
 pub use self::rx_fifo::*;
 mod rx_fifo {
@@ -1142,7 +1164,6 @@ mod rx_fifo {
   }
   type DataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
 }
-
 
 
 /// Bytes written here are pushed to the transmit FIFO. If the FIFO   is full writes are ignored..  
@@ -1198,7 +1219,6 @@ mod tx_fifo {
 }
 
 
-
 /// Returns information on the SPI controller..  
 pub use self::info::*;
 mod info {
@@ -1248,6 +1268,10 @@ mod info {
         RxFifoDepthField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -1256,8 +1280,8 @@ mod info {
   }
   type TxFifoDepthField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
   type RxFifoDepthField<'a> = zermio::BitField<'a, 8, 8, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 16, u32, zermio::access::Read>
 }
-
 
 
 /// Specifies which peripherals are selected for transmit/receive operations.   An operation may select multiple peripherals simultaneously but this functionality   shall be used only for transmit operations.   This register shall be changed only when the SPI controller is idle, not whilst   a transmit/receive operation may be in progress..  
@@ -1269,10 +1293,7 @@ mod cs {
   /// # CS fields.  
   /// | Field name      | Description  | Offset | Write | Read| 
   /// | :---               | :---         | :---   | :--   | :-- |
-  /// | CS_0 | If this bit is clear the peripheral is selected for transmit/receive operations. | [0:0] | true |true |
-  /// | CS_1 | If this bit is clear the peripheral is selected for transmit/receive operations. | [1:1] | true |true |
-  /// | CS_2 | If this bit is clear the peripheral is selected for transmit/receive operations. | [2:2] | true |true |
-  /// | CS_3 | If this bit is clear the peripheral is selected for transmit/receive operations. | [3:3] | true |true |
+  /// | CS 0:3| If this bit is clear the peripheral is selected for transmit/receive operations. | [0:3] | true |true |
   pub struct Cs {
     reg: zermio::Register<u32>,
   }
@@ -1305,72 +1326,22 @@ mod cs {
         Cs0Field::new(&self.reg)
     }
 
-  /// Hardware description: If this bit is clear the peripheral is selected for transmit/receive operations.
-  ///
-  /// Returns a BitField with ReadWrite permissions, providing the following functions:
-  /// | Method                | Description                                     |
-  /// | :---                  | :---                                            |
-  /// | **`get()`**           | Returns the current value of the field.         |
-  /// | **`is_set()`**        | Returns `true` if the bit is 1.                 |
-  /// | **`write(val)`**      | Writes a multi-bit `val` to the field.          |
-  /// | **`clear()`**         | Sets all bits in the field to 0.                |
-  /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
-  /// | **`set()`**           | Sets a single-bit field to 1.                   |
-  /// | **`reset()`**         | Sets a single-bit field to 0.                   |
-  /// | **`toggle()`**        | Inverts the current state of a single-bit field.|
-  /// | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   |
-  /// | **`mask()`**          | Returns the bitmask for this field.             |
-  /// | **`max()`**           | Returns the maximum value this field can hold.  |
-  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
-  ///
     pub fn cs_1(&self) -> Cs1Field<'_> {
         Cs1Field::new(&self.reg)
     }
 
-  /// Hardware description: If this bit is clear the peripheral is selected for transmit/receive operations.
-  ///
-  /// Returns a BitField with ReadWrite permissions, providing the following functions:
-  /// | Method                | Description                                     |
-  /// | :---                  | :---                                            |
-  /// | **`get()`**           | Returns the current value of the field.         |
-  /// | **`is_set()`**        | Returns `true` if the bit is 1.                 |
-  /// | **`write(val)`**      | Writes a multi-bit `val` to the field.          |
-  /// | **`clear()`**         | Sets all bits in the field to 0.                |
-  /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
-  /// | **`set()`**           | Sets a single-bit field to 1.                   |
-  /// | **`reset()`**         | Sets a single-bit field to 0.                   |
-  /// | **`toggle()`**        | Inverts the current state of a single-bit field.|
-  /// | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   |
-  /// | **`mask()`**          | Returns the bitmask for this field.             |
-  /// | **`max()`**           | Returns the maximum value this field can hold.  |
-  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
-  ///
     pub fn cs_2(&self) -> Cs2Field<'_> {
         Cs2Field::new(&self.reg)
     }
 
-  /// Hardware description: If this bit is clear the peripheral is selected for transmit/receive operations.
-  ///
-  /// Returns a BitField with ReadWrite permissions, providing the following functions:
-  /// | Method                | Description                                     |
-  /// | :---                  | :---                                            |
-  /// | **`get()`**           | Returns the current value of the field.         |
-  /// | **`is_set()`**        | Returns `true` if the bit is 1.                 |
-  /// | **`write(val)`**      | Writes a multi-bit `val` to the field.          |
-  /// | **`clear()`**         | Sets all bits in the field to 0.                |
-  /// | **`write_mask(val)`** | Sets only the bits that are high (1) in `val`.  |
-  /// | **`set()`**           | Sets a single-bit field to 1.                   |
-  /// | **`reset()`**         | Sets a single-bit field to 0.                   |
-  /// | **`toggle()`**        | Inverts the current state of a single-bit field.|
-  /// | **`assign(val)`**     | Sets a single-bit field to the boolean `val`.   |
-  /// | **`mask()`**          | Returns the bitmask for this field.             |
-  /// | **`max()`**           | Returns the maximum value this field can hold.  |
-  /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
-  ///
     pub fn cs_3(&self) -> Cs3Field<'_> {
         Cs3Field::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg);
+    }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
       self.reg.fetch();
@@ -1402,6 +1373,7 @@ mod cs {
   type Cs1Field<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type Cs2Field<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
   type Cs3Field<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 4, u32, zermio::access::ReadWrite>
 }
 
 
