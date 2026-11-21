@@ -344,7 +344,6 @@ where
 
 #[cfg(all(test, target_arch = "x86_64"))]
 mod unittest {
-    use super::*;
 
     #[test]
     fn test_memory_window() {

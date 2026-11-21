@@ -114,7 +114,7 @@ fn main() -> anyhow::Result<(), String> {
             let json = std::fs::read_to_string(&rdl).unwrap();
             let mut soc = rdljson::SoC::try_from(&json).unwrap();
             if !no_optimize {
-                soc.homogeneous_interfaces_to_periperals();
+                soc.homogeneous_interfaces_to_peripherals();
             }
             let soc = soc.into();
 

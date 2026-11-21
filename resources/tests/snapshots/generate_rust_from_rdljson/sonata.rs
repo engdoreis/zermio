@@ -12,6 +12,7 @@ use super::uart;
 use super::i2c;
 use super::spi;
 
+#[repr(u32)]
 pub enum GpioOffset{
   Gpio = 0x80000000,
   GpioRpi = 0x80000010,
@@ -20,29 +21,35 @@ pub enum GpioOffset{
   GpioPmodc = 0x80000040,
 }
 
+#[repr(u32)]
 pub enum PwmOffset{
   Pwm = 0x80001000,
 }
 
+#[repr(u32)]
 pub enum XadcOffset{
   Xadc = 0x8000b000,
 }
 
+#[repr(u32)]
 pub enum TimerOffset{
   Timer = 0x80040000,
 }
 
+#[repr(u32)]
 pub enum UartOffset{
   Uart0 = 0x80100000,
   Uart1 = 0x80101000,
   Uart2 = 0x80102000,
 }
 
+#[repr(u32)]
 pub enum I2cOffset{
   I2c0 = 0x80200000,
   I2c1 = 0x80201000,
 }
 
+#[repr(u32)]
 pub enum SpiOffset{
   SpiLcd = 0x80300000,
   SpiEthmac = 0x80301000,
@@ -50,7 +57,6 @@ pub enum SpiOffset{
   Spi1 = 0x80303000,
   Spi2 = 0x80304000,
 }
-
 
 pub enum Interrupt{
 }
