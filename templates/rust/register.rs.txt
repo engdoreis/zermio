@@ -1,19 +1,26 @@
 {%- set newline = "" %}
 {%- set type_ = inner.info[0].type_ %}
 
+{%- set the_field = inner.bitfields[0] %}
+{%- set size = inner.bitfields.len() %}
 
 /// {{ inner.info[0].desc }}.  
-pub use self::{{type_|lower}}::*;
-mod {{type_|lower}} {
+pub use self::{{type_|lower|kw}}::*;
+mod {{type_|lower|kw}} {
 
   use super::*;
 
   /// # {{type_}} fields.  
   /// | Field name      | Description  | Offset | Write | Read| 
   /// | :---               | :---         | :---   | :--   | :-- |
-{%- for bitfield in inner.bitfields %}
+
+{%- if inner.is_homogeneous() %}
+  /// | {{the_field.name_prefix()}} 0:{{size-1}}| {{the_field.desc}} | [{{0}}:{{size-1}}] | {{the_field.permissions.is_writable()}} |{{the_field.permissions.is_readable()}} |
+{%- else %}
+  {%- for bitfield in inner.bitfields %}
   /// | {{bitfield.name}} | {{bitfield.desc}} | [{{bitfield.offset + bitfield.bit_size -1}}:{{bitfield.offset}}] | {{bitfield.permissions.is_writable()}} |{{bitfield.permissions.is_readable()}} |
-{%- endfor %}
+  {%- endfor %}
+{%- endif %}
   pub struct {{type_|pascal_case}} {
     reg: zermio::Register<u32>,
   }
@@ -26,6 +33,7 @@ mod {{type_|lower}} {
     }
 
 {%- for bitfield in inner.bitfields %}
+  {%- if !inner.is_homogeneous() || loop.first %}
   /// Hardware description: {{bitfield.desc}}
   ///
   /// Returns a BitField with {{ bitfield.permissions }} permissions, providing the following functions:
@@ -52,15 +60,23 @@ mod {{type_|lower}} {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn {{bitfield.name|lower}}(&mut self) -> {{bitfield.name|pascal_case}}Field {
-        {{bitfield.name|pascal_case}}Field::new(&mut self.reg)
+  {%- endif %}
+    pub fn {{bitfield.name|lower|kw}}(&self) -> {{bitfield.name|pascal_case}}Field<'_> {
+        {{bitfield.name|pascal_case}}Field::new(&self.reg)
     }
 {{newline}}
 {%- endfor %}
 
+    
+{%- if size > 1 %}
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
+{%- endif %}
 {%- if inner.is_readable() %}
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -94,4 +110,9 @@ mod {{type_|lower}} {
 {%- for bitfield in inner.bitfields %}
   type {{ bitfield.name|pascal_case }}Field<'a> = zermio::BitField<'a, {{bitfield.offset}}, {{bitfield.bit_size}}, u32, zermio::access::{{bitfield.permissions}}>;
 {%- endfor %}
+{%- if size > 1 %}
+  {%- set first = inner.bitfields.first().unwrap() %}
+  {%- set last = inner.bitfields.last().unwrap() %}
+  type AllFields<'a> = zermio::BitField<'a, {{first.offset}}, {{last.offset + last.bit_size - first.offset}}, u32, zermio::access::{{inner.permissions()}}>;
+{%- endif %}
 }

@@ -62,8 +62,8 @@ mod libtest {
 
         let json = std::fs::read_to_string(&rdljson).unwrap();
         let mut soc = rdljson::SoC::try_from(&json).unwrap();
-        soc.homogeneous_interfaces_to_periperals();
-        let soc = soc.try_into().unwrap();
+        soc.homogeneous_interfaces_to_peripherals();
+        let soc = soc.into();
 
         generator::cpp::generate(&soc, output_dir.clone(), output_dir.clone(), FILE_HEADER)
             .unwrap();
@@ -102,8 +102,8 @@ mod libtest {
 
         let json = std::fs::read_to_string(&rdljson).unwrap();
         let mut soc = rdljson::SoC::try_from(&json).unwrap();
-        soc.homogeneous_interfaces_to_periperals();
-        let soc = soc.try_into().unwrap();
+        soc.homogeneous_interfaces_to_peripherals();
+        let soc = soc.into();
 
         generator::rust::generate(&soc, output_dir.clone(), FILE_HEADER).unwrap();
 
@@ -129,28 +129,68 @@ mod libtest {
         check_eq("uart.rs", None);
         check_eq("i2c.rs", None);
         check_eq("spi.rs", None);
-        check_eq("spi.rs", None);
-        check_eq("spi.rs", None);
+    }
+
+    // Snapshot comparisons above only catch textual drift; they can't tell a
+    // trailing-whitespace change from a missing semicolon that makes the
+    // generated crate fail to build. Compile the generated sources for real.
+    #[test]
+    #[function_name::named]
+    fn generated_rust_code_compiles() {
+        let rdljson = PathBuf::from("resources/tests/input/rdl.json");
+        let output_dir = PathBuf::from(format!("target/test_{}", function_name!()));
+
+        let _ = std::fs::create_dir(&output_dir);
+
+        let json = std::fs::read_to_string(&rdljson).unwrap();
+        let mut soc = rdljson::SoC::try_from(&json).unwrap();
+        soc.homogeneous_interfaces_to_peripherals();
+        let soc = soc.into();
+
+        generator::rust::generate(&soc, output_dir.clone(), FILE_HEADER).unwrap();
+
+        let lib_rs = output_dir.join("lib.rs");
+        let status = std::process::Command::new("rustc")
+            .args([
+                "--edition",
+                "2024",
+                "--crate-type",
+                "lib",
+                "--emit=metadata",
+                "--cfg",
+                "test",
+                "-o",
+            ])
+            .arg(output_dir.join("generated_rust_code_compiles.rmeta"))
+            .arg(&lib_rs)
+            .status()
+            .expect("failed to invoke rustc; is it on PATH?");
+
+        assert!(
+            status.success(),
+            "Generated Rust code failed to compile. Re-run with:\n\
+             rustc --edition 2024 --crate-type lib --emit=metadata -o /dev/null --cfg test {}",
+            lib_rs.display(),
+        );
     }
 
     pub fn compare_files(file_path1: &PathBuf, file_path2: &PathBuf) -> anyhow::Result<bool> {
         // Read the contents of the first file into a vector
         let contents1: Vec<_> = std::fs::read(file_path1)
-            .expect(&format!(
-                "Cant't read file {}\nConsider:\ncp {} {}\n",
-                file_path1.to_str().unwrap(),
-                file_path2.to_str().unwrap(),
-                file_path1.to_str().unwrap()
-            ))
+            .unwrap_or_else(|_| {
+                panic!(
+                    "Can't read file {}\nConsider:\ncp {} {}\n",
+                    file_path1.to_str().unwrap(),
+                    file_path2.to_str().unwrap(),
+                    file_path1.to_str().unwrap()
+                )
+            })
             .into_iter()
             .filter(|x| *x != b'\r' && *x != b'\n')
             .collect();
         // Read the contents of the second file into a vector
         let contents2: Vec<_> = std::fs::read(file_path2)
-            .expect(&format!(
-                "Cant't read file {}",
-                file_path2.to_str().unwrap()
-            ))
+            .unwrap_or_else(|_| panic!("Can't read file {}", file_path2.to_str().unwrap()))
             .into_iter()
             .filter(|x| *x != b'\r' && *x != b'\n')
             .collect();

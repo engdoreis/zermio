@@ -30,6 +30,11 @@ impl Bitfield {
             permissions,
         }
     }
+
+    pub fn name_prefix(&self) -> &str {
+        self.name
+            .trim_end_matches(|c: char| !c.is_ascii_alphabetic())
+    }
 }
 
 impl Default for Bitfield {

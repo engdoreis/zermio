@@ -21,7 +21,7 @@ use super::zermio;
 /// });
 /// ```
 pub struct Xadc {
-    addr: u32,
+    __addr: u32,
     /// 
     pub config: [config::Config; 3],
     /// 
@@ -32,7 +32,7 @@ impl Xadc {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       config : [
       config::Config::new(addr + 0x40),
       config::Config::new(addr + 0x41),
@@ -48,10 +48,9 @@ impl Xadc {
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
-
 
 
 /// .  
@@ -92,12 +91,12 @@ mod config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cfg(&mut self) -> CfgField {
-        CfgField::new(&mut self.reg)
+    pub fn cfg(&self) -> CfgField<'_> {
+        CfgField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -125,7 +124,6 @@ mod config {
   }
   type CfgField<'a> = zermio::BitField<'a, 0, 1, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// .  
@@ -166,12 +164,12 @@ mod test_reg {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tr(&mut self) -> TrField {
-        TrField::new(&mut self.reg)
+    pub fn tr(&self) -> TrField<'_> {
+        TrField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }

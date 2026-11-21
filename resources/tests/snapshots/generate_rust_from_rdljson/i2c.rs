@@ -50,7 +50,7 @@ use super::zermio;
 /// });
 /// ```
 pub struct I2c {
-    addr: u32,
+    __addr: u32,
     /// Interrupt State Register
     pub intr_state : intr_state::IntrState,
     /// Interrupt Enable Register
@@ -119,7 +119,7 @@ impl I2c {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       intr_state : intr_state::IntrState::new(addr),
       intr_enable : intr_enable::IntrEnable::new(addr + 0x4),
       intr_test : intr_test::IntrTest::new(addr + 0x8),
@@ -155,10 +155,9 @@ impl I2c {
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
-
 
 
 /// Interrupt State Register.  
@@ -206,8 +205,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_threshold(&mut self) -> FmtThresholdField {
-        FmtThresholdField::new(&mut self.reg)
+    pub fn fmt_threshold(&self) -> FmtThresholdField<'_> {
+        FmtThresholdField::new(&self.reg)
     }
 
   /// Hardware description: host mode interrupt: asserted whilst the RX FIFO level is above the high threshold. This is a level status interrupt.
@@ -221,8 +220,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_threshold(&mut self) -> RxThresholdField {
-        RxThresholdField::new(&mut self.reg)
+    pub fn rx_threshold(&self) -> RxThresholdField<'_> {
+        RxThresholdField::new(&self.reg)
     }
 
   /// Hardware description: target mode interrupt: asserted whilst the ACQ FIFO level is above the high threshold. This is a level status interrupt.
@@ -236,8 +235,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_threshold(&mut self) -> AcqThresholdField {
-        AcqThresholdField::new(&mut self.reg)
+    pub fn acq_threshold(&self) -> AcqThresholdField<'_> {
+        AcqThresholdField::new(&self.reg)
     }
 
   /// Hardware description: host mode interrupt: raised if the RX FIFO has overflowed.
@@ -258,8 +257,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: host mode interrupt: raised if the controller FSM is halted, such as on an unexpected NACK or lost arbitration.Check !!CONTROLLER_EVENTS for the reason.The interrupt will be released when the bits in !!CONTROLLER_EVENTS are cleared.
@@ -273,8 +272,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn controller_halt(&mut self) -> ControllerHaltField {
-        ControllerHaltField::new(&mut self.reg)
+    pub fn controller_halt(&self) -> ControllerHaltField<'_> {
+        ControllerHaltField::new(&self.reg)
     }
 
   /// Hardware description: host mode interrupt: raised if the SCL line drops early (not supported without clock synchronization).
@@ -295,8 +294,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_interference(&mut self) -> SclInterferenceField {
-        SclInterferenceField::new(&mut self.reg)
+    pub fn scl_interference(&self) -> SclInterferenceField<'_> {
+        SclInterferenceField::new(&self.reg)
     }
 
   /// Hardware description: host mode interrupt: raised if the SDA line goes low when host is trying to assert high
@@ -317,8 +316,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_interference(&mut self) -> SdaInterferenceField {
-        SdaInterferenceField::new(&mut self.reg)
+    pub fn sda_interference(&self) -> SdaInterferenceField<'_> {
+        SdaInterferenceField::new(&self.reg)
     }
 
   /// Hardware description: host mode interrupt: raised if target stretches the clock beyond the allowed timeout period
@@ -339,8 +338,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stretch_timeout(&mut self) -> StretchTimeoutField {
-        StretchTimeoutField::new(&mut self.reg)
+    pub fn stretch_timeout(&self) -> StretchTimeoutField<'_> {
+        StretchTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: host mode interrupt: raised if the target does not assert a constant value of SDA during transmission.
@@ -361,8 +360,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_unstable(&mut self) -> SdaUnstableField {
-        SdaUnstableField::new(&mut self.reg)
+    pub fn sda_unstable(&self) -> SdaUnstableField<'_> {
+        SdaUnstableField::new(&self.reg)
     }
 
   /// Hardware description: host and target mode interrupt.In host mode, raised if the host issues a repeated START or terminates the transaction by issuing STOP.In target mode, raised if the external host issues a STOP or repeated START.
@@ -383,8 +382,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cmd_complete(&mut self) -> CmdCompleteField {
-        CmdCompleteField::new(&mut self.reg)
+    pub fn cmd_complete(&self) -> CmdCompleteField<'_> {
+        CmdCompleteField::new(&self.reg)
     }
 
   /// Hardware description: target mode interrupt: raised if the target is stretching clocks for a read command. This is a level status interrupt.
@@ -398,8 +397,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch(&mut self) -> TxStretchField {
-        TxStretchField::new(&mut self.reg)
+    pub fn tx_stretch(&self) -> TxStretchField<'_> {
+        TxStretchField::new(&self.reg)
     }
 
   /// Hardware description: target mode interrupt: asserted whilst the TX FIFO level is below the low threshold. This is a level status interrupt.
@@ -413,8 +412,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_threshold(&mut self) -> TxThresholdField {
-        TxThresholdField::new(&mut self.reg)
+    pub fn tx_threshold(&self) -> TxThresholdField<'_> {
+        TxThresholdField::new(&self.reg)
     }
 
   /// Hardware description: target mode interrupt: raised if the target is stretching clocks due to full ACQ FIFO or zero count in !!TARGET_ACK_CTRL.NBYTES (if enabled). This is a level status interrupt.
@@ -428,8 +427,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_stretch(&mut self) -> AcqStretchField {
-        AcqStretchField::new(&mut self.reg)
+    pub fn acq_stretch(&self) -> AcqStretchField<'_> {
+        AcqStretchField::new(&self.reg)
     }
 
   /// Hardware description: target mode interrupt: raised if STOP is received without a preceding NACK during an external host read.
@@ -450,8 +449,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unexp_stop(&mut self) -> UnexpStopField {
-        UnexpStopField::new(&mut self.reg)
+    pub fn unexp_stop(&self) -> UnexpStopField<'_> {
+        UnexpStopField::new(&self.reg)
     }
 
   /// Hardware description: target mode interrupt: raised if the host stops sending the clock during an ongoing transaction.
@@ -472,12 +471,16 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout(&mut self) -> HostTimeoutField {
-        HostTimeoutField::new(&mut self.reg)
+    pub fn host_timeout(&self) -> HostTimeoutField<'_> {
+        HostTimeoutField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -518,8 +521,8 @@ mod intr_state {
   type AcqStretchField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::Read>;
   type UnexpStopField<'a> = zermio::BitField<'a, 13, 1, u32, zermio::access::ReadWrite>;
   type HostTimeoutField<'a> = zermio::BitField<'a, 14, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 15, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Interrupt Enable Register.  
@@ -574,8 +577,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_threshold(&mut self) -> FmtThresholdField {
-        FmtThresholdField::new(&mut self.reg)
+    pub fn fmt_threshold(&self) -> FmtThresholdField<'_> {
+        FmtThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_threshold is set.
@@ -596,8 +599,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_threshold(&mut self) -> RxThresholdField {
-        RxThresholdField::new(&mut self.reg)
+    pub fn rx_threshold(&self) -> RxThresholdField<'_> {
+        RxThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.acq_threshold is set.
@@ -618,8 +621,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_threshold(&mut self) -> AcqThresholdField {
-        AcqThresholdField::new(&mut self.reg)
+    pub fn acq_threshold(&self) -> AcqThresholdField<'_> {
+        AcqThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_overflow is set.
@@ -640,8 +643,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.controller_halt is set.
@@ -662,8 +665,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn controller_halt(&mut self) -> ControllerHaltField {
-        ControllerHaltField::new(&mut self.reg)
+    pub fn controller_halt(&self) -> ControllerHaltField<'_> {
+        ControllerHaltField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.scl_interference is set.
@@ -684,8 +687,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_interference(&mut self) -> SclInterferenceField {
-        SclInterferenceField::new(&mut self.reg)
+    pub fn scl_interference(&self) -> SclInterferenceField<'_> {
+        SclInterferenceField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.sda_interference is set.
@@ -706,8 +709,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_interference(&mut self) -> SdaInterferenceField {
-        SdaInterferenceField::new(&mut self.reg)
+    pub fn sda_interference(&self) -> SdaInterferenceField<'_> {
+        SdaInterferenceField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.stretch_timeout is set.
@@ -728,8 +731,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stretch_timeout(&mut self) -> StretchTimeoutField {
-        StretchTimeoutField::new(&mut self.reg)
+    pub fn stretch_timeout(&self) -> StretchTimeoutField<'_> {
+        StretchTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.sda_unstable is set.
@@ -750,8 +753,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_unstable(&mut self) -> SdaUnstableField {
-        SdaUnstableField::new(&mut self.reg)
+    pub fn sda_unstable(&self) -> SdaUnstableField<'_> {
+        SdaUnstableField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.cmd_complete is set.
@@ -772,8 +775,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cmd_complete(&mut self) -> CmdCompleteField {
-        CmdCompleteField::new(&mut self.reg)
+    pub fn cmd_complete(&self) -> CmdCompleteField<'_> {
+        CmdCompleteField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_stretch is set.
@@ -794,8 +797,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch(&mut self) -> TxStretchField {
-        TxStretchField::new(&mut self.reg)
+    pub fn tx_stretch(&self) -> TxStretchField<'_> {
+        TxStretchField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_threshold is set.
@@ -816,8 +819,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_threshold(&mut self) -> TxThresholdField {
-        TxThresholdField::new(&mut self.reg)
+    pub fn tx_threshold(&self) -> TxThresholdField<'_> {
+        TxThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.acq_stretch is set.
@@ -838,8 +841,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_stretch(&mut self) -> AcqStretchField {
-        AcqStretchField::new(&mut self.reg)
+    pub fn acq_stretch(&self) -> AcqStretchField<'_> {
+        AcqStretchField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.unexp_stop is set.
@@ -860,8 +863,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unexp_stop(&mut self) -> UnexpStopField {
-        UnexpStopField::new(&mut self.reg)
+    pub fn unexp_stop(&self) -> UnexpStopField<'_> {
+        UnexpStopField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.host_timeout is set.
@@ -882,12 +885,16 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout(&mut self) -> HostTimeoutField {
-        HostTimeoutField::new(&mut self.reg)
+    pub fn host_timeout(&self) -> HostTimeoutField<'_> {
+        HostTimeoutField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -928,8 +935,8 @@ mod intr_enable {
   type AcqStretchField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::ReadWrite>;
   type UnexpStopField<'a> = zermio::BitField<'a, 13, 1, u32, zermio::access::ReadWrite>;
   type HostTimeoutField<'a> = zermio::BitField<'a, 14, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 15, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Interrupt Test Register.  
@@ -982,8 +989,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_threshold(&mut self) -> FmtThresholdField {
-        FmtThresholdField::new(&mut self.reg)
+    pub fn fmt_threshold(&self) -> FmtThresholdField<'_> {
+        FmtThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_threshold to 1.
@@ -1002,8 +1009,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_threshold(&mut self) -> RxThresholdField {
-        RxThresholdField::new(&mut self.reg)
+    pub fn rx_threshold(&self) -> RxThresholdField<'_> {
+        RxThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.acq_threshold to 1.
@@ -1022,8 +1029,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_threshold(&mut self) -> AcqThresholdField {
-        AcqThresholdField::new(&mut self.reg)
+    pub fn acq_threshold(&self) -> AcqThresholdField<'_> {
+        AcqThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_overflow to 1.
@@ -1042,8 +1049,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.controller_halt to 1.
@@ -1062,8 +1069,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn controller_halt(&mut self) -> ControllerHaltField {
-        ControllerHaltField::new(&mut self.reg)
+    pub fn controller_halt(&self) -> ControllerHaltField<'_> {
+        ControllerHaltField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.scl_interference to 1.
@@ -1082,8 +1089,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_interference(&mut self) -> SclInterferenceField {
-        SclInterferenceField::new(&mut self.reg)
+    pub fn scl_interference(&self) -> SclInterferenceField<'_> {
+        SclInterferenceField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.sda_interference to 1.
@@ -1102,8 +1109,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_interference(&mut self) -> SdaInterferenceField {
-        SdaInterferenceField::new(&mut self.reg)
+    pub fn sda_interference(&self) -> SdaInterferenceField<'_> {
+        SdaInterferenceField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.stretch_timeout to 1.
@@ -1122,8 +1129,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stretch_timeout(&mut self) -> StretchTimeoutField {
-        StretchTimeoutField::new(&mut self.reg)
+    pub fn stretch_timeout(&self) -> StretchTimeoutField<'_> {
+        StretchTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.sda_unstable to 1.
@@ -1142,8 +1149,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_unstable(&mut self) -> SdaUnstableField {
-        SdaUnstableField::new(&mut self.reg)
+    pub fn sda_unstable(&self) -> SdaUnstableField<'_> {
+        SdaUnstableField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.cmd_complete to 1.
@@ -1162,8 +1169,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn cmd_complete(&mut self) -> CmdCompleteField {
-        CmdCompleteField::new(&mut self.reg)
+    pub fn cmd_complete(&self) -> CmdCompleteField<'_> {
+        CmdCompleteField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_stretch to 1.
@@ -1182,8 +1189,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch(&mut self) -> TxStretchField {
-        TxStretchField::new(&mut self.reg)
+    pub fn tx_stretch(&self) -> TxStretchField<'_> {
+        TxStretchField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_threshold to 1.
@@ -1202,8 +1209,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_threshold(&mut self) -> TxThresholdField {
-        TxThresholdField::new(&mut self.reg)
+    pub fn tx_threshold(&self) -> TxThresholdField<'_> {
+        TxThresholdField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.acq_stretch to 1.
@@ -1222,8 +1229,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_stretch(&mut self) -> AcqStretchField {
-        AcqStretchField::new(&mut self.reg)
+    pub fn acq_stretch(&self) -> AcqStretchField<'_> {
+        AcqStretchField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.unexp_stop to 1.
@@ -1242,8 +1249,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unexp_stop(&mut self) -> UnexpStopField {
-        UnexpStopField::new(&mut self.reg)
+    pub fn unexp_stop(&self) -> UnexpStopField<'_> {
+        UnexpStopField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.host_timeout to 1.
@@ -1262,10 +1269,14 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout(&mut self) -> HostTimeoutField {
-        HostTimeoutField::new(&mut self.reg)
+    pub fn host_timeout(&self) -> HostTimeoutField<'_> {
+        HostTimeoutField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -1294,8 +1305,8 @@ mod intr_test {
   type AcqStretchField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::Write>;
   type UnexpStopField<'a> = zermio::BitField<'a, 13, 1, u32, zermio::access::Write>;
   type HostTimeoutField<'a> = zermio::BitField<'a, 14, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 15, u32, zermio::access::Write>;
 }
-
 
 
 /// I2C Control Register.  
@@ -1342,8 +1353,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn enablehost(&mut self) -> EnablehostField {
-        EnablehostField::new(&mut self.reg)
+    pub fn enablehost(&self) -> EnablehostField<'_> {
+        EnablehostField::new(&self.reg)
     }
 
   /// Hardware description: Enable Target I2C functionality
@@ -1364,8 +1375,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn enabletarget(&mut self) -> EnabletargetField {
-        EnabletargetField::new(&mut self.reg)
+    pub fn enabletarget(&self) -> EnabletargetField<'_> {
+        EnabletargetField::new(&self.reg)
     }
 
   /// Hardware description: Enable I2C line loopback testIf line loopback is enabled, the internal design sees ACQ and RX data as "1"
@@ -1386,8 +1397,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn llpbk(&mut self) -> LlpbkField {
-        LlpbkField::new(&mut self.reg)
+    pub fn llpbk(&self) -> LlpbkField<'_> {
+        LlpbkField::new(&self.reg)
     }
 
   /// Hardware description: Enable NACKing the address on a stretch timeout.This is a Target mode feature.If enabled (1), a stretch timeout will cause the device to NACK the address byte.If disabled (0), a stretch timeout will cause the device to ACK the address byte.SMBus requires that devices always ACK their address, even for read commands.However, non-SMBus protocols may have a different approach and can choose to NACK instead.Note that both cases handle data bytes the same way.For writes, the Target module will NACK all subsequent data bytes until it receives a Stop.For reads, the Target module will release SDA, causing 0xff to be returned for all data bytes until it receives a Stop.
@@ -1408,8 +1419,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nack_addr_after_timeout(&mut self) -> NackAddrAfterTimeoutField {
-        NackAddrAfterTimeoutField::new(&mut self.reg)
+    pub fn nack_addr_after_timeout(&self) -> NackAddrAfterTimeoutField<'_> {
+        NackAddrAfterTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: Enable I2C Target ACK Control Mode.ACK Control Mode works together with !!TARGET_ACK_CTRL.NBYTES to allow software to control upper-layer protocol (N)ACKing (e.g. as in SMBus).This bit enables the mode when 1, and !!TARGET_ACK_CTRL.NBYTES limits how many bytes may be automatically ACK'd while the ACQ FIFO has space.If it is 0, the decision to ACK or NACK is made only from stretching timeouts and !!CTRL.NACK_ADDR_AFTER_TIMEOUT.
@@ -1430,8 +1441,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn ack_ctrl_en(&mut self) -> AckCtrlEnField {
-        AckCtrlEnField::new(&mut self.reg)
+    pub fn ack_ctrl_en(&self) -> AckCtrlEnField<'_> {
+        AckCtrlEnField::new(&self.reg)
     }
 
   /// Hardware description: Enable the bus monitor in multi-controller mode.If a 0->1 transition happens while !!CTRL.ENABLEHOST and !!CTRL.ENABLETARGET are both 0, the bus monitor will enable and begin in the "bus busy" state.To transition to a bus free state, !!HOST_TIMEOUT_CTRL must be nonzero, so the bus monitor may count out idle cycles to confirm the freedom to transmit.In addition, the bus monitor will track whether the bus is free based on the enabled timeouts and detected Stop symbols.For multi-controller mode, ensure !!CTRL.MULTI_CONTROLLER_MONITOR_EN becomes 1 no later than !!CTRL.ENABLEHOST or !!CTRL.ENABLETARGET.This bit can be set at the same time as either or both of the other two, though.Note that if !!CTRL.MULTI_CONTROLLER_MONITOR_EN is set after !!CTRL.ENABLEHOST or !!CTRL.ENABLETARGET, the bus monitor will begin in the "bus free" state instead.This would violate the proper protocol for a controller to join a multi-controller environment.However, if this controller is known to be the first to join, this ordering will enable skipping the idle wait.When 0, the bus monitor will report that the bus is always free, so the controller FSM is never blocked from transmitting.
@@ -1452,8 +1463,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn multi_controller_monitor_en(&mut self) -> MultiControllerMonitorEnField {
-        MultiControllerMonitorEnField::new(&mut self.reg)
+    pub fn multi_controller_monitor_en(&self) -> MultiControllerMonitorEnField<'_> {
+        MultiControllerMonitorEnField::new(&self.reg)
     }
 
   /// Hardware description: If set to 1, this bit causes a read transfer addressed to this target to set the corresponding bit in !!TARGET_EVENTS.While !!TARGET_EVENTS.TX_PENDING is 1, subsequent read transactions will stretch the clock, even if there is data in the TX FIFO.If enabled, this function allows software to confirm the data in the TX FIFO should be released for the current read.This may be useful for cases where the TX FIFO has data that does not apply to the current transfer.For example, the transaction could've targeted an alternate function via another address.
@@ -1474,12 +1485,16 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_stretch_ctrl_en(&mut self) -> TxStretchCtrlEnField {
-        TxStretchCtrlEnField::new(&mut self.reg)
+    pub fn tx_stretch_ctrl_en(&self) -> TxStretchCtrlEnField<'_> {
+        TxStretchCtrlEnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1512,8 +1527,8 @@ mod ctrl {
   type AckCtrlEnField<'a> = zermio::BitField<'a, 4, 1, u32, zermio::access::ReadWrite>;
   type MultiControllerMonitorEnField<'a> = zermio::BitField<'a, 5, 1, u32, zermio::access::ReadWrite>;
   type TxStretchCtrlEnField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 7, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// I2C Live Status Register for Host and Target modes.  
@@ -1557,8 +1572,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtfull(&mut self) -> FmtfullField {
-        FmtfullField::new(&mut self.reg)
+    pub fn fmtfull(&self) -> FmtfullField<'_> {
+        FmtfullField::new(&self.reg)
     }
 
   /// Hardware description: Host mode RX FIFO is full
@@ -1572,8 +1587,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxfull(&mut self) -> RxfullField {
-        RxfullField::new(&mut self.reg)
+    pub fn rxfull(&self) -> RxfullField<'_> {
+        RxfullField::new(&self.reg)
     }
 
   /// Hardware description: Host mode FMT FIFO is empty
@@ -1587,8 +1602,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtempty(&mut self) -> FmtemptyField {
-        FmtemptyField::new(&mut self.reg)
+    pub fn fmtempty(&self) -> FmtemptyField<'_> {
+        FmtemptyField::new(&self.reg)
     }
 
   /// Hardware description: Host functionality is idle. No Host transaction is in progress
@@ -1602,8 +1617,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn hostidle(&mut self) -> HostidleField {
-        HostidleField::new(&mut self.reg)
+    pub fn hostidle(&self) -> HostidleField<'_> {
+        HostidleField::new(&self.reg)
     }
 
   /// Hardware description: Target functionality is idle. No Target transaction is in progress
@@ -1617,8 +1632,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn targetidle(&mut self) -> TargetidleField {
-        TargetidleField::new(&mut self.reg)
+    pub fn targetidle(&self) -> TargetidleField<'_> {
+        TargetidleField::new(&self.reg)
     }
 
   /// Hardware description: Host mode RX FIFO is empty
@@ -1632,8 +1647,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxempty(&mut self) -> RxemptyField {
-        RxemptyField::new(&mut self.reg)
+    pub fn rxempty(&self) -> RxemptyField<'_> {
+        RxemptyField::new(&self.reg)
     }
 
   /// Hardware description: Target mode TX FIFO is full
@@ -1647,8 +1662,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txfull(&mut self) -> TxfullField {
-        TxfullField::new(&mut self.reg)
+    pub fn txfull(&self) -> TxfullField<'_> {
+        TxfullField::new(&self.reg)
     }
 
   /// Hardware description: Target mode receive FIFO is full
@@ -1662,8 +1677,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqfull(&mut self) -> AcqfullField {
-        AcqfullField::new(&mut self.reg)
+    pub fn acqfull(&self) -> AcqfullField<'_> {
+        AcqfullField::new(&self.reg)
     }
 
   /// Hardware description: Target mode TX FIFO is empty
@@ -1677,8 +1692,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txempty(&mut self) -> TxemptyField {
-        TxemptyField::new(&mut self.reg)
+    pub fn txempty(&self) -> TxemptyField<'_> {
+        TxemptyField::new(&self.reg)
     }
 
   /// Hardware description: Target mode receive FIFO is empty
@@ -1692,8 +1707,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqempty(&mut self) -> AcqemptyField {
-        AcqemptyField::new(&mut self.reg)
+    pub fn acqempty(&self) -> AcqemptyField<'_> {
+        AcqemptyField::new(&self.reg)
     }
 
   /// Hardware description: Target mode stretching at (N)ACK phase due to zero count in !!TARGET_ACK_CTRL.NBYTES
@@ -1707,12 +1722,16 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn ack_ctrl_stretch(&mut self) -> AckCtrlStretchField {
-        AckCtrlStretchField::new(&mut self.reg)
+    pub fn ack_ctrl_stretch(&self) -> AckCtrlStretchField<'_> {
+        AckCtrlStretchField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1728,8 +1747,8 @@ mod status {
   type TxemptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Read>;
   type AcqemptyField<'a> = zermio::BitField<'a, 9, 1, u32, zermio::access::Read>;
   type AckCtrlStretchField<'a> = zermio::BitField<'a, 10, 1, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 11, u32, zermio::access::Read>;
 }
-
 
 
 /// I2C Read Data.  
@@ -1762,19 +1781,18 @@ mod rdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rdata(&mut self) -> RdataField {
-        RdataField::new(&mut self.reg)
+    pub fn rdata(&self) -> RdataField<'_> {
+        RdataField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type RdataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
 }
-
 
 
 /// I2C Host Format DataWrites to this register are used to define and drive Controller-Mode transactions..  
@@ -1814,8 +1832,8 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fbyte(&mut self) -> FbyteField {
-        FbyteField::new(&mut self.reg)
+    pub fn fbyte(&self) -> FbyteField<'_> {
+        FbyteField::new(&self.reg)
     }
 
   /// Hardware description: Issue a START condition before transmitting FBYTE.
@@ -1834,8 +1852,8 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn start(&mut self) -> StartField {
-        StartField::new(&mut self.reg)
+    pub fn start(&self) -> StartField<'_> {
+        StartField::new(&self.reg)
     }
 
   /// Hardware description: Issue a STOP condition after transmitting FBYTE.
@@ -1854,8 +1872,8 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn stop(&mut self) -> StopField {
-        StopField::new(&mut self.reg)
+    pub fn stop(&self) -> StopField<'_> {
+        StopField::new(&self.reg)
     }
 
   /// Hardware description: Transfer Direction Indicator.If unset, this write to FDATA defines a controller-transmitter operation (WRITE).A single byte of data (FBYTE) is written to the bus.If set, this write to FDATA defines a controller-receiver operation (READ).The value of FBYTE defines the number of bytes read from the bus. (256 if FBYTE==0)"After this number of bytes are read, the final byte will be NACKed to end the transferunless RCONT is also set.
@@ -1874,8 +1892,8 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn readb(&mut self) -> ReadbField {
-        ReadbField::new(&mut self.reg)
+    pub fn readb(&self) -> ReadbField<'_> {
+        ReadbField::new(&self.reg)
     }
 
   /// Hardware description: Do not NACK the last byte read, let the read operation continue.
@@ -1894,8 +1912,8 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rcont(&mut self) -> RcontField {
-        RcontField::new(&mut self.reg)
+    pub fn rcont(&self) -> RcontField<'_> {
+        RcontField::new(&self.reg)
     }
 
   /// Hardware description: For the currrent controller-transmitter byte (WRITE), do not halt via CONTROLLER_EVENTSor assert the 'controller_halt' interrupt if the current byte is not ACK'd.
@@ -1914,10 +1932,14 @@ mod fdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nakok(&mut self) -> NakokField {
-        NakokField::new(&mut self.reg)
+    pub fn nakok(&self) -> NakokField<'_> {
+        NakokField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -1937,8 +1959,8 @@ mod fdata {
   type ReadbField<'a> = zermio::BitField<'a, 10, 1, u32, zermio::access::Write>;
   type RcontField<'a> = zermio::BitField<'a, 11, 1, u32, zermio::access::Write>;
   type NakokField<'a> = zermio::BitField<'a, 12, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::Write>;
 }
-
 
 
 /// I2C FIFO control register.  
@@ -1980,8 +2002,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxrst(&mut self) -> RxrstField {
-        RxrstField::new(&mut self.reg)
+    pub fn rxrst(&self) -> RxrstField<'_> {
+        RxrstField::new(&self.reg)
     }
 
   /// Hardware description: FMT fifo reset. Write 1 to the register resets FMT_FIFO. Read returns 0
@@ -2000,8 +2022,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtrst(&mut self) -> FmtrstField {
-        FmtrstField::new(&mut self.reg)
+    pub fn fmtrst(&self) -> FmtrstField<'_> {
+        FmtrstField::new(&self.reg)
     }
 
   /// Hardware description: ACQ FIFO reset. Write 1 to the register resets it. Read returns 0
@@ -2020,8 +2042,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqrst(&mut self) -> AcqrstField {
-        AcqrstField::new(&mut self.reg)
+    pub fn acqrst(&self) -> AcqrstField<'_> {
+        AcqrstField::new(&self.reg)
     }
 
   /// Hardware description: TX FIFO reset. Write 1 to the register resets it. Read returns 0
@@ -2040,10 +2062,14 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txrst(&mut self) -> TxrstField {
-        TxrstField::new(&mut self.reg)
+    pub fn txrst(&self) -> TxrstField<'_> {
+        TxrstField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -2061,8 +2087,8 @@ mod fifo_ctrl {
   type FmtrstField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::Write>;
   type AcqrstField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::Write>;
   type TxrstField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::Write>;
 }
-
 
 
 /// Host mode FIFO configuration.  
@@ -2099,8 +2125,8 @@ mod host_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_thresh(&mut self) -> RxThreshField {
-        RxThreshField::new(&mut self.reg)
+    pub fn rx_thresh(&self) -> RxThreshField<'_> {
+        RxThreshField::new(&self.reg)
     }
 
   /// Hardware description: Threshold level for FMT interrupts. Whilst the number of used entries in theFMT FIFO is below this setting, the fmt_threshold interrupt will be asserted.
@@ -2116,12 +2142,16 @@ mod host_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmt_thresh(&mut self) -> FmtThreshField {
-        FmtThreshField::new(&mut self.reg)
+    pub fn fmt_thresh(&self) -> FmtThreshField<'_> {
+        FmtThreshField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2149,8 +2179,8 @@ mod host_fifo_config {
   }
   type RxThreshField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::ReadWrite>;
   type FmtThreshField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Target mode FIFO configuration.  
@@ -2187,8 +2217,8 @@ mod target_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_thresh(&mut self) -> TxThreshField {
-        TxThreshField::new(&mut self.reg)
+    pub fn tx_thresh(&self) -> TxThreshField<'_> {
+        TxThreshField::new(&self.reg)
     }
 
   /// Hardware description: Threshold level for ACQ interrupts. Whilst the level of data in the ACQ FIFOis above this setting, the acq_threshold interrupt will be asserted.
@@ -2204,12 +2234,16 @@ mod target_fifo_config {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_thresh(&mut self) -> AcqThreshField {
-        AcqThreshField::new(&mut self.reg)
+    pub fn acq_thresh(&self) -> AcqThreshField<'_> {
+        AcqThreshField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2237,8 +2271,8 @@ mod target_fifo_config {
   }
   type TxThreshField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::ReadWrite>;
   type AcqThreshField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Host mode FIFO status register.  
@@ -2272,8 +2306,8 @@ mod host_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn fmtlvl(&mut self) -> FmtlvlField {
-        FmtlvlField::new(&mut self.reg)
+    pub fn fmtlvl(&self) -> FmtlvlField<'_> {
+        FmtlvlField::new(&self.reg)
     }
 
   /// Hardware description: Current fill level of RX fifo
@@ -2286,20 +2320,24 @@ mod host_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxlvl(&mut self) -> RxlvlField {
-        RxlvlField::new(&mut self.reg)
+    pub fn rxlvl(&self) -> RxlvlField<'_> {
+        RxlvlField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type FmtlvlField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::Read>;
   type RxlvlField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::Read>;
 }
-
 
 
 /// Target mode FIFO status register.  
@@ -2333,8 +2371,8 @@ mod target_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txlvl(&mut self) -> TxlvlField {
-        TxlvlField::new(&mut self.reg)
+    pub fn txlvl(&self) -> TxlvlField<'_> {
+        TxlvlField::new(&self.reg)
     }
 
   /// Hardware description: Current fill level of ACQ fifo
@@ -2347,20 +2385,24 @@ mod target_fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acqlvl(&mut self) -> AcqlvlField {
-        AcqlvlField::new(&mut self.reg)
+    pub fn acqlvl(&self) -> AcqlvlField<'_> {
+        AcqlvlField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type TxlvlField<'a> = zermio::BitField<'a, 0, 12, u32, zermio::access::Read>;
   type AcqlvlField<'a> = zermio::BitField<'a, 16, 12, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::Read>;
 }
-
 
 
 /// I2C Override Control Register.  
@@ -2403,8 +2445,8 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txovrden(&mut self) -> TxovrdenField {
-        TxovrdenField::new(&mut self.reg)
+    pub fn txovrden(&self) -> TxovrdenField<'_> {
+        TxovrdenField::new(&self.reg)
     }
 
   /// Hardware description: Value for SCL Override. Set to 0 to drive TX Low, and set to 1 for high-Z
@@ -2425,8 +2467,8 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sclval(&mut self) -> SclvalField {
-        SclvalField::new(&mut self.reg)
+    pub fn sclval(&self) -> SclvalField<'_> {
+        SclvalField::new(&self.reg)
     }
 
   /// Hardware description: Value for SDA Override. Set to 0 to drive TX Low, and set to 1 for high-Z
@@ -2447,12 +2489,16 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sdaval(&mut self) -> SdavalField {
-        SdavalField::new(&mut self.reg)
+    pub fn sdaval(&self) -> SdavalField<'_> {
+        SdavalField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2481,8 +2527,8 @@ mod ovrd {
   type TxovrdenField<'a> = zermio::BitField<'a, 0, 1, u32, zermio::access::ReadWrite>;
   type SclvalField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type SdavalField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 3, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Oversampled RX values.  
@@ -2516,8 +2562,8 @@ mod val {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn scl_rx(&mut self) -> SclRxField {
-        SclRxField::new(&mut self.reg)
+    pub fn scl_rx(&self) -> SclRxField<'_> {
+        SclRxField::new(&self.reg)
     }
 
   /// Hardware description: Last 16 oversampled values of SDA. Most recent bit is bit 16, oldest 31.
@@ -2530,20 +2576,24 @@ mod val {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn sda_rx(&mut self) -> SdaRxField {
-        SdaRxField::new(&mut self.reg)
+    pub fn sda_rx(&self) -> SdaRxField<'_> {
+        SdaRxField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type SclRxField<'a> = zermio::BitField<'a, 0, 16, u32, zermio::access::Read>;
   type SdaRxField<'a> = zermio::BitField<'a, 16, 16, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::Read>;
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period.These must be greater than 2 in order for the change in SCL to propagate to the input of the FSM so that acknowledgements are detected correctly..  
@@ -2580,8 +2630,8 @@ mod timing0 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn thigh(&mut self) -> ThighField {
-        ThighField::new(&mut self.reg)
+    pub fn thigh(&self) -> ThighField<'_> {
+        ThighField::new(&self.reg)
     }
 
   /// Hardware description: The actual time to hold SCL low between any two SCL pulses.This field is sized to have a range of at least Standard Mode's 4.7 us max with a core clock at 1 GHz.
@@ -2597,12 +2647,16 @@ mod timing0 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tlow(&mut self) -> TlowField {
-        TlowField::new(&mut self.reg)
+    pub fn tlow(&self) -> TlowField<'_> {
+        TlowField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2630,8 +2684,8 @@ mod timing0 {
   }
   type ThighField<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::ReadWrite>;
   type TlowField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2668,8 +2722,8 @@ mod timing1 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn t_r(&mut self) -> TRField {
-        TRField::new(&mut self.reg)
+    pub fn t_r(&self) -> TRField<'_> {
+        TRField::new(&self.reg)
     }
 
   /// Hardware description: The nominal fall time to anticipate for the bus (influences SDA hold times).This field is sized to have a range of at least Standard Mode's 300 ns max with a core clock at 1 GHz.
@@ -2685,12 +2739,16 @@ mod timing1 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn t_f(&mut self) -> TFField {
-        TFField::new(&mut self.reg)
+    pub fn t_f(&self) -> TFField<'_> {
+        TFField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2718,8 +2776,8 @@ mod timing1 {
   }
   type TRField<'a> = zermio::BitField<'a, 0, 10, u32, zermio::access::ReadWrite>;
   type TFField<'a> = zermio::BitField<'a, 16, 9, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 25, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10 in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2756,8 +2814,8 @@ mod timing2 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tsu_sta(&mut self) -> TsuStaField {
-        TsuStaField::new(&mut self.reg)
+    pub fn tsu_sta(&self) -> TsuStaField<'_> {
+        TsuStaField::new(&self.reg)
     }
 
   /// Hardware description: Actual hold time for start signals.This field is sized to have a range of at least Standard Mode's 4.0 us max with a core clock at 1 GHz.
@@ -2773,12 +2831,16 @@ mod timing2 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn thd_sta(&mut self) -> ThdStaField {
-        ThdStaField::new(&mut self.reg)
+    pub fn thd_sta(&self) -> ThdStaField<'_> {
+        ThdStaField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2806,8 +2868,8 @@ mod timing2 {
   }
   type TsuStaField<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::ReadWrite>;
   type ThdStaField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2844,8 +2906,8 @@ mod timing3 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tsu_dat(&mut self) -> TsuDatField {
-        TsuDatField::new(&mut self.reg)
+    pub fn tsu_dat(&self) -> TsuDatField<'_> {
+        TsuDatField::new(&self.reg)
     }
 
   /// Hardware description: Actual hold time for data (or ack) bits.(Note, where required, the parameters TVD_DAT is taken to be THD_DAT+T_F)This field is sized to have a range that accommodates Standard Mode's 3.45 us max for TVD_DAT with a core clock at 1 GHz.However, this field is generally expected to represent a time substantially shorter than that.It should be long enough to cover the maximum round-trip latency from output pins, through pads and voltage transitions on the board, and back to the input pins, but it should not be substantially greater.
@@ -2861,12 +2923,16 @@ mod timing3 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn thd_dat(&mut self) -> ThdDatField {
-        ThdDatField::new(&mut self.reg)
+    pub fn thd_dat(&self) -> ThdDatField<'_> {
+        ThdDatField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2894,8 +2960,8 @@ mod timing3 {
   }
   type TsuDatField<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
   type ThdDatField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Detailed I2C Timings (directly corresponding to table 10, in the I2C Specification).All values are expressed in units of the input clock period..  
@@ -2932,8 +2998,8 @@ mod timing4 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tsu_sto(&mut self) -> TsuStoField {
-        TsuStoField::new(&mut self.reg)
+    pub fn tsu_sto(&self) -> TsuStoField<'_> {
+        TsuStoField::new(&self.reg)
     }
 
   /// Hardware description: Actual time between each STOP signal and the following START signal.This field is sized to have a range of at least Standard Mode's 4.7 us max with a core clock at 1 GHz.
@@ -2949,12 +3015,16 @@ mod timing4 {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn t_buf(&mut self) -> TBufField {
-        TBufField::new(&mut self.reg)
+    pub fn t_buf(&self) -> TBufField<'_> {
+        TBufField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -2982,8 +3052,8 @@ mod timing4 {
   }
   type TsuStoField<'a> = zermio::BitField<'a, 0, 13, u32, zermio::access::ReadWrite>;
   type TBufField<'a> = zermio::BitField<'a, 16, 13, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 29, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// I2C clock stretching and bus timeout control.This timeout must be enabled by setting !!TIMEOUT_CTRL.EN to 1, and the behavior of this feature depends on the value of !!TIMEOUT_CTRL.MODE.If the mode is "STRETCH_TIMEOUT", this is used in I2C controller mode to detect whether a connected target is stretching a single low time beyond the timeout value.Configured as such, this timeout is more informative and doesn't do more than assert the "stretch_timeout" interrupt.If the mode is "BUS_TIMEOUT", it is used to detect whether the clock has been held low for too long instead, inclusive of the controller's clock low time.This is useful for an SMBus context, where the VAL programmed should be tTIMEOUT:MIN..  
@@ -3021,8 +3091,8 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField {
-        ValField::new(&mut self.reg)
+    pub fn val(&self) -> ValField<'_> {
+        ValField::new(&self.reg)
     }
 
   /// Hardware description: Selects the timeout mode, between a stretch timeout and a bus timeout.Between the two modes, the primary difference is how much of the clock low period is counted.For a stretch timeout, only the time that another device holds the clock low will be counted.For a bus timeout, the entire clock low time is counted, consistent with the SMBus tTIMEOUT type.!!TIMEOUT_CTRL.EN must be 1 for either of these features to be enabled.
@@ -3043,8 +3113,8 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn mode(&mut self) -> ModeField {
-        ModeField::new(&mut self.reg)
+    pub fn mode(&self) -> ModeField<'_> {
+        ModeField::new(&self.reg)
     }
 
   /// Hardware description: Enable stretch timeout or bus timeout feature
@@ -3065,12 +3135,16 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField {
-        EnField::new(&mut self.reg)
+    pub fn en(&self) -> EnField<'_> {
+        EnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3099,8 +3173,8 @@ mod timeout_ctrl {
   type ValField<'a> = zermio::BitField<'a, 0, 30, u32, zermio::access::ReadWrite>;
   type ModeField<'a> = zermio::BitField<'a, 30, 1, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// I2C target address and mask pairs.  
@@ -3139,8 +3213,8 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn address0(&mut self) -> Address0Field {
-        Address0Field::new(&mut self.reg)
+    pub fn address0(&self) -> Address0Field<'_> {
+        Address0Field::new(&self.reg)
     }
 
   /// Hardware description: I2C target mask number 0.At least one bit in MASK0 must be set to 1 for ADDRESS0 to be used.
@@ -3156,8 +3230,8 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn mask0(&mut self) -> Mask0Field {
-        Mask0Field::new(&mut self.reg)
+    pub fn mask0(&self) -> Mask0Field<'_> {
+        Mask0Field::new(&self.reg)
     }
 
   /// Hardware description: I2C target address number 1
@@ -3173,8 +3247,8 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn address1(&mut self) -> Address1Field {
-        Address1Field::new(&mut self.reg)
+    pub fn address1(&self) -> Address1Field<'_> {
+        Address1Field::new(&self.reg)
     }
 
   /// Hardware description: I2C target mask number 1.At least one bit in MASK1 must be set to 1 for ADDRESS1 to be used.
@@ -3190,12 +3264,16 @@ mod target_id {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn mask1(&mut self) -> Mask1Field {
-        Mask1Field::new(&mut self.reg)
+    pub fn mask1(&self) -> Mask1Field<'_> {
+        Mask1Field::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3225,8 +3303,8 @@ mod target_id {
   type Mask0Field<'a> = zermio::BitField<'a, 7, 7, u32, zermio::access::ReadWrite>;
   type Address1Field<'a> = zermio::BitField<'a, 14, 7, u32, zermio::access::ReadWrite>;
   type Mask1Field<'a> = zermio::BitField<'a, 21, 7, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 28, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// I2C target acquired data.  
@@ -3260,8 +3338,8 @@ mod acqdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn abyte(&mut self) -> AbyteField {
-        AbyteField::new(&mut self.reg)
+    pub fn abyte(&self) -> AbyteField<'_> {
+        AbyteField::new(&self.reg)
     }
 
   /// Hardware description: Indicates any control symbols associated with the ABYTE.For the STOP symbol, a stretch timeout or other unexpected events will cause a NACK_STOP to appear in the ACQ FIFO.If the ACQ FIFO doesn't have enough space to record a START and a STOP, the transaction will be dropped entirely on a stretch timeout.In that case, the START byte will not appear (neither as START nor NACK_START), but a standalone NACK_STOP may, if there was space.Software can discard any standalone NACK_STOP that appears.See the associated values for more information about the contents.
@@ -3274,20 +3352,24 @@ mod acqdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn signal(&mut self) -> SignalField {
-        SignalField::new(&mut self.reg)
+    pub fn signal(&self) -> SignalField<'_> {
+        SignalField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type AbyteField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
   type SignalField<'a> = zermio::BitField<'a, 8, 3, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 11, u32, zermio::access::Read>;
 }
-
 
 
 /// I2C target transmit data.  
@@ -3322,8 +3404,8 @@ mod txdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txdata(&mut self) -> TxdataField {
-        TxdataField::new(&mut self.reg)
+    pub fn txdata(&self) -> TxdataField<'_> {
+        TxdataField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -3341,7 +3423,6 @@ mod txdata {
   }
   type TxdataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Write>;
 }
-
 
 
 /// I2C host clock generation timeout value (in units of input clock frequency).In an active transaction in Target-Mode, if the Controller ceases to send SCL pulsesfor this number of cycles then the "host_timeout" interrupt will be asserted.In multi-controller monitoring mode, !!HOST_TIMEOUT_CTRL is required to be nonzero to transition out of the initial busy state.Set this CSR to 0 to disable this behaviour..  
@@ -3377,12 +3458,12 @@ mod host_timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn host_timeout_ctrl(&mut self) -> HostTimeoutCtrlField {
-        HostTimeoutCtrlField::new(&mut self.reg)
+    pub fn host_timeout_ctrl(&self) -> HostTimeoutCtrlField<'_> {
+        HostTimeoutCtrlField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3410,7 +3491,6 @@ mod host_timeout_ctrl {
   }
   type HostTimeoutCtrlField<'a> = zermio::BitField<'a, 0, 20, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// I2C target internal stretching timeout control.When the target has stretched beyond this time it will send a NACK for incoming data bytes or release SDA for outgoing data bytes.The behavior for the address byte is configurable via !!CTRL.ACK_ADDR_AFTER_TIMEOUT.Note that the count accumulates stretching time over the course of a transaction.In other words, this is equivalent to the SMBus cumulative target clock extension time..  
@@ -3447,8 +3527,8 @@ mod target_timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField {
-        ValField::new(&mut self.reg)
+    pub fn val(&self) -> ValField<'_> {
+        ValField::new(&self.reg)
     }
 
   /// Hardware description: Enable timeout feature and send NACK once the timeout has been reached
@@ -3469,12 +3549,16 @@ mod target_timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField {
-        EnField::new(&mut self.reg)
+    pub fn en(&self) -> EnField<'_> {
+        EnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3502,8 +3586,8 @@ mod target_timeout_ctrl {
   }
   type ValField<'a> = zermio::BitField<'a, 0, 31, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Number of times the I2C target has NACK'ed a new transaction since the last read of this register.Reading this register clears it.This is useful because when the ACQ FIFO is full the software know that a NACK has occurred, but without this register would not know how many transactions it missed.When it reaches its maximum value it will stay at that value..  
@@ -3539,12 +3623,12 @@ mod target_nack_count {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn target_nack_count(&mut self) -> TargetNackCountField {
-        TargetNackCountField::new(&mut self.reg)
+    pub fn target_nack_count(&self) -> TargetNackCountField<'_> {
+        TargetNackCountField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3572,7 +3656,6 @@ mod target_nack_count {
   }
   type TargetNackCountField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Controls for mid-transfer (N)ACK phase handling.  
@@ -3609,8 +3692,8 @@ mod target_ack_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nbytes(&mut self) -> NbytesField {
-        NbytesField::new(&mut self.reg)
+    pub fn nbytes(&self) -> NbytesField<'_> {
+        NbytesField::new(&self.reg)
     }
 
   /// Hardware description: When the Target module stretches on the (N)ACK phase of a Write due to !!TARGET_ACK_CTRL.NBYTES being 0, writing a 1 here will cause it to send a NACK.If software chooses to NACK, note that the NACKing behavior is the same as if a stretch timeout occurred.The rest of the transaction will be NACK'd, including subsequent transfers.For the address byte, the (N)ACK phase of subsequent transfers will follow the behavior specified by !!CTRL.NACK_ADDR_AFTER_TIMEOUT.Automatically clears to 0.
@@ -3629,12 +3712,16 @@ mod target_ack_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nack(&mut self) -> NackField {
-        NackField::new(&mut self.reg)
+    pub fn nack(&self) -> NackField<'_> {
+        NackField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3662,8 +3749,8 @@ mod target_ack_ctrl {
   }
   type NbytesField<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
   type NackField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// The data byte pending to be written to the ACQ FIFO.This CSR is only valid while the Target module is stretching in the (N)ACK phase, indicated by !!STATUS.ACK_CTRL_STRETCH .It is intended to be used with ACK Control Mode, so software may check the current byte..  
@@ -3696,19 +3783,18 @@ mod acq_fifo_next_data {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn acq_fifo_next_data(&mut self) -> AcqFifoNextDataField {
-        AcqFifoNextDataField::new(&mut self.reg)
+    pub fn acq_fifo_next_data(&self) -> AcqFifoNextDataField<'_> {
+        AcqFifoNextDataField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type AcqFifoNextDataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
 }
-
 
 
 /// Timeout in Host-Mode for an unhandled NACK before hardware automatically ends the transaction.(in units of input clock frequency)If an active Controller-Transmitter transfer receives a NACK from the Target, the !!CONTROLLER_EVENTS.NACK bit is set.In turn, this causes the Controller FSM to halt awaiting software intervention, and the 'controller_halt' interrupt may assert.Software must clear the !!CONTROLLER_EVENTS.NACK bit to allow the state machine to continue, typically after clearing out the FMTFIFO to start a new transfer.While halted, the active transaction is not ended (no STOP (P) condition is created), and the block asserts SCL and leaves SDA released.This timeout can be used to automatically produce a STOP condition, whether as a backstop for slow software responses (longer timeout) or as a convenience (short timeout).If the timeout expires, the Controller FSM will issue a STOP (P) condition on the bus to end the active transaction.Additionally, the !!CONTROLLER_EVENTS.UNHANDLED_NACK_TIMEOUT bit is set to alert software, and the FSM will return to the idle state and halt until the bit is cleared.The enable bit must be set for this feature to operate..  
@@ -3745,8 +3831,8 @@ mod host_nack_handler_timeout {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField {
-        ValField::new(&mut self.reg)
+    pub fn val(&self) -> ValField<'_> {
+        ValField::new(&self.reg)
     }
 
   /// Hardware description: Timeout enable
@@ -3767,12 +3853,16 @@ mod host_nack_handler_timeout {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField {
-        EnField::new(&mut self.reg)
+    pub fn en(&self) -> EnField<'_> {
+        EnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3800,8 +3890,8 @@ mod host_nack_handler_timeout {
   }
   type ValField<'a> = zermio::BitField<'a, 0, 31, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Latched events that explain why the controller halted.Any bits that are set must be written (with a 1) to clear the CONTROLLER_HALT interrupt..  
@@ -3845,8 +3935,8 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nack(&mut self) -> NackField {
-        NackField::new(&mut self.reg)
+    pub fn nack(&self) -> NackField<'_> {
+        NackField::new(&self.reg)
     }
 
   /// Hardware description: A Host-Mode active transaction has been ended by the !!HOST_NACK_HANDLER_TIMEOUT mechanism.
@@ -3867,8 +3957,8 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn unhandled_nack_timeout(&mut self) -> UnhandledNackTimeoutField {
-        UnhandledNackTimeoutField::new(&mut self.reg)
+    pub fn unhandled_nack_timeout(&self) -> UnhandledNackTimeoutField<'_> {
+        UnhandledNackTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: A Host-Mode active transaction has terminated due to a bus timeout activated by !!TIMEOUT_CTRL.
@@ -3889,8 +3979,8 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn bus_timeout(&mut self) -> BusTimeoutField {
-        BusTimeoutField::new(&mut self.reg)
+    pub fn bus_timeout(&self) -> BusTimeoutField<'_> {
+        BusTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: A Host-Mode active transaction has terminated due to lost arbitration.
@@ -3911,12 +4001,16 @@ mod controller_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn arbitration_lost(&mut self) -> ArbitrationLostField {
-        ArbitrationLostField::new(&mut self.reg)
+    pub fn arbitration_lost(&self) -> ArbitrationLostField<'_> {
+        ArbitrationLostField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -3946,8 +4040,8 @@ mod controller_events {
   type UnhandledNackTimeoutField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type BusTimeoutField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
   type ArbitrationLostField<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 4, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Latched events that can cause the target module to stretch the clock at the beginning of a read transfer.These events cause TX FIFO-related stretching even when the TX FIFO has data available.Any bits that are set must be written (with a 1) to clear the tx_stretch interrupt.This CSR serves as a gate to prevent the Target module from responding to a read command with unrelated, leftover data..  
@@ -3990,8 +4084,8 @@ mod target_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_pending(&mut self) -> TxPendingField {
-        TxPendingField::new(&mut self.reg)
+    pub fn tx_pending(&self) -> TxPendingField<'_> {
+        TxPendingField::new(&self.reg)
     }
 
   /// Hardware description: A Target-Mode read transfer has terminated due to a bus timeout activated by !!TIMEOUT_CTRL.
@@ -4012,8 +4106,8 @@ mod target_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn bus_timeout(&mut self) -> BusTimeoutField {
-        BusTimeoutField::new(&mut self.reg)
+    pub fn bus_timeout(&self) -> BusTimeoutField<'_> {
+        BusTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: A Target-Mode read transfer has terminated due to lost arbitration.
@@ -4034,12 +4128,16 @@ mod target_events {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn arbitration_lost(&mut self) -> ArbitrationLostField {
-        ArbitrationLostField::new(&mut self.reg)
+    pub fn arbitration_lost(&self) -> ArbitrationLostField<'_> {
+        ArbitrationLostField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -4068,4 +4166,5 @@ mod target_events {
   type TxPendingField<'a> = zermio::BitField<'a, 0, 1, u32, zermio::access::ReadWrite>;
   type BusTimeoutField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
   type ArbitrationLostField<'a> = zermio::BitField<'a, 2, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 3, u32, zermio::access::ReadWrite>;
 }

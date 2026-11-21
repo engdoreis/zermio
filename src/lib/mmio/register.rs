@@ -4,6 +4,7 @@
 
 pub use crate::mmio::Bitfield;
 pub use crate::mmio::Device;
+pub use crate::mmio::Permissions;
 pub use crate::rdljson;
 use svd_rs::cluster;
 use svd_rs::registercluster;
@@ -59,6 +60,27 @@ impl Register {
 
     pub fn is_writable(&self) -> bool {
         self.bitfields.iter().any(|f| f.permissions.is_writable())
+    }
+
+    pub fn permissions(&self) -> Permissions {
+        if self.is_readable() && self.is_writable() {
+            return Permissions::ReadWrite;
+        }
+        if self.is_writable() {
+            return Permissions::Write;
+        }
+        Permissions::Read
+    }
+
+    pub fn is_homogeneous(&self) -> bool {
+        let name_prefix = self.bitfields.first().unwrap().name_prefix();
+
+        let permissions = self.bitfields.first().unwrap().permissions;
+        self.bitfields.len() > 1
+            && self
+                .bitfields
+                .iter()
+                .all(|f| f.name.starts_with(name_prefix) && f.permissions == permissions)
     }
 
     pub fn try_from(cluster: &cluster::Cluster) -> Result<Vec<Self>, String> {

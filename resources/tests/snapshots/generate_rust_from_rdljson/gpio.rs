@@ -23,11 +23,11 @@ use super::zermio;
 /// });
 /// ```
 pub struct Gpio {
-    addr: u32,
+    __addr: u32,
     /// 
     pub out : out::Out,
     /// 
-    pub in : in::In,
+    pub r#in : r#in::In,
     /// 
     pub in_dbnc : in_dbnc::InDbnc,
     /// 
@@ -38,19 +38,18 @@ impl Gpio {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       out : out::Out::new(addr),
-      in : in::In::new(addr + 0x4),
+      r#in : r#in::In::new(addr + 0x4),
       in_dbnc : in_dbnc::InDbnc::new(addr + 0x8),
       output_enable : output_enable::OutputEnable::new(addr + 0xc),
     }
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
-
 
 
 /// .  
@@ -85,8 +84,8 @@ mod out {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -106,10 +105,9 @@ mod out {
 }
 
 
-
 /// .  
-pub use self::in::*;
-mod in {
+pub use self::r#in::*;
+mod r#in {
 
   use super::*;
 
@@ -137,19 +135,18 @@ mod in {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type PinsField<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::Read>;
 }
-
 
 
 /// .  
@@ -182,19 +179,18 @@ mod in_dbnc {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type PinsField<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::Read>;
 }
-
 
 
 /// .  
@@ -230,12 +226,12 @@ mod output_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn pins(&mut self) -> PinsField {
-        PinsField::new(&mut self.reg)
+    pub fn pins(&self) -> PinsField<'_> {
+        PinsField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }

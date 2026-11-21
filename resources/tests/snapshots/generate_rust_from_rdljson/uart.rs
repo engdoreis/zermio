@@ -31,7 +31,7 @@ use super::zermio;
 /// });
 /// ```
 pub struct Uart {
-    addr: u32,
+    __addr: u32,
     /// Interrupt State Register
     pub intr_state : intr_state::IntrState,
     /// Interrupt Enable Register
@@ -62,7 +62,7 @@ impl Uart {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       intr_state : intr_state::IntrState::new(addr),
       intr_enable : intr_enable::IntrEnable::new(addr + 0x4),
       intr_test : intr_test::IntrTest::new(addr + 0x8),
@@ -79,10 +79,9 @@ impl Uart {
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
-
 
 
 /// Interrupt State Register.  
@@ -124,8 +123,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: raised if the receive FIFO is past the high-water mark.
@@ -139,8 +138,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: raised if the transmit FIFO has emptied and no transmit is ongoing.
@@ -161,8 +160,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_done(&mut self) -> TxDoneField {
-        TxDoneField::new(&mut self.reg)
+    pub fn tx_done(&self) -> TxDoneField<'_> {
+        TxDoneField::new(&self.reg)
     }
 
   /// Hardware description: raised if the receive FIFO has overflowed.
@@ -183,8 +182,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: raised if a framing error has been detected on receive.
@@ -205,8 +204,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_frame_err(&mut self) -> RxFrameErrField {
-        RxFrameErrField::new(&mut self.reg)
+    pub fn rx_frame_err(&self) -> RxFrameErrField<'_> {
+        RxFrameErrField::new(&self.reg)
     }
 
   /// Hardware description: raised if break condition has been detected on receive.
@@ -227,8 +226,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_break_err(&mut self) -> RxBreakErrField {
-        RxBreakErrField::new(&mut self.reg)
+    pub fn rx_break_err(&self) -> RxBreakErrField<'_> {
+        RxBreakErrField::new(&self.reg)
     }
 
   /// Hardware description: raised if RX FIFO has characters remaining in the FIFO without beingretrieved for the programmed time period.
@@ -249,8 +248,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_timeout(&mut self) -> RxTimeoutField {
-        RxTimeoutField::new(&mut self.reg)
+    pub fn rx_timeout(&self) -> RxTimeoutField<'_> {
+        RxTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: raised if the receiver has detected a parity error.
@@ -271,8 +270,8 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_parity_err(&mut self) -> RxParityErrField {
-        RxParityErrField::new(&mut self.reg)
+    pub fn rx_parity_err(&self) -> RxParityErrField<'_> {
+        RxParityErrField::new(&self.reg)
     }
 
   /// Hardware description: raised if the transmit FIFO is empty.
@@ -286,12 +285,16 @@ mod intr_state {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -326,8 +329,8 @@ mod intr_state {
   type RxTimeoutField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::ReadWrite>;
   type RxParityErrField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::ReadWrite>;
   type TxEmptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Interrupt Enable Register.  
@@ -376,8 +379,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_watermark is set.
@@ -398,8 +401,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_done is set.
@@ -420,8 +423,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_done(&mut self) -> TxDoneField {
-        TxDoneField::new(&mut self.reg)
+    pub fn tx_done(&self) -> TxDoneField<'_> {
+        TxDoneField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_overflow is set.
@@ -442,8 +445,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_frame_err is set.
@@ -464,8 +467,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_frame_err(&mut self) -> RxFrameErrField {
-        RxFrameErrField::new(&mut self.reg)
+    pub fn rx_frame_err(&self) -> RxFrameErrField<'_> {
+        RxFrameErrField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_break_err is set.
@@ -486,8 +489,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_break_err(&mut self) -> RxBreakErrField {
-        RxBreakErrField::new(&mut self.reg)
+    pub fn rx_break_err(&self) -> RxBreakErrField<'_> {
+        RxBreakErrField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_timeout is set.
@@ -508,8 +511,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_timeout(&mut self) -> RxTimeoutField {
-        RxTimeoutField::new(&mut self.reg)
+    pub fn rx_timeout(&self) -> RxTimeoutField<'_> {
+        RxTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.rx_parity_err is set.
@@ -530,8 +533,8 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_parity_err(&mut self) -> RxParityErrField {
-        RxParityErrField::new(&mut self.reg)
+    pub fn rx_parity_err(&self) -> RxParityErrField<'_> {
+        RxParityErrField::new(&self.reg)
     }
 
   /// Hardware description: Enable interrupt when !!INTR_STATE.tx_empty is set.
@@ -552,12 +555,16 @@ mod intr_enable {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -592,8 +599,8 @@ mod intr_enable {
   type RxTimeoutField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::ReadWrite>;
   type RxParityErrField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::ReadWrite>;
   type TxEmptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// Interrupt Test Register.  
@@ -640,8 +647,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_watermark(&mut self) -> TxWatermarkField {
-        TxWatermarkField::new(&mut self.reg)
+    pub fn tx_watermark(&self) -> TxWatermarkField<'_> {
+        TxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_watermark to 1.
@@ -660,8 +667,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_watermark(&mut self) -> RxWatermarkField {
-        RxWatermarkField::new(&mut self.reg)
+    pub fn rx_watermark(&self) -> RxWatermarkField<'_> {
+        RxWatermarkField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_done to 1.
@@ -680,8 +687,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_done(&mut self) -> TxDoneField {
-        TxDoneField::new(&mut self.reg)
+    pub fn tx_done(&self) -> TxDoneField<'_> {
+        TxDoneField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_overflow to 1.
@@ -700,8 +707,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_overflow(&mut self) -> RxOverflowField {
-        RxOverflowField::new(&mut self.reg)
+    pub fn rx_overflow(&self) -> RxOverflowField<'_> {
+        RxOverflowField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_frame_err to 1.
@@ -720,8 +727,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_frame_err(&mut self) -> RxFrameErrField {
-        RxFrameErrField::new(&mut self.reg)
+    pub fn rx_frame_err(&self) -> RxFrameErrField<'_> {
+        RxFrameErrField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_break_err to 1.
@@ -740,8 +747,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_break_err(&mut self) -> RxBreakErrField {
-        RxBreakErrField::new(&mut self.reg)
+    pub fn rx_break_err(&self) -> RxBreakErrField<'_> {
+        RxBreakErrField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_timeout to 1.
@@ -760,8 +767,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_timeout(&mut self) -> RxTimeoutField {
-        RxTimeoutField::new(&mut self.reg)
+    pub fn rx_timeout(&self) -> RxTimeoutField<'_> {
+        RxTimeoutField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.rx_parity_err to 1.
@@ -780,8 +787,8 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx_parity_err(&mut self) -> RxParityErrField {
-        RxParityErrField::new(&mut self.reg)
+    pub fn rx_parity_err(&self) -> RxParityErrField<'_> {
+        RxParityErrField::new(&self.reg)
     }
 
   /// Hardware description: Write 1 to force !!INTR_STATE.tx_empty to 1.
@@ -800,10 +807,14 @@ mod intr_test {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx_empty(&mut self) -> TxEmptyField {
-        TxEmptyField::new(&mut self.reg)
+    pub fn tx_empty(&self) -> TxEmptyField<'_> {
+        TxEmptyField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
       self.reg.commit()
@@ -826,8 +837,8 @@ mod intr_test {
   type RxTimeoutField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::Write>;
   type RxParityErrField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::Write>;
   type TxEmptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Write>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::Write>;
 }
-
 
 
 /// UART control register.  
@@ -876,8 +887,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn tx(&mut self) -> TxField {
-        TxField::new(&mut self.reg)
+    pub fn tx(&self) -> TxField<'_> {
+        TxField::new(&self.reg)
     }
 
   /// Hardware description: RX enable
@@ -898,8 +909,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx(&mut self) -> RxField {
-        RxField::new(&mut self.reg)
+    pub fn rx(&self) -> RxField<'_> {
+        RxField::new(&self.reg)
     }
 
   /// Hardware description: RX noise filter enable.If the noise filter is enabled, RX line goes through the 3-taprepetition code. It ignores single IP clock period noise.
@@ -920,8 +931,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nf(&mut self) -> NfField {
-        NfField::new(&mut self.reg)
+    pub fn nf(&self) -> NfField<'_> {
+        NfField::new(&self.reg)
     }
 
   /// Hardware description: System loopback enable.If this bit is turned on, any outgoing bits to TX are received through RX.See Block Diagram. Note that the TX line goes 1 if System loopback is enabled.
@@ -942,8 +953,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn slpbk(&mut self) -> SlpbkField {
-        SlpbkField::new(&mut self.reg)
+    pub fn slpbk(&self) -> SlpbkField<'_> {
+        SlpbkField::new(&self.reg)
     }
 
   /// Hardware description: Line loopback enable.If this bit is turned on, incoming bits are forwarded to TX for testing purpose.See Block Diagram. Note that the internal design sees RX value as 1 always if lineloopback is enabled.
@@ -964,8 +975,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn llpbk(&mut self) -> LlpbkField {
-        LlpbkField::new(&mut self.reg)
+    pub fn llpbk(&self) -> LlpbkField<'_> {
+        LlpbkField::new(&self.reg)
     }
 
   /// Hardware description: If true, parity is enabled in both RX and TX directions.
@@ -986,8 +997,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn parity_en(&mut self) -> ParityEnField {
-        ParityEnField::new(&mut self.reg)
+    pub fn parity_en(&self) -> ParityEnField<'_> {
+        ParityEnField::new(&self.reg)
     }
 
   /// Hardware description: If PARITY_EN is true, this determines the type, 1 for odd parity, 0 for even.
@@ -1008,8 +1019,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn parity_odd(&mut self) -> ParityOddField {
-        ParityOddField::new(&mut self.reg)
+    pub fn parity_odd(&self) -> ParityOddField<'_> {
+        ParityOddField::new(&self.reg)
     }
 
   /// Hardware description: Trigger level for RX break detection. Sets the number of charactertimes the line must be low to detect a break.
@@ -1025,8 +1036,8 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxblvl(&mut self) -> RxblvlField {
-        RxblvlField::new(&mut self.reg)
+    pub fn rxblvl(&self) -> RxblvlField<'_> {
+        RxblvlField::new(&self.reg)
     }
 
   /// Hardware description: BAUD clock rate control.
@@ -1042,12 +1053,16 @@ mod ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn nco(&mut self) -> NcoField {
-        NcoField::new(&mut self.reg)
+    pub fn nco(&self) -> NcoField<'_> {
+        NcoField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1082,8 +1097,8 @@ mod ctrl {
   type ParityOddField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::ReadWrite>;
   type RxblvlField<'a> = zermio::BitField<'a, 8, 2, u32, zermio::access::ReadWrite>;
   type NcoField<'a> = zermio::BitField<'a, 16, 16, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// UART live status register.  
@@ -1122,8 +1137,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txfull(&mut self) -> TxfullField {
-        TxfullField::new(&mut self.reg)
+    pub fn txfull(&self) -> TxfullField<'_> {
+        TxfullField::new(&self.reg)
     }
 
   /// Hardware description: RX buffer is full
@@ -1137,8 +1152,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxfull(&mut self) -> RxfullField {
-        RxfullField::new(&mut self.reg)
+    pub fn rxfull(&self) -> RxfullField<'_> {
+        RxfullField::new(&self.reg)
     }
 
   /// Hardware description: TX FIFO is empty
@@ -1152,8 +1167,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txempty(&mut self) -> TxemptyField {
-        TxemptyField::new(&mut self.reg)
+    pub fn txempty(&self) -> TxemptyField<'_> {
+        TxemptyField::new(&self.reg)
     }
 
   /// Hardware description: TX FIFO is empty and all bits have been transmitted
@@ -1167,8 +1182,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txidle(&mut self) -> TxidleField {
-        TxidleField::new(&mut self.reg)
+    pub fn txidle(&self) -> TxidleField<'_> {
+        TxidleField::new(&self.reg)
     }
 
   /// Hardware description: RX is idle
@@ -1182,8 +1197,8 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxidle(&mut self) -> RxidleField {
-        RxidleField::new(&mut self.reg)
+    pub fn rxidle(&self) -> RxidleField<'_> {
+        RxidleField::new(&self.reg)
     }
 
   /// Hardware description: RX FIFO is empty
@@ -1197,12 +1212,16 @@ mod status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxempty(&mut self) -> RxemptyField {
-        RxemptyField::new(&mut self.reg)
+    pub fn rxempty(&self) -> RxemptyField<'_> {
+        RxemptyField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1213,8 +1232,8 @@ mod status {
   type TxidleField<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::Read>;
   type RxidleField<'a> = zermio::BitField<'a, 4, 1, u32, zermio::access::Read>;
   type RxemptyField<'a> = zermio::BitField<'a, 5, 1, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 6, u32, zermio::access::Read>;
 }
-
 
 
 /// UART read data.  
@@ -1247,19 +1266,18 @@ mod rdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rdata(&mut self) -> RdataField {
-        RdataField::new(&mut self.reg)
+    pub fn rdata(&self) -> RdataField<'_> {
+        RdataField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type RdataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
 }
-
 
 
 /// UART write data.  
@@ -1294,8 +1312,8 @@ mod wdata {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn wdata(&mut self) -> WdataField {
-        WdataField::new(&mut self.reg)
+    pub fn wdata(&self) -> WdataField<'_> {
+        WdataField::new(&self.reg)
     }
 
     /// Run a store instruction to write the MMIO
@@ -1313,7 +1331,6 @@ mod wdata {
   }
   type WdataField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Write>;
 }
-
 
 
 /// UART FIFO control register.  
@@ -1355,8 +1372,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxrst(&mut self) -> RxrstField {
-        RxrstField::new(&mut self.reg)
+    pub fn rxrst(&self) -> RxrstField<'_> {
+        RxrstField::new(&self.reg)
     }
 
   /// Hardware description: TX fifo reset. Write 1 to the register resets TX_FIFO. Read returns 0
@@ -1375,8 +1392,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txrst(&mut self) -> TxrstField {
-        TxrstField::new(&mut self.reg)
+    pub fn txrst(&self) -> TxrstField<'_> {
+        TxrstField::new(&self.reg)
     }
 
   /// Hardware description: Trigger level for RX interrupts. If the FIFO depth is greater than or equal tothe setting, it raises rx_watermark interrupt.
@@ -1392,8 +1409,8 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxilvl(&mut self) -> RxilvlField {
-        RxilvlField::new(&mut self.reg)
+    pub fn rxilvl(&self) -> RxilvlField<'_> {
+        RxilvlField::new(&self.reg)
     }
 
   /// Hardware description: Trigger level for TX interrupts. If the FIFO depth is less than the setting, itraises tx_watermark interrupt.
@@ -1409,12 +1426,16 @@ mod fifo_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txilvl(&mut self) -> TxilvlField {
-        TxilvlField::new(&mut self.reg)
+    pub fn txilvl(&self) -> TxilvlField<'_> {
+        TxilvlField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1444,8 +1465,8 @@ mod fifo_ctrl {
   type TxrstField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::Write>;
   type RxilvlField<'a> = zermio::BitField<'a, 2, 3, u32, zermio::access::ReadWrite>;
   type TxilvlField<'a> = zermio::BitField<'a, 5, 3, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// UART FIFO status register.  
@@ -1479,8 +1500,8 @@ mod fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txlvl(&mut self) -> TxlvlField {
-        TxlvlField::new(&mut self.reg)
+    pub fn txlvl(&self) -> TxlvlField<'_> {
+        TxlvlField::new(&self.reg)
     }
 
   /// Hardware description: Current fill level of RX fifo
@@ -1493,20 +1514,24 @@ mod fifo_status {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rxlvl(&mut self) -> RxlvlField {
-        RxlvlField::new(&mut self.reg)
+    pub fn rxlvl(&self) -> RxlvlField<'_> {
+        RxlvlField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type TxlvlField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
   type RxlvlField<'a> = zermio::BitField<'a, 16, 8, u32, zermio::access::Read>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 24, u32, zermio::access::Read>;
 }
-
 
 
 /// TX pin override control. Gives direct SW control over TX pin state.  
@@ -1548,8 +1573,8 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txen(&mut self) -> TxenField {
-        TxenField::new(&mut self.reg)
+    pub fn txen(&self) -> TxenField<'_> {
+        TxenField::new(&self.reg)
     }
 
   /// Hardware description: Write to set the value of the TX pin
@@ -1570,12 +1595,16 @@ mod ovrd {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn txval(&mut self) -> TxvalField {
-        TxvalField::new(&mut self.reg)
+    pub fn txval(&self) -> TxvalField<'_> {
+        TxvalField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1603,8 +1632,8 @@ mod ovrd {
   }
   type TxenField<'a> = zermio::BitField<'a, 0, 1, u32, zermio::access::ReadWrite>;
   type TxvalField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 2, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// UART oversampled values.  
@@ -1637,19 +1666,18 @@ mod val {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn rx(&mut self) -> RxField {
-        RxField::new(&mut self.reg)
+    pub fn rx(&self) -> RxField<'_> {
+        RxField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
   }
   type RxField<'a> = zermio::BitField<'a, 0, 16, u32, zermio::access::Read>;
 }
-
 
 
 /// UART RX timeout control.  
@@ -1686,8 +1714,8 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn val(&mut self) -> ValField {
-        ValField::new(&mut self.reg)
+    pub fn val(&self) -> ValField<'_> {
+        ValField::new(&self.reg)
     }
 
   /// Hardware description: Enable RX timeout feature
@@ -1708,12 +1736,16 @@ mod timeout_ctrl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn en(&mut self) -> EnField {
-        EnField::new(&mut self.reg)
+    pub fn en(&self) -> EnField<'_> {
+        EnField::new(&self.reg)
     }
 
+    /// All fields.
+    pub fn all_fields(&self) ->AllFields<'_> {
+      AllFields::new(&self.reg)
+    }
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -1741,4 +1773,5 @@ mod timeout_ctrl {
   }
   type ValField<'a> = zermio::BitField<'a, 0, 24, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }

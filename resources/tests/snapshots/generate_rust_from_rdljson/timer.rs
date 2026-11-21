@@ -23,7 +23,7 @@ use super::zermio;
 /// });
 /// ```
 pub struct Timer {
-    addr: u32,
+    __addr: u32,
     /// 
     pub mtimel : mtimel::Mtimel,
     /// 
@@ -38,7 +38,7 @@ impl Timer {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       mtimel : mtimel::Mtimel::new(addr),
       mtimeh : mtimeh::Mtimeh::new(addr + 0x4),
       mtimecmpl : mtimecmpl::Mtimecmpl::new(addr + 0x8),
@@ -47,10 +47,9 @@ impl Timer {
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
-
 
 
 /// .  
@@ -86,12 +85,12 @@ mod mtimel {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -119,7 +118,6 @@ mod mtimel {
   }
   type ValueField<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// .  
@@ -155,12 +153,12 @@ mod mtimeh {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -188,7 +186,6 @@ mod mtimeh {
   }
   type ValueField<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// .  
@@ -224,12 +221,12 @@ mod mtimecmpl {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -257,7 +254,6 @@ mod mtimecmpl {
   }
   type ValueField<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// .  
@@ -293,12 +289,12 @@ mod mtimecmph {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }

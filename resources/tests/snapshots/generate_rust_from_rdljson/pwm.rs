@@ -21,7 +21,7 @@ use super::zermio;
 /// });
 /// ```
 pub struct Pwm {
-    addr: u32,
+    __addr: u32,
     /// 
     pub width : width::Width,
     /// 
@@ -32,17 +32,16 @@ impl Pwm {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       width : width::Width::new(addr),
       counter : counter::Counter::new(addr + 0x4),
     }
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
-
 
 
 /// .  
@@ -78,12 +77,12 @@ mod width {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
@@ -111,7 +110,6 @@ mod width {
   }
   type ValueField<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
-
 
 
 /// .  
@@ -147,12 +145,12 @@ mod counter {
   /// | **`max()`**           | Returns the maximum value this field can hold.  |
   /// | **`in_range(val)`**   | Returns true if val fits in the field.          |
   ///
-    pub fn value(&mut self) -> ValueField {
-        ValueField::new(&mut self.reg)
+    pub fn value(&self) -> ValueField<'_> {
+        ValueField::new(&self.reg)
     }
 
     /// Run a load instruction to read from MMIO
-    pub fn fetch(&mut self) -> &mut Self {
+    pub fn fetch(&self) -> &Self {
       self.reg.fetch();
       self
     }
