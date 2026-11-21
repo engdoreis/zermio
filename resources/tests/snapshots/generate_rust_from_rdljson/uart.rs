@@ -31,7 +31,7 @@ use super::zermio;
 /// });
 /// ```
 pub struct Uart {
-    addr: u32,
+    __addr: u32,
     /// Interrupt State Register
     pub intr_state : intr_state::IntrState,
     /// Interrupt Enable Register
@@ -62,7 +62,7 @@ impl Uart {
     pub fn new(instance: u32) -> Self {
     let addr = instance;
     Self {
-      addr,
+      __addr: addr,
       intr_state : intr_state::IntrState::new(addr),
       intr_enable : intr_enable::IntrEnable::new(addr + 0x4),
       intr_test : intr_test::IntrTest::new(addr + 0x8),
@@ -79,7 +79,7 @@ impl Uart {
   }
 
   pub fn destroy(self) -> u32 {
-    self.addr
+    self.__addr
   }
 }
 
@@ -291,7 +291,7 @@ mod intr_state {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -329,7 +329,7 @@ mod intr_state {
   type RxTimeoutField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::ReadWrite>;
   type RxParityErrField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::ReadWrite>;
   type TxEmptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Read>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
 }
 
 
@@ -561,7 +561,7 @@ mod intr_enable {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -599,7 +599,7 @@ mod intr_enable {
   type RxTimeoutField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::ReadWrite>;
   type RxParityErrField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::ReadWrite>;
   type TxEmptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::ReadWrite>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::ReadWrite>;
 }
 
 
@@ -813,7 +813,7 @@ mod intr_test {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a store instruction to write the MMIO
     pub fn commit(&mut self) {
@@ -837,7 +837,7 @@ mod intr_test {
   type RxTimeoutField<'a> = zermio::BitField<'a, 6, 1, u32, zermio::access::Write>;
   type RxParityErrField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::Write>;
   type TxEmptyField<'a> = zermio::BitField<'a, 8, 1, u32, zermio::access::Write>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::Write>
+  type AllFields<'a> = zermio::BitField<'a, 0, 9, u32, zermio::access::Write>;
 }
 
 
@@ -1059,7 +1059,7 @@ mod ctrl {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -1097,7 +1097,7 @@ mod ctrl {
   type ParityOddField<'a> = zermio::BitField<'a, 7, 1, u32, zermio::access::ReadWrite>;
   type RxblvlField<'a> = zermio::BitField<'a, 8, 2, u32, zermio::access::ReadWrite>;
   type NcoField<'a> = zermio::BitField<'a, 16, 16, u32, zermio::access::ReadWrite>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }
 
 
@@ -1218,7 +1218,7 @@ mod status {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -1232,7 +1232,7 @@ mod status {
   type TxidleField<'a> = zermio::BitField<'a, 3, 1, u32, zermio::access::Read>;
   type RxidleField<'a> = zermio::BitField<'a, 4, 1, u32, zermio::access::Read>;
   type RxemptyField<'a> = zermio::BitField<'a, 5, 1, u32, zermio::access::Read>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 6, u32, zermio::access::Read>
+  type AllFields<'a> = zermio::BitField<'a, 0, 6, u32, zermio::access::Read>;
 }
 
 
@@ -1432,7 +1432,7 @@ mod fifo_ctrl {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -1465,7 +1465,7 @@ mod fifo_ctrl {
   type TxrstField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::Write>;
   type RxilvlField<'a> = zermio::BitField<'a, 2, 3, u32, zermio::access::ReadWrite>;
   type TxilvlField<'a> = zermio::BitField<'a, 5, 3, u32, zermio::access::ReadWrite>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::ReadWrite>
+  type AllFields<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::ReadWrite>;
 }
 
 
@@ -1520,7 +1520,7 @@ mod fifo_status {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -1530,7 +1530,7 @@ mod fifo_status {
   }
   type TxlvlField<'a> = zermio::BitField<'a, 0, 8, u32, zermio::access::Read>;
   type RxlvlField<'a> = zermio::BitField<'a, 16, 8, u32, zermio::access::Read>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 24, u32, zermio::access::Read>
+  type AllFields<'a> = zermio::BitField<'a, 0, 24, u32, zermio::access::Read>;
 }
 
 
@@ -1601,7 +1601,7 @@ mod ovrd {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -1632,7 +1632,7 @@ mod ovrd {
   }
   type TxenField<'a> = zermio::BitField<'a, 0, 1, u32, zermio::access::ReadWrite>;
   type TxvalField<'a> = zermio::BitField<'a, 1, 1, u32, zermio::access::ReadWrite>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 2, u32, zermio::access::ReadWrite>
+  type AllFields<'a> = zermio::BitField<'a, 0, 2, u32, zermio::access::ReadWrite>;
 }
 
 
@@ -1742,7 +1742,7 @@ mod timeout_ctrl {
 
     /// All fields.
     pub fn all_fields(&self) ->AllFields<'_> {
-      AllFields::new(&self.reg);
+      AllFields::new(&self.reg)
     }
     /// Run a load instruction to read from MMIO
     pub fn fetch(&self) -> &Self {
@@ -1773,5 +1773,5 @@ mod timeout_ctrl {
   }
   type ValField<'a> = zermio::BitField<'a, 0, 24, u32, zermio::access::ReadWrite>;
   type EnField<'a> = zermio::BitField<'a, 31, 1, u32, zermio::access::ReadWrite>;
-  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>
+  type AllFields<'a> = zermio::BitField<'a, 0, 32, u32, zermio::access::ReadWrite>;
 }

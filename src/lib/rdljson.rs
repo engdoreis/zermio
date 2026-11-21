@@ -129,7 +129,7 @@ impl SoC {
     }
 
     /// If homogeneous interfaces are found, transform them into separate devices/pheripherals.
-    pub fn homogeneous_interfaces_to_periperals(&mut self) {
+    pub fn homogeneous_interfaces_to_peripherals(&mut self) {
         let mut new_devices: Vec<Device> = vec![];
         for device in self.devices.iter_mut() {
             let Device::Device(device) = device else {

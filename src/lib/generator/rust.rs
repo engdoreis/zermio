@@ -2,6 +2,9 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
+// Used by the `#[derive(Template)]` expansions below, which reference `filters::...`
+// unqualified; the compiler can't see that usage, so it looks unused to clippy.
+#[allow(unused_imports)]
 use crate::filters;
 use askama::Template;
 

@@ -1,4 +1,4 @@
-/* The best way to read and explor this documentation is by rendering it with:*/
+/* The best way to read and explore this documentation is by rendering it with:*/
 /*`cargo doc --open`*/
 
 #![cfg_attr(not(test), no_std)]

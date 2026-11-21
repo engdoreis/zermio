@@ -6,8 +6,8 @@
 //zermio
 
 
-//! These are the registers present in the gpio
-//! | Register name      | Description  | Offset | Write | Read|
+//! These are the registers present in the gpio 
+//! | Register name      | Description  | Offset | Write | Read| 
 //! | :---               | :---         | :---   | :--   | :-- |
 //! | OUT |  | 0x0 | true |false |
 //! | IN |  | 0x4 | false |true |
@@ -24,13 +24,13 @@ use super::zermio;
 /// ```
 pub struct Gpio {
     __addr: u32,
-    ///
+    /// 
     pub out : out::Out,
-    ///
+    /// 
     pub r#in : r#in::In,
-    ///
+    /// 
     pub in_dbnc : in_dbnc::InDbnc,
-    ///
+    /// 
     pub output_enable : output_enable::OutputEnable,
 }
 
@@ -52,14 +52,14 @@ impl Gpio {
 }
 
 
-/// .
+/// .  
 pub use self::out::*;
 mod out {
 
   use super::*;
 
-  /// # OUT fields.
-  /// | Field name      | Description  | Offset | Write | Read|
+  /// # OUT fields.  
+  /// | Field name      | Description  | Offset | Write | Read| 
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | PINS | Pins. | [31:0] | true |false |
   pub struct Out {
@@ -105,14 +105,14 @@ mod out {
 }
 
 
-/// .
+/// .  
 pub use self::r#in::*;
 mod r#in {
 
   use super::*;
 
-  /// # IN fields.
-  /// | Field name      | Description  | Offset | Write | Read|
+  /// # IN fields.  
+  /// | Field name      | Description  | Offset | Write | Read| 
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | PINS | Pins. | [31:0] | false |true |
   pub struct In {
@@ -149,14 +149,14 @@ mod r#in {
 }
 
 
-/// .
+/// .  
 pub use self::in_dbnc::*;
 mod in_dbnc {
 
   use super::*;
 
-  /// # IN_DBNC fields.
-  /// | Field name      | Description  | Offset | Write | Read|
+  /// # IN_DBNC fields.  
+  /// | Field name      | Description  | Offset | Write | Read| 
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | PINS | DBNC. | [31:0] | false |true |
   pub struct InDbnc {
@@ -193,14 +193,14 @@ mod in_dbnc {
 }
 
 
-/// .
+/// .  
 pub use self::output_enable::*;
 mod output_enable {
 
   use super::*;
 
-  /// # OUTPUT_ENABLE fields.
-  /// | Field name      | Description  | Offset | Write | Read|
+  /// # OUTPUT_ENABLE fields.  
+  /// | Field name      | Description  | Offset | Write | Read| 
   /// | :---               | :---         | :---   | :--   | :-- |
   /// | PINS | val | [31:0] | true |true |
   pub struct OutputEnable {
@@ -247,7 +247,7 @@ mod output_enable {
       action(self);
       self.reg.commit();
     }
-    /// Run a load instruction to read from the MMIO, call action, then run a store instruction
+    /// Run a load instruction to read from the MMIO, call action, then run a store instruction 
     /// to write it to the MMIO
     pub fn update<F>(&mut self, action: F)
     where

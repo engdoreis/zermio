@@ -5,7 +5,8 @@ use super::{{device_type.type_name|lower|kw}};
 {{newline}}
 
 {%- for device_type in inner.device_types %}
-pub enum {{ device_type.type_name|pascal_case }}Offset{ 
+#[repr(u32)]
+pub enum {{ device_type.type_name|pascal_case }}Offset{
   {%- for device in device_type.devices %}
   {{ device.name|pascal_case }} = {{device.address}},
   {%- endfor %}
@@ -13,7 +14,10 @@ pub enum {{ device_type.type_name|pascal_case }}Offset{
 {{newline}}
 {%- endfor %}
 
-pub enum Interrupt{ 
+{%- if !inner.interrupts.is_empty() %}
+#[repr(u32)]
+{%- endif %}
+pub enum Interrupt{
 {%- for interrupt in inner.interrupts %}
   {{ interrupt.name|pascal_case }} = {{interrupt.value}}, 
 {%- endfor %}
